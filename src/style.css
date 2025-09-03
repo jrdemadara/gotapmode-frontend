@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MINIMAL DARK MODE FIX - Preserve Original Design */
+@layer base {
+  :root {
+    /* Force light color scheme */
+    color-scheme: light only;
+    forced-colors: none;
+  }
+
+  /* Only override when system is in dark mode */
+  @media (prefers-color-scheme: dark) {
+    /* Keep original light design values */
+    html {
+      background-color: #f9fafb;
+      color: #111827;
+    }
+
+    body {
+      background-color: #f9fafb;
+      color: #111827;
+    }
+
+    /* Form elements - keep visible */
+    input, textarea, select {
+      background-color: #ffffff;
+      color: #111827;
+      border-color: #d1d5db;
+    }
+
+    /* Text readability */
+    input::placeholder, textarea::placeholder {
+      color: #9ca3af;
+      opacity: 1;
+    }
+
+    /* Navigation elements */
+    .fixed.z-50.w-72, .fixed.z-50.w-80 {
+      background: linear-gradient(to bottom, #ffffff, #f9fafb);
+      color: #111827;
+      border-color: #e5e7eb;
+    }
+
+    /* Hamburger menu lines */
+    button span.block.h-0\.5 {
+      background-color: #111827;
+    }
+
+    /* Modal backgrounds */
+    .fixed.inset-0.bg-black\/50 {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
