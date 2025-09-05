@@ -183,8 +183,8 @@
                 </svg>
               </div>
                 <div>
-                  <h2 class="text-xl font-bold text-white">Company Profile</h2>
-                  <p class="text-emerald-100 text-sm">Manage company information & branding</p>
+                  <h2 class="text-xl font-bold text-white">User Profile</h2>
+                  <p class="text-emerald-100 text-sm">Manage user information & details</p>
             </div>
           </div>
               <button @click="saveProfileInfo" :disabled="savingProfile" type="button" class="px-5 py-2.5 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-xl hover:bg-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl ring-2 ring-white/20">
@@ -254,7 +254,7 @@
                 ></textarea>
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Bio</label>
+                <label class="block text-sm font-medium text-gray-700">Bio</label>
                 <textarea
                   v-model="formData.profile.bio"
                   rows="4"
