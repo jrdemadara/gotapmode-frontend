@@ -27,7 +27,7 @@
       <template v-else>
         <!-- Main Metrics - Responsive Grid -->
         <section>
-          <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+          <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
             <!-- Registered Users -->
             <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
               <div class="flex flex-col items-center text-center">
@@ -98,7 +98,7 @@
 
         <!-- Contact Metrics - Responsive Grid -->
         <section>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+          <div class="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             <!-- Emails -->
             <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
               <div class="flex flex-col items-center text-center">
@@ -134,9 +134,9 @@
         </section>
 
         <!-- Chart and Sidebar Section -->
-        <section class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Chart Section -->
-          <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 xl:col-span-2 border border-gray-100">
+          <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 lg:col-span-2 border border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-0">Last 14 Days Activity</h3>
               <div class="flex flex-wrap gap-2">
@@ -178,7 +178,7 @@
           </div>
 
           <!-- Sidebar Section -->
-          <div class="xl:col-span-1 space-y-4 sm:space-y-6">
+          <div class="lg:col-span-1 space-y-4 sm:space-y-6">
             <!-- Recent Activations -->
             <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Recent Activations</h3>

@@ -53,14 +53,14 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 py-6 sm:py-8">
+    <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
       <!-- NFC Card Scanner -->
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-6 sm:mb-8">
-        <div class="flex items-center gap-3 mb-4 sm:mb-6">
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6 mb-4 sm:mb-6 lg:mb-8">
+        <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-6">
           <div class="w-10 h-10 rounded-xl  flex items-center justify-center shadow-md">
             <img src="/icons/scan.png" alt="Scan" class="w-5 h-5" />
           </div>
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900">Scan NFC Card</h2>
+          <h2 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Scan NFC Card</h2>
         </div>
         
         <div class="space-y-4 sm:space-y-6">

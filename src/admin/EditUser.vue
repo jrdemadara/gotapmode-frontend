@@ -93,16 +93,16 @@
     </div>
 
     <!-- Main Content -->
-    <div v-else-if="user" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="grid gap-8 lg:gap-10">
+    <div v-else-if="user" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div class="grid gap-6 sm:gap-8 lg:gap-10">
 
                 <!-- Basic Information Card -->
         <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-white/30 overflow-hidden hover:shadow-2xl transition-all duration-300">
-          <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 px-6 py-5 relative overflow-hidden">
+          <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 px-4 sm:px-6 py-4 sm:py-5 relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-700/20"></div>
-            <div class="relative flex items-center justify-between">
-              <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30">
+            <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+              <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30">
                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>

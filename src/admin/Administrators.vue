@@ -7,15 +7,15 @@
       <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
     </button>
 
-                                                                                                                                                               <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8 lg:flex lg:flex-col lg:items-center">
+                                                                                                                                                               <main class="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 lg:space-y-8 lg:flex lg:flex-col lg:items-center">
                <!-- Page Header -->
-                 <div class="flex flex-col items-center text-center mt-12 sm:mt-16">
-        <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-3">
+                 <div class="flex flex-col items-center text-center mt-8 sm:mt-12 lg:mt-16">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-2 sm:mb-3">
           <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-9 h-9 object-contain" />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
-          <p class="text-base text-gray-600">User Management System</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">GoTapMode</h1>
+          <p class="text-sm sm:text-base text-gray-600">User Management System</p>
         </div>
       </div>
       <!-- Loading and Error States -->
