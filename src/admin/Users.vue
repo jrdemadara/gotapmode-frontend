@@ -624,21 +624,28 @@
                    <!-- Modal Container -->
           <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-6xl border border-gray-200/50">
            
-           <!-- Header Section with Gradient -->
-           <div class="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 px-4 sm:px-6 py-4 sm:py-6">
-             <div class="absolute inset-0 bg-black/10 rounded-t-2xl"></div>
-             <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-               <div class="flex items-center gap-3 sm:gap-4">
-                 <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-lg sm:text-2xl text-white font-bold shadow-lg overflow-hidden">
-                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+           <!-- Header Section -->
+           <div class="bg-gray-50 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200 relative">
+             <!-- Mobile Close Button - Top Right -->
+             <button @click="selectedUser = null" class="absolute top-2 right-2 sm:hidden w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all duration-200">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+               </svg>
+             </button>
+             
+             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+               <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
                  </div>
                  <div>
-                   <h3 class="text-xl sm:text-2xl font-bold text-white">GoTapMode User Profile</h3>
-                   <p class="text-sm sm:text-base text-blue-100">{{ selectedUser.name }}</p>
+                   <h3 class="text-lg sm:text-xl font-bold text-gray-900">User Profile</h3>
+                   <p class="text-sm text-gray-600">{{ selectedUser.name }}</p>
                  </div>
                </div>
-               <button @click="selectedUser = null" class="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white hover:text-gray-200 transition-all duration-200">
-                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <!-- Desktop Close Button -->
+               <button @click="selectedUser = null" class="hidden sm:flex w-10 h-10 rounded-lg bg-gray-200 hover:bg-gray-300 items-center justify-center text-gray-600 hover:text-gray-800 transition-all duration-200">
+                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                  </svg>
                </button>
@@ -646,21 +653,21 @@
            </div>
            
            <!-- Content Section -->
-           <div class="bg-white px-4 sm:px-6 py-6 sm:py-8">
+           <div class="bg-white px-3 sm:px-6 py-4 sm:py-6">
              
              <!-- Basic Information Cards -->
-             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                <!-- Basic Info Card -->
-               <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-4 sm:p-6 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                 <div class="flex items-center gap-3 mb-4">
-                   <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                 <div class="flex items-center gap-2 mb-3">
+                   <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
+                     <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                      </svg>
                    </div>
-                   <h4 class="text-base sm:text-lg font-semibold text-gray-900">Basic Information</h4>
+                   <h4 class="text-sm font-semibold text-gray-900">Basic Information</h4>
                  </div>
-                 <div class="space-y-3 sm:space-y-4">
+                 <div class="space-y-2">
                    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
                      <span class="text-sm font-medium text-gray-600">Full Name</span>
                      <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0">{{ selectedUser.name }}</span>
@@ -684,16 +691,16 @@
                </div>
 
                <!-- Profile Details Card -->
-               <div class="bg-gradient-to-br from-gray-50 to-purple-50 rounded-xl p-4 sm:p-6 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                 <div class="flex items-center gap-3 mb-4">
-                   <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                 <div class="flex items-center gap-2 mb-3">
+                   <div class="w-6 h-6 rounded bg-green-100 flex items-center justify-center">
+                     <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                      </svg>
                    </div>
-                   <h4 class="text-base sm:text-lg font-semibold text-gray-900">User Profile</h4>
+                   <h4 class="text-sm font-semibold text-gray-900">User Profile</h4>
                  </div>
-                 <div class="space-y-3 sm:space-y-4">
+                 <div class="space-y-2">
                    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
                      <span class="text-sm font-medium text-gray-600">Company</span>
                      <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0">{{ selectedUser.profile?.company || 'N/A' }}</span>
@@ -715,50 +722,50 @@
              </div>
 
              <!-- Statistics Cards -->
-             <div class="mb-6 sm:mb-8">
-               <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <div class="mb-4 sm:mb-6">
+               <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                  </svg>
-                 Statistics Overview
+                 Statistics
                </h4>
-               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 sm:p-6 border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200">
+               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-blue-600">Total Cards</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-blue-900">{{ selectedUser.cards?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Total Cards</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.cards?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                        </svg>
                      </div>
                    </div>
                  </div>
                  
-                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 sm:p-6 border border-green-200/50 shadow-sm hover:shadow-md transition-all duration-200">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-green-600">Activated Cards</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-green-900">{{ selectedUser.activated_cards?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Activated Cards</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.activated_cards?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-green-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-green-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                        </svg>
                      </div>
                    </div>
                  </div>
                  
-                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 sm:p-6 border border-purple-200/50 shadow-sm hover:shadow-md transition-all duration-200 sm:col-span-2 lg:col-span-1">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-purple-600">Contact Info</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-purple-900">{{ selectedUser.contact_info?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Contact Info</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.contact_info?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-purple-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
                        </svg>
                      </div>
