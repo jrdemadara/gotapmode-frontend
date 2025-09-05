@@ -111,15 +111,15 @@
                   <p class="text-sm text-gray-600">Manage user's basic details</p>
                 </div>
               </div>
-              <button @click="saveBasicInfo" :disabled="savingBasic" type="button" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <div class="flex items-center space-x-2">
-                  <svg v-if="savingBasic" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="saveBasicInfo" :disabled="savingBasic" type="button" class="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <div class="flex items-center space-x-1">
+                  <svg v-if="savingBasic" class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
-                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                   </svg>
-                  <span>{{ savingBasic ? 'Saving...' : 'Save Changes' }}</span>
+                  <span>{{ savingBasic ? 'Saving...' : 'Save' }}</span>
                 </div>
               </button>
             </div>
@@ -173,15 +173,15 @@
                   <p class="text-sm text-gray-600">Manage user information & details</p>
                 </div>
               </div>
-              <button @click="saveProfileInfo" :disabled="savingProfile" type="button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <div class="flex items-center space-x-2">
-                  <svg v-if="savingProfile" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="saveProfileInfo" :disabled="savingProfile" type="button" class="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <div class="flex items-center space-x-1">
+                  <svg v-if="savingProfile" class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
-                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                   </svg>
-                  <span>{{ savingProfile ? 'Saving...' : 'Save Changes' }}</span>
+                  <span>{{ savingProfile ? 'Saving...' : 'Save' }}</span>
                 </div>
               </button>
             </div>
