@@ -8,11 +8,14 @@
     </button>
 
 <main class="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
-               <!-- Page Header -->
-                 <div class="text-center mt-6 sm:mt-8 lg:mt-12">
+      <!-- Page Header -->
+      <div class="flex flex-col items-center text-center mt-12 sm:mt-16">
+        <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-3">
+          <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-9 h-9 object-contain" />
+        </div>
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Administrator Management</h1>
-          <p class="text-sm sm:text-base text-gray-600 mt-2">Manage system administrators and their access</p>
+          <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
+          <p class="text-base text-gray-600">Administrator Management System</p>
         </div>
       </div>
       <!-- Loading and Error States -->
@@ -34,9 +37,14 @@
                  <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div class="flex flex-col gap-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <h2 class="text-lg font-semibold text-gray-900">Administrator Accounts</h2>
-                <p class="text-sm text-gray-600">Manage and view all system administrators</p>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
+                  <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-gray-900">Administrator Accounts</h2>
+                  <p class="text-sm text-gray-600">Manage and view all system administrators</p>
+                </div>
               </div>
               
               <!-- Desktop Stats -->
@@ -407,12 +415,18 @@
            </svg>
            NFC Writing
          </router-link>
-         <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
-           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-           </svg>
-           Administrators
-         </router-link>
+                 <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          Administrators
+        </router-link>
          <button @click="logout" class="flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>

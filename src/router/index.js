@@ -12,6 +12,7 @@ import AdminDashboard from '../admin/Dashboard.vue'
 import AdminUsers from '../admin/Users.vue'
 import EditUser from '../admin/EditUser.vue'
 import NfcWriting from '../admin/NFCWriting.vue'
+import NFCCards from '../admin/NFCCards.vue'
 import Administrators from '../admin/Administrators.vue'
 
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
   { path: '/admin/users/:id/edit', name: 'admin-edit-user', component: EditUser, meta: { requiresAdmin: true } },
   { path: '/admin/administrators', name: 'admin-administrators', component: Administrators, meta: { requiresAdmin: true } },
   { path: '/admin/nfc-writing', name: 'admin-nfc-writing', component: NfcWriting, meta: { requiresAdmin: true } },
+  { path: '/admin/nfc-cards', name: 'admin-nfc-cards', component: NFCCards, meta: { requiresAdmin: true } },
 ]
 
 export const router = createRouter({

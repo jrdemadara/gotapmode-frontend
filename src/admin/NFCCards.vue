@@ -1,0 +1,951 @@
+<template>
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 relative">
+    <!-- Hamburger button -->
+    <button @click="showSidebar = !showSidebar" class="absolute left-3 sm:left-4 top-3 sm:top-4 z-50 w-12 h-12 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg border-2 sm:border border-gray-300 bg-white/95 backdrop-blur flex flex-col items-center justify-center gap-1.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all duration-200">
+      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+    </button>
+
+    <main class="max-w-7xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
+      <!-- Page Header -->
+      <div class="flex flex-col items-center text-center mt-12 sm:mt-16">
+        <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-3">
+          <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-9 h-9 object-contain" />
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
+          <p class="text-base text-gray-600">NFC Cards Management System</p>
+        </div>
+      </div>
+
+      <!-- Loading and Error States -->
+      <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <div class="text-lg text-gray-600">Loading NFC cards...</div>
+      </div>
+
+      <div v-else-if="error" class="bg-white rounded-2xl shadow p-6 text-center">
+        <div class="text-red-600 text-lg mb-2">{{ error }}</div>
+        <button @click="fetchCards" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Try Again
+        </button>
+      </div>
+
+      <!-- Cards Table -->
+      <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+        <!-- Table Header -->
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
+                  <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-gray-900">NFC Cards</h2>
+                  <p class="text-sm text-gray-600">Manage and view all NFC cards</p>
+                </div>
+              </div>
+              
+              <!-- Desktop Stats -->
+              <div class="hidden lg:flex items-center gap-4">
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500">Total</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ cards.length }}</div>
+                  </div>
+                </div>
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500">Activated</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ cards.filter(c => c.is_activated).length }}</div>
+                  </div>
+                </div>
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500">Unactivated</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ cards.filter(c => !c.is_activated).length }}</div>
+                  </div>
+                </div>
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500">Filtered</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ filteredCards.length }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Search Section -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div class="relative w-full lg:w-96">
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="Search by card ID, user name, or email..."
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div class="absolute left-3 top-2.5 text-gray-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <div class="absolute right-3 top-2.5 text-gray-400">
+                  <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ filteredCards.length }}</span>
+                </div>
+              </div>
+              
+              <!-- Quick Actions -->
+              <div class="flex items-center gap-2 justify-end">
+                <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="hidden lg:block w-full overflow-hidden">
+          <div class="bg-white border border-gray-200 overflow-hidden">
+            <table class="w-full" role="table" aria-label="NFC Cards table">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Card Details
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User Information
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Activation Status
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Expiry Date
+                  </th>
+                  <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="(card, index) in paginatedCards" :key="card.id"
+                    class="hover:bg-gray-50 transition-colors duration-200"
+                    role="row">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="text-sm font-medium text-gray-900">{{ card.unique_code }}</div>
+                        <div class="text-xs text-gray-500">{{ card.activation_code }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">{{ card.user?.name || 'Unknown User' }}</div>
+                    <div class="text-xs text-gray-500">{{ card.user?.email || 'No email' }}</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span :class="[
+                      'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
+                      card.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    ]">
+                      <div :class="[
+                        'w-2 h-2 rounded-full mr-1',
+                        card.is_activated ? 'bg-green-500' : 'bg-yellow-500'
+                      ]"></div>
+                      {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div v-if="card.expiry_date" class="text-sm text-gray-900">{{ formatDate(card.expiry_date) }}</div>
+                    <div v-else class="text-sm text-gray-500 italic">Not set</div>
+                    <div v-if="card.expiry_date" class="text-xs text-gray-500">{{ getTimeAgo(card.expiry_date) }}</div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                      <button
+                        @click="viewCard(card)"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View
+                      </button>
+                      <button
+                        @click="deleteCard(card)"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="lg:hidden">
+          <div class="p-4 space-y-4">
+            <div v-for="card in paginatedCards" :key="card.id"
+                 class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+              <div class="space-y-3">
+                <!-- Card Header -->
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-base font-medium text-gray-900">{{ card.unique_code }}</div>
+                    <div class="text-sm text-gray-600">{{ card.user?.name || 'Unknown User' }}</div>
+                    <div class="text-xs text-gray-500">{{ card.user?.email || 'No email' }}</div>
+                  </div>
+                </div>
+
+                <!-- Status and Date -->
+                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <span :class="[
+                      'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
+                      card.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    ]">
+                      <div :class="[
+                        'w-2 h-2 rounded-full mr-1',
+                        card.is_activated ? 'bg-green-500' : 'bg-yellow-500'
+                      ]"></div>
+                      {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                    </span>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm text-gray-900">{{ formatDate(card.created_at) }}</div>
+                    <div class="text-xs text-gray-500">{{ getTimeAgo(card.created_at) }}</div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="pt-2 flex gap-2">
+                  <button @click="viewCard(card)"
+                          class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    View
+                  </button>
+                  <button @click="deleteCard(card)"
+                          class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="filteredCards.length > 0" class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50 w-full">
+          <!-- Desktop Pagination Layout -->
+          <div class="hidden lg:flex items-center justify-between">
+            <!-- Left Section: Page Size & Info -->
+            <div class="flex items-center gap-4">
+              <!-- Page Size Selector -->
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Show:</span>
+                <select
+                  v-model="itemsPerPage"
+                  class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="text-sm text-gray-600">entries</span>
+              </div>
+
+              <!-- Pagination Info -->
+              <div class="text-sm text-gray-700">
+                <span class="font-medium">{{ paginationInfo.start }}-{{ paginationInfo.end }}</span>
+                <span class="text-gray-500"> of </span>
+                <span class="font-medium">{{ paginationInfo.total }}</span>
+                <span class="text-gray-500"> results</span>
+              </div>
+            </div>
+
+            <!-- Right Section: Navigation -->
+            <div class="flex items-center gap-2">
+              <!-- Page Jump Input -->
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Go to:</span>
+                <input
+                  type="number"
+                  :min="1"
+                  :max="totalPages"
+                  v-model.number="currentPage"
+                  @keyup.enter="validateAndChangePage(currentPage)"
+                  @blur="validateAndChangePage(currentPage)"
+                  class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <span class="text-sm text-gray-600">of {{ totalPages }}</span>
+              </div>
+
+              <!-- Pagination Navigation -->
+              <div class="flex items-center gap-1 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <!-- Previous Button -->
+                <button
+                  @click="changePage(currentPage - 1)"
+                  :disabled="currentPage === 1"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-r border-gray-200"
+                  title="Previous Page"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center">
+                  <button
+                    v-for="page in getVisiblePages()"
+                    :key="page"
+                    @click="changePage(page)"
+                    :class="[
+                      'px-3 py-2 text-sm font-medium border-r border-gray-200 transition-colors hover:bg-gray-50',
+                      page === currentPage
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'text-gray-700 bg-white hover:text-gray-600'
+                    ]"
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+
+                <!-- Next Button -->
+                <button
+                  @click="changePage(currentPage + 1)"
+                  :disabled="currentPage === totalPages"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Next Page"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Pagination Layout -->
+          <div class="lg:hidden">
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
+              <!-- Left: Page Size -->
+              <div class="flex items-center gap-2">
+                <select
+                  v-model="itemsPerPage"
+                  class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="text-xs text-gray-500">items</span>
+              </div>
+
+              <!-- Center: Navigation Controls -->
+              <div class="flex items-center gap-1">
+                <button
+                  @click="changePage(currentPage - 1)"
+                  :disabled="currentPage === 1"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
+                  title="Previous"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+
+                <div class="flex items-center gap-1 px-2">
+                  <span class="text-xs text-gray-600">{{ currentPage }}</span>
+                  <span class="text-xs text-gray-400">/</span>
+                  <span class="text-xs text-gray-600">{{ totalPages }}</span>
+                </div>
+
+                <button
+                  @click="changePage(currentPage + 1)"
+                  :disabled="currentPage === totalPages"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
+                  title="Next"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Right: Page Jump -->
+              <div class="flex items-center gap-1">
+                <input
+                  type="number"
+                  :min="1"
+                  :max="totalPages"
+                  v-model.number="currentPage"
+                  @keyup.enter="validateAndChangePage(currentPage)"
+                  @blur="validateAndChangePage(currentPage)"
+                  class="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Page"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="filteredCards.length === 0" class="px-6 py-12 text-center w-full">
+          <div class="text-gray-400 text-6xl mb-4">💳</div>
+          <div class="text-lg font-medium text-gray-900 mb-2">No NFC cards found</div>
+          <div class="text-gray-500">{{ searchQuery ? 'Try adjusting your search terms' : 'No NFC cards have been created yet' }}</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    <div v-if="showSidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300">
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
+            <img src="/logo/GoTapMode.png" alt="logo" class="w-9 h-9 object-contain" />
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
+            <p class="text-sm text-gray-600">Admin Panel</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="p-6 space-y-3">
+        <router-link to="/admin/dashboard" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          Dashboard
+        </router-link>
+        <router-link to="/admin/users" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          Users
+        </router-link>
+        <router-link to="/admin/nfc-writing" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Writing
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          Administrators
+        </router-link>
+        <button @click="logout" class="flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Logout
+        </button>
+      </nav>
+    </div>
+
+    <!-- Card Details Modal -->
+    <div v-if="showCardModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
+        <!-- Modal Header -->
+        <div class="bg-gray-50 px-4 sm:px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+              <h2 class="text-lg font-semibold text-gray-900 truncate">NFC Card Details</h2>
+              <p class="text-sm text-gray-600 truncate">Complete card information</p>
+            </div>
+          </div>
+          <button
+            @click="closeCardModal"
+            class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition-colors duration-200 flex-shrink-0 ml-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div v-if="selectedCard" class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
+          <!-- Card Header -->
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">{{ selectedCard.unique_code }}</h3>
+              <p class="text-sm text-gray-600">{{ selectedCard.activation_code }}</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span :class="[
+                  'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
+                  selectedCard.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                ]">
+                  <div :class="[
+                    'w-2 h-2 rounded-full mr-1',
+                    selectedCard.is_activated ? 'bg-green-500' : 'bg-yellow-500'
+                  ]"></div>
+                  {{ selectedCard.is_activated ? 'Activated' : 'Unactivated' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Information Cards -->
+          <div class="space-y-3">
+            <!-- User Information -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-900 mb-2">User Information</h4>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <p class="text-xs text-gray-600">Name</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.user?.name || 'Unknown User' }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Email</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.user?.email || 'No email' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Information -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-900 mb-3">Card Information</h4>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <p class="text-xs text-gray-600">Unique Code</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.unique_code }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Activation Code</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.activation_code }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Activation Status</p>
+                  <div class="flex items-center gap-1">
+                    <span :class="[
+                      'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
+                      selectedCard.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    ]">
+                      <div :class="[
+                        'w-1.5 h-1.5 rounded-full mr-1',
+                        selectedCard.is_activated ? 'bg-green-500' : 'bg-yellow-500'
+                      ]"></div>
+                      {{ selectedCard.is_activated ? 'Activated' : 'Unactivated' }}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Expiry Date</p>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ selectedCard.expiry_date ? formatDate(selectedCard.expiry_date) : 'Not set' }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Created Date</p>
+                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.created_at) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-600">Last Updated</p>
+                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.updated_at) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- URL Information -->
+            <div v-if="selectedCard.url" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-900 mb-3">Card URL</h4>
+              <div class="flex items-center gap-2">
+                <a :href="selectedCard.url" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 underline truncate flex-1">
+                  {{ selectedCard.url }}
+                </a>
+                <button @click="copyToClipboard(selectedCard.url)" class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full border border-gray-200">
+        <!-- Modal Header -->
+        <div class="bg-red-50 px-6 py-4 border-b border-red-200 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-red-900">Delete NFC Card</h2>
+              <p class="text-sm text-red-700">This action cannot be undone</p>
+            </div>
+          </div>
+          <button
+            @click="closeDeleteModal"
+            class="w-8 h-8 rounded-lg bg-red-200 hover:bg-red-300 flex items-center justify-center text-red-600 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6">
+          <div class="text-center">
+            <div class="text-red-600 text-4xl mb-4">⚠️</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Are you sure?</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              You are about to delete NFC Card #{{ cardToDelete?.id }}. This will permanently remove the card and cannot be undone.
+            </p>
+            <div class="bg-gray-50 rounded-lg p-3 text-left">
+              <p class="text-xs text-gray-600">Card Details:</p>
+              <p class="text-sm font-medium text-gray-900">Card #{{ cardToDelete?.id }}</p>
+              <p class="text-xs text-gray-600">User: {{ cardToDelete?.user?.name || 'Unknown User' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
+          <button
+            @click="closeDeleteModal"
+            class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmDelete"
+            :disabled="isDeleting"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            <svg v-if="isDeleting" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>{{ isDeleting ? 'Deleting...' : 'Delete Card' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { adminApi } from '../config/api'
+
+const router = useRouter()
+const loading = ref(true)
+const error = ref('')
+const cards = ref([])
+const selectedCard = ref(null)
+const cardToDelete = ref(null)
+const searchQuery = ref('')
+const showSidebar = ref(false)
+
+// Pagination state
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+// Modal states
+const showCardModal = ref(false)
+const showDeleteModal = ref(false)
+const isDeleting = ref(false)
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const getTimeAgo = (dateString) => {
+  if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+  
+  if (diffInSeconds < 60) return 'Just now'
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`
+  return formatDate(dateString)
+}
+
+const fetchCards = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    console.log('Fetching NFC cards from API...')
+    
+    const token = localStorage.getItem('gtm_admin_token')
+    if (!token) {
+      throw new Error('No admin token found')
+    }
+
+    const response = await fetch('/api/admin/cards', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token expired or invalid
+        localStorage.removeItem('gtm_admin_token')
+        localStorage.removeItem('gtm_admin_user')
+        router.replace({ name: 'login' })
+        return
+      }
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    
+    // Transform the data to ensure it has the expected structure
+    cards.value = data.cards || data.data || data || []
+    
+    console.log('Cards loaded from API:', cards.value)
+  } catch (err) {
+    console.error('Error fetching cards:', err)
+    error.value = err.message || 'Failed to load NFC cards. Please try again.'
+    cards.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+// Computed properties
+const filteredCards = computed(() => {
+  if (!searchQuery.value) return cards.value
+
+  const query = searchQuery.value.toLowerCase()
+  return cards.value.filter(card =>
+    card.id.toString().includes(query) ||
+    card.user?.name?.toLowerCase().includes(query) ||
+    card.user?.email?.toLowerCase().includes(query)
+  )
+})
+
+const paginatedCards = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredCards.value.slice(start, end)
+})
+
+// Watch for search query changes to reset pagination
+watch(searchQuery, () => {
+  resetPagination()
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredCards.value.length / itemsPerPage.value)
+})
+
+const paginationInfo = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value + 1
+  const end = Math.min(currentPage.value * itemsPerPage.value, filteredCards.value.length)
+  return { start, end, total: filteredCards.value.length }
+})
+
+// Functions
+function viewCard(card) {
+  selectedCard.value = card
+  showCardModal.value = true
+}
+
+function deleteCard(card) {
+  cardToDelete.value = card
+  showDeleteModal.value = true
+}
+
+function closeCardModal() {
+  showCardModal.value = false
+  selectedCard.value = null
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  cardToDelete.value = null
+}
+
+async function confirmDelete() {
+  if (!cardToDelete.value || isDeleting.value) return
+
+  try {
+    isDeleting.value = true
+    console.log('Deleting card:', cardToDelete.value.id)
+    
+    const token = localStorage.getItem('gtm_admin_token')
+    if (!token) {
+      throw new Error('No admin token found')
+    }
+
+    const response = await fetch(`/api/admin/cards/${cardToDelete.value.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token expired or invalid
+        localStorage.removeItem('gtm_admin_token')
+        localStorage.removeItem('gtm_admin_user')
+        router.replace({ name: 'login' })
+        return
+      }
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    // Remove card from list
+    cards.value = cards.value.filter(card => card.id !== cardToDelete.value.id)
+    
+    console.log('Card deleted successfully')
+    closeDeleteModal()
+  } catch (err) {
+    console.error('Error deleting card:', err)
+    error.value = err.message || 'Failed to delete card'
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+function resetPagination() {
+  currentPage.value = 1
+}
+
+const changePage = (page) => {
+  currentPage.value = page
+}
+
+const validateAndChangePage = (page) => {
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    changePage(validPage)
+  }
+}
+
+const getVisiblePages = () => {
+  const pages = []
+  const maxVisible = 5
+
+  if (totalPages.value <= maxVisible) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i)
+    }
+  } else {
+    let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
+    let end = Math.min(totalPages.value, start + maxVisible - 1)
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1)
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i)
+    }
+  }
+
+  return pages
+}
+
+// Handle ESC key to close modals
+const handleKeyDown = (event) => {
+  if (event.key === 'Escape') {
+    if (showDeleteModal.value) {
+      closeDeleteModal()
+    } else if (showCardModal.value) {
+      closeCardModal()
+    }
+  }
+}
+
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    // You could add a toast notification here
+    console.log('URL copied to clipboard')
+  } catch (err) {
+    console.error('Failed to copy: ', err)
+  }
+}
+
+function logout() {
+  localStorage.removeItem('gtm_admin_token')
+  localStorage.removeItem('gtm_admin_user')
+  router.replace({ name: 'login' })
+}
+
+onMounted(() => {
+  fetchCards()
+  document.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+})
+</script>
