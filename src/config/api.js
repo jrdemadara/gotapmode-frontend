@@ -1,11 +1,13 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-const DEFAULT_BASE = 'https://192.168.50.56:8443/api';
+//const DEFAULT_BASE = 'https://192.168.50.56:8443/api';
+const DEFAULT_BASE = 'https://api.gotapmode.info/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
-const DEFAULT_FRONTEND_BASE = 'https://GoTapMode.info';
+const DEFAULT_FRONTEND_BASE = 'https://www.gotapmode.info';
+//const DEFAULT_FRONTEND_BASE = 'https://192.168.50.56:';
 export const FRONTEND_BASE = (import.meta?.env?.VITE_FRONTEND_BASE || DEFAULT_FRONTEND_BASE).replace(/\/$/, '');
 
 export const http = axios.create({
