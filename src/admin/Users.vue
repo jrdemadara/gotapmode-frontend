@@ -1,22 +1,100 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 relative">
-    <!-- Hamburger button -->
-    <button @click="showSidebar = !showSidebar" class="absolute left-3 sm:left-4 top-3 sm:top-4 z-50 w-12 h-12 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg border-2 sm:border border-gray-300 bg-white/95 backdrop-blur flex flex-col items-center justify-center gap-1.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all duration-200">
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-    </button>
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex">
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:flex flex-col bg-white border-r border-gray-200 shadow-sm" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+      <!-- Sidebar Header -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
+          <div v-if="!sidebarCollapsed" class="flex items-center gap-3">
+            <img class="w-10 h-10" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+            <div>
+              <h1 class="m-0 text-lg font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+              <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+            </div>
+          </div>
+          <!-- Collapse Button -->
+          <button @click="sidebarCollapsed = !sidebarCollapsed" class="w-8 h-8 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors duration-200">
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+          </button>
+        </div>
+      </div>
 
-    <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
-      <!-- Page Header -->
-      <div class="flex flex-col items-center text-center mt-12 sm:mt-16">
-        <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-3">
-          <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-9 h-9 object-contain" />
+      <!-- Sidebar Navigation -->
+      <nav class="flex-1 p-4 space-y-2">
+        <router-link to="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Dashboard</span>
+        </router-link>
+        <router-link to="/admin/users" class="flex items-center gap-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Users</span>
+        </router-link>
+        <router-link to="/admin/nfc-writing" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Writing</span>
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Cards</span>
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Administrators</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-gray-200">
+        <button @click="logout" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Mobile Header -->
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+        <div class="px-3 sm:px-6 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left Section - Logo and Brand -->
+            <div class="flex items-center gap-3">
+              <img class="w-12 h-12" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+              <div>
+                <h1 class="m-0 text-xl font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+                <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+              </div>
+            </div>
+
+            <!-- Right Section - Menu Button -->
+            <button @click="showSidebar = !showSidebar" class="w-12 h-12 sm:w-10 sm:h-10 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1.5 sm:gap-1 hover:bg-gray-50 transition-colors duration-200">
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+            </button>
+          </div>
         </div>
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
-          <p class="text-base text-gray-600">User Management System</p>
-        </div>
+      </div>
+
+      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <!-- Page Title -->
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900">User Management System</h2>
       </div>
 
       <!-- Loading and Error States -->
@@ -72,8 +150,8 @@
              </div>
              
                            <!-- Search Section -->
-              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div class="relative w-full lg:w-96">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="relative w-full sm:w-80 lg:w-96">
                   <input
                     v-model="searchQuery"
                     type="text"
@@ -91,24 +169,24 @@
                 </div>
                 
                 <!-- Quick Actions (Desktop & Mobile) -->
-                <div class="flex items-center gap-3 justify-end">
-                  <button @click="showRestoreModal = true" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all duration-200">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3 justify-end">
+                  <button @click="showRestoreModal = true" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all duration-200">
+                    <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                     </svg>
-                    Restore
+                    <span class="hidden xs:inline">Restore</span>
                   </button>
-                  <button @click="loadUsers" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button @click="loadUsers" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                    <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
-                    Refresh
+                    <span class="hidden xs:inline">Refresh</span>
                   </button>
-                  <button @click="exportUsers" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition-all duration-200">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button @click="exportUsers" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition-all duration-200">
+                    <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Export
+                    <span class="hidden xs:inline">Export</span>
                   </button>
                 </div>
               </div>
@@ -301,9 +379,9 @@
 
          <!-- Mobile Cards -->
          <div class="lg:hidden">
-           <div class="p-4 space-y-4">
+           <div class="p-2 sm:p-4 space-y-3 sm:space-y-4">
              <div v-for="user in paginatedUsers" :key="user.id" 
-                  class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                  class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200">
                <div class="space-y-3">
                  <!-- User Header -->
                  <div class="flex items-center justify-between">
@@ -562,16 +640,15 @@
              </div>
            </div>
       </div>
-    </main>
+      </main>
+    </div>
 
-    <!-- Sidebar -->
-    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-    <div v-if="showSidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300">
+    <!-- Mobile Sidebar -->
+    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-            <img src="/logo/GoTapMode.png" alt="logo" class="w-9 h-9 object-contain" />
-          </div>
+          <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
           <div>
             <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
             <p class="text-sm text-gray-600">Admin Panel</p>
@@ -597,6 +674,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
           </svg>
           NFC Writing
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
         </router-link>
         <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -624,21 +707,28 @@
                    <!-- Modal Container -->
           <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-6xl border border-gray-200/50">
            
-           <!-- Header Section with Gradient -->
-           <div class="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 px-4 sm:px-6 py-4 sm:py-6">
-             <div class="absolute inset-0 bg-black/10 rounded-t-2xl"></div>
-             <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-               <div class="flex items-center gap-3 sm:gap-4">
-                 <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-lg sm:text-2xl text-white font-bold shadow-lg overflow-hidden">
-                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+           <!-- Header Section -->
+           <div class="bg-gray-50 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200 relative">
+             <!-- Mobile Close Button - Top Right -->
+             <button @click="selectedUser = null" class="absolute top-2 right-2 sm:hidden w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all duration-200">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+               </svg>
+             </button>
+             
+             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+               <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
                  </div>
                  <div>
-                   <h3 class="text-xl sm:text-2xl font-bold text-white">GoTapMode User Profile</h3>
-                   <p class="text-sm sm:text-base text-blue-100">{{ selectedUser.name }}</p>
+                   <h3 class="text-lg sm:text-xl font-bold text-gray-900">User Profile</h3>
+                   <p class="text-sm text-gray-600">{{ selectedUser.name }}</p>
                  </div>
                </div>
-               <button @click="selectedUser = null" class="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white hover:text-gray-200 transition-all duration-200">
-                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <!-- Desktop Close Button -->
+               <button @click="selectedUser = null" class="hidden sm:flex w-10 h-10 rounded-lg bg-gray-200 hover:bg-gray-300 items-center justify-center text-gray-600 hover:text-gray-800 transition-all duration-200">
+                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                  </svg>
                </button>
@@ -646,21 +736,21 @@
            </div>
            
            <!-- Content Section -->
-           <div class="bg-white px-4 sm:px-6 py-6 sm:py-8">
+           <div class="bg-white px-3 sm:px-6 py-4 sm:py-6">
              
              <!-- Basic Information Cards -->
-             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                <!-- Basic Info Card -->
-               <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-4 sm:p-6 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                 <div class="flex items-center gap-3 mb-4">
-                   <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                 <div class="flex items-center gap-2 mb-3">
+                   <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
+                     <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                      </svg>
                    </div>
-                   <h4 class="text-base sm:text-lg font-semibold text-gray-900">Basic Information</h4>
+                   <h4 class="text-sm font-semibold text-gray-900">Basic Information</h4>
                  </div>
-                 <div class="space-y-3 sm:space-y-4">
+                 <div class="space-y-2">
                    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
                      <span class="text-sm font-medium text-gray-600">Full Name</span>
                      <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0">{{ selectedUser.name }}</span>
@@ -684,16 +774,16 @@
                </div>
 
                <!-- Profile Details Card -->
-               <div class="bg-gradient-to-br from-gray-50 to-purple-50 rounded-xl p-4 sm:p-6 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                 <div class="flex items-center gap-3 mb-4">
-                   <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                 <div class="flex items-center gap-2 mb-3">
+                   <div class="w-6 h-6 rounded bg-green-100 flex items-center justify-center">
+                     <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                      </svg>
                    </div>
-                   <h4 class="text-base sm:text-lg font-semibold text-gray-900">Company Profile</h4>
+                   <h4 class="text-sm font-semibold text-gray-900">User Profile</h4>
                  </div>
-                 <div class="space-y-3 sm:space-y-4">
+                 <div class="space-y-2">
                    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
                      <span class="text-sm font-medium text-gray-600">Company</span>
                      <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0">{{ selectedUser.profile?.company || 'N/A' }}</span>
@@ -715,50 +805,50 @@
              </div>
 
              <!-- Statistics Cards -->
-             <div class="mb-6 sm:mb-8">
-               <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <div class="mb-4 sm:mb-6">
+               <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                  </svg>
-                 Statistics Overview
+                 Statistics
                </h4>
-               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 sm:p-6 border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200">
+               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-blue-600">Total Cards</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-blue-900">{{ selectedUser.cards?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Total Cards</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.cards?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                        </svg>
                      </div>
                    </div>
                  </div>
                  
-                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 sm:p-6 border border-green-200/50 shadow-sm hover:shadow-md transition-all duration-200">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-green-600">Activated Cards</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-green-900">{{ selectedUser.activated_cards?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Activated Cards</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.activated_cards?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-green-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-green-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                        </svg>
                      </div>
                    </div>
                  </div>
                  
-                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 sm:p-6 border border-purple-200/50 shadow-sm hover:shadow-md transition-all duration-200 sm:col-span-2 lg:col-span-1">
+                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs sm:text-sm font-medium text-purple-600">Contact Info</p>
-                       <p class="text-2xl sm:text-3xl font-bold text-purple-900">{{ selectedUser.contact_info?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">Contact Info</p>
+                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.contact_info?.length || 0 }}</p>
                      </div>
-                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-purple-200 flex items-center justify-center">
-                       <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center">
+                       <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
                        </svg>
                      </div>
@@ -1227,6 +1317,7 @@ const searchQuery = ref('')
 const restoreSearchQuery = ref('')
 const adminName = ref('Admin')
 const showSidebar = ref(false)
+const sidebarCollapsed = ref(false)
 const showRestoreModal = ref(false)
 
 // Add new state variables for confirmation modals and notifications

@@ -1,22 +1,100 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 relative">
-    <!-- Hamburger button -->
-    <button @click="showSidebar = !showSidebar" class="absolute left-3 sm:left-4 top-3 sm:top-4 z-50 w-12 h-12 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg border-2 sm:border border-gray-300 bg-white/95 backdrop-blur flex flex-col items-center justify-center gap-1.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all duration-200">
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-    </button>
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex">
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:flex flex-col bg-white border-r border-gray-200 shadow-sm" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+      <!-- Sidebar Header -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
+          <div v-if="!sidebarCollapsed" class="flex items-center gap-3">
+            <img class="w-10 h-10" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+            <div>
+              <h1 class="m-0 text-lg font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+              <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+            </div>
+          </div>
+          <!-- Collapse Button -->
+          <button @click="sidebarCollapsed = !sidebarCollapsed" class="w-8 h-8 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors duration-200">
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+          </button>
+        </div>
+      </div>
 
-                                                                                                                                                               <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8 lg:flex lg:flex-col lg:items-center">
-               <!-- Page Header -->
-                 <div class="flex flex-col items-center text-center mt-12 sm:mt-16">
-        <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden mb-3">
-          <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-9 h-9 object-contain" />
+      <!-- Sidebar Navigation -->
+      <nav class="flex-1 p-4 space-y-2">
+        <router-link to="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Dashboard</span>
+        </router-link>
+        <router-link to="/admin/users" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Users</span>
+        </router-link>
+        <router-link to="/admin/nfc-writing" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Writing</span>
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Cards</span>
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Administrators</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-gray-200">
+        <button @click="logout" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Mobile Header -->
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+        <div class="px-3 sm:px-6 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left Section - Logo and Brand -->
+            <div class="flex items-center gap-3">
+              <img class="w-12 h-12" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+              <div>
+                <h1 class="m-0 text-xl font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+                <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+              </div>
+            </div>
+
+            <!-- Right Section - Menu Button -->
+            <button @click="showSidebar = !showSidebar" class="w-12 h-12 sm:w-10 sm:h-10 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1.5 sm:gap-1 hover:bg-gray-50 transition-colors duration-200">
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+            </button>
+          </div>
         </div>
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
-          <p class="text-base text-gray-600">User Management System</p>
-        </div>
+      </div>
+
+      <main class="flex-1 p-3 sm:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
+      <!-- Page Title -->
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900">Administrator Management System</h2>
       </div>
       <!-- Loading and Error States -->
       <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
@@ -32,9 +110,9 @@
       </div>
 
              <!-- Administrators Table -->
-       <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden w-full lg:max-w-7xl">
+       <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
         <!-- Table Header -->
-                 <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                 <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div class="flex flex-col gap-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div class="flex items-center gap-3">
@@ -48,23 +126,17 @@
               </div>
               
               <!-- Desktop Stats -->
-              <div class="hidden lg:flex items-center gap-6">
-                <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
+              <div class="hidden lg:flex items-center gap-4">
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
                   <div class="text-center">
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Total Admins</div>
-                    <div class="text-2xl font-bold text-blue-600">{{ administrators.length }}</div>
+                    <div class="text-xs text-gray-500">Total</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ administrators.length }}</div>
                   </div>
                 </div>
-                <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
+                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
                   <div class="text-center">
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Filtered</div>
-                    <div class="text-2xl font-bold text-green-600">{{ filteredAdministrators.length }}</div>
-                  </div>
-                </div>
-                <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                  <div class="text-center">
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Pages</div>
-                    <div class="text-2xl font-bold text-purple-600">{{ totalPages }}</div>
+                    <div class="text-xs text-gray-500">Filtered</div>
+                    <div class="text-lg font-semibold text-gray-900">{{ filteredAdministrators.length }}</div>
                   </div>
                 </div>
               </div>
@@ -77,27 +149,27 @@
                   v-model="searchQuery"
                   type="text"
                   placeholder="Search by name, email, or ID..."
-                                     class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-transparent shadow-sm hover:shadow-md transition-all duration-200"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div class="absolute left-4 top-3.5 text-gray-400">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="absolute left-3 top-2.5 text-gray-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                   </svg>
                 </div>
-                <div class="absolute right-4 top-3.5 text-gray-400">
-                  <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">{{ filteredAdministrators.length }} results</span>
+                <div class="absolute right-3 top-2.5 text-gray-400">
+                  <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ filteredAdministrators.length }}</span>
                 </div>
               </div>
               
               <!-- Quick Actions -->
-              <div class="flex items-center gap-3 justify-end">
-                                 <button @click="openAddModal" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-gray-500 to-gray-600 border border-gray-500 rounded-lg hover:from-gray-600 hover:to-gray-700 hover:border-gray-600 transition-all duration-200">
-                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                   </svg>
-                   Add Admin
-                 </button>
-                <button @click="fetchAdministrators" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+              <div class="flex items-center gap-2 justify-end">
+                <button @click="openAddModal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Add Admin
+                </button>
+                <button @click="fetchAdministrators" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
@@ -110,128 +182,61 @@
 
         <!-- Desktop Table -->
         <div class="hidden lg:block w-full overflow-hidden">
-          <div class="bg-white border border-gray-200 overflow-hidden shadow-sm">
-            <table class="w-full enhanced-table" role="table" aria-label="Administrators table">
-                             <thead class="bg-gradient-to-r from-gray-100 to-gray-200 border-b-2 border-gray-200/80 sticky top-0 z-10">
-                <tr class="backdrop-blur-sm">
-                                     <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/4 group cursor-pointer hover:bg-gray-100/50 transition-colors duration-200">
-                    <div class="flex items-center gap-3">
-                                             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm">
-                         <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                         </svg>
-                       </div>
-                      <div class="flex flex-col">
-                        <span class="text-xs font-semibold text-gray-800">Full Name</span>
-                        <span class="text-xs text-gray-500 font-normal">Administrator</span>
-                      </div>
-                    </div>
+          <div class="bg-white border border-gray-200 overflow-hidden">
+            <table class="w-full" role="table" aria-label="Administrators table">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Administrator
                   </th>
-                  <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/4 group cursor-pointer hover:bg-gray-100/50 transition-colors duration-200">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm">
-                        <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-xs font-semibold text-gray-800">Email Address</span>
-                        <span class="text-xs text-gray-500 font-normal">Contact Info</span>
-                      </div>
-                    </div>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email Address
                   </th>
-
-                  <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/6 group cursor-pointer hover:bg-gray-100/50 transition-colors duration-200">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm">
-                        <svg class="w-4 h-4 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-xs font-semibold text-gray-800">Joined Date</span>
-                        <span class="text-xs text-gray-500 font-normal">Registration</span>
-                      </div>
-                    </div>
+                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Joined Date
                   </th>
-                                     <th class="px-6 py-5 text-center text-xs font-bold text-gray-700 uppercase tracking-wider w-1/6">
-                    <div class="flex items-center justify-center gap-3">
-                      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center shadow-sm">
-                        <svg class="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-xs font-semibold text-gray-800">Actions</span>
-                        <span class="text-xs text-gray-500 font-normal">Management</span>
-                      </div>
-                    </div>
+                  <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-100/80">
+              <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="(admin, index) in paginatedAdministrators" :key="admin.id"
-                                         :class="[
-                       'group hover:bg-gradient-to-r hover:from-gray-50/30 hover:to-gray-100/30 transition-all duration-300 hover:shadow-sm hover:scale-[1.002] transform-gpu',
-                       index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                     ]"
+                    class="hover:bg-gray-50 transition-colors duration-200"
                     role="row">
-                  <td class="px-6 py-5 border-r border-gray-100/50">
-                    <div class="flex items-center gap-4">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
                       <div class="relative">
-                                                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 text-white flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 flex-shrink-0 ring-2 ring-gray-100 group-hover:ring-gray-200">
+                        <div class="w-10 h-10 rounded-lg bg-gray-600 text-white flex items-center justify-center text-sm font-semibold">
                           {{ getUserInitials(admin.name) }}
                         </div>
-                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-3 border-white shadow-sm animate-pulse">
-                          <div class="w-full h-full rounded-full bg-green-500"></div>
-                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                       </div>
                       <div class="min-w-0 flex-1">
-                                                 <div class="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors duration-200">{{ admin.name }}</div>
-                        <div class="text-sm text-gray-500 mt-1 font-mono">ID: #{{ admin.id }}</div>
+                        <div class="text-sm font-medium text-gray-900">{{ admin.name }}</div>
+                        <div class="text-xs text-gray-500">ID: #{{ admin.id }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-5 border-r border-gray-100/50">
-                    <div class="flex items-center gap-4">
-                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                      </div>
-                      <div class="min-w-0 flex-1">
-                        <div class="text-base font-semibold text-gray-900 group-hover:text-purple-700 transition-colors duration-200">{{ admin.email }}</div>
-                        <div class="text-sm text-gray-500 mt-1">Primary Email Address</div>
-                      </div>
-                    </div>
+                  <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">{{ admin.email }}</div>
+                    <div class="text-xs text-gray-500">Primary Email</div>
                   </td>
-
-                  <td class="px-6 py-5 border-r border-gray-100/50">
-                    <div class="flex items-center gap-4">
-                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                      </div>
-                      <div class="min-w-0 flex-1">
-                        <div class="text-base font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors duration-200">{{ formatDate(admin.created_at) }}</div>
-                        <div class="text-sm text-gray-500 mt-1">Member since {{ new Date(admin.created_at).getFullYear() }}</div>
-                      </div>
-                    </div>
+                  <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">{{ formatDate(admin.created_at) }}</div>
+                    <div class="text-xs text-gray-500">Since {{ new Date(admin.created_at).getFullYear() }}</div>
                   </td>
-                  <td class="px-6 py-5 text-center">
-                    <div class="flex items-center justify-center gap-2">
-                      <button
-                        @click="viewAdministrator(admin)"
-                        class="inline-flex items-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-gray-500 to-gray-600 border border-gray-500 rounded-lg hover:from-gray-600 hover:to-gray-700 hover:border-gray-600 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group-hover:shadow-xl"
-                      >
-                        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                        View Details
-                      </button>
-                    </div>
+                  <td class="px-6 py-4 text-center">
+                    <button
+                      @click="viewAdministrator(admin)"
+                      class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                      View
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -241,65 +246,45 @@
 
         <!-- Mobile Cards -->
         <div class="lg:hidden">
-          <div class="p-4 space-y-6">
+          <div class="p-4 space-y-4">
             <div v-for="admin in paginatedAdministrators" :key="admin.id"
-                 class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
-              <div class="space-y-4">
+                 class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+              <div class="space-y-3">
                 <!-- User Header -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-4">
-                    <div class="relative">
-                                             <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 text-white flex items-center justify-center text-base font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">
-                        {{ getUserInitials(admin.name) }}
-                      </div>
-                      <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-3 border-white shadow-sm animate-pulse">
-                        <div class="w-full h-full rounded-full bg-green-500"></div>
-                      </div>
+                <div class="flex items-center gap-3">
+                  <div class="relative">
+                    <div class="w-12 h-12 rounded-lg bg-gray-600 text-white flex items-center justify-center text-sm font-semibold">
+                      {{ getUserInitials(admin.name) }}
                     </div>
-                    <div class="min-w-0 flex-1">
-                                             <div class="text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors duration-200">{{ admin.name }}</div>
-                      <div class="text-sm text-gray-600 font-medium">{{ admin.email }}</div>
-                      <div class="text-xs text-gray-500 mt-1 font-mono">ID: #{{ admin.id }}</div>
-                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
-
+                  <div class="min-w-0 flex-1">
+                    <div class="text-base font-medium text-gray-900">{{ admin.name }}</div>
+                    <div class="text-sm text-gray-600">{{ admin.email }}</div>
+                    <div class="text-xs text-gray-500">ID: #{{ admin.id }}</div>
+                  </div>
                 </div>
 
-                <!-- Email & Date Info -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-sm">
-                      <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <div class="text-sm font-medium text-gray-900">{{ admin.email }}</div>
-                      <div class="text-xs text-gray-500">Primary Email</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shadow-sm">
-                      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <div class="text-sm font-medium text-gray-900">{{ formatDate(admin.created_at) }}</div>
-                      <div class="text-xs text-gray-500">Joined {{ new Date(admin.created_at).getFullYear() }}</div>
-                    </div>
+                <!-- Date Info -->
+                <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <div>
+                    <div class="text-sm text-gray-900">{{ formatDate(admin.created_at) }}</div>
+                    <div class="text-xs text-gray-500">Joined {{ new Date(admin.created_at).getFullYear() }}</div>
                   </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="border-t border-gray-100 pt-4">
+                <div class="pt-2">
                   <button @click="viewAdministrator(admin)"
-                          class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-gray-500 to-gray-600 border border-gray-500 rounded-lg hover:from-gray-600 hover:to-gray-700 hover:border-gray-600 hover:shadow-lg transition-all duration-200 transform hover:scale-105">
-                    <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    View Administrator Details
+                    View Details
                   </button>
                 </div>
               </div>
@@ -307,21 +292,18 @@
           </div>
         </div>
 
-                 <!-- Enhanced Pagination -->
-                   <div v-if="filteredAdministrators.length > 0" class="px-4 sm:px-6 py-6 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 w-full lg:max-w-7xl">
+                 <!-- Pagination -->
+                   <div v-if="filteredAdministrators.length > 0" class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50 w-full">
           <!-- Desktop Pagination Layout -->
           <div class="hidden lg:flex items-center justify-between">
             <!-- Left Section: Page Size & Info -->
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
               <!-- Page Size Selector -->
-              <div class="flex items-center gap-3 bg-white px-6 py-3 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                </svg>
-                <span class="text-sm font-semibold text-gray-700">Show:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Show:</span>
                 <select
                   v-model="itemsPerPage"
-                  class="border-0 bg-transparent px-6 py-1 text-sm font-bold text-blue-600 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-700 transition-colors"
+                  class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
@@ -332,24 +314,19 @@
               </div>
 
               <!-- Pagination Info -->
-              <div class="bg-white px-6 py-3 rounded-xl border border-gray-200 shadow-lg">
-                <div class="text-sm text-gray-700">
-                  <span class="font-bold text-blue-600 text-lg">{{ paginationInfo.start }}-{{ paginationInfo.end }}</span>
-                  <span class="text-gray-500"> of </span>
-                  <span class="font-bold text-gray-900 text-lg">{{ paginationInfo.total }}</span>
-                  <span class="text-gray-500"> results</span>
-                </div>
+              <div class="text-sm text-gray-700">
+                <span class="font-medium">{{ paginationInfo.start }}-{{ paginationInfo.end }}</span>
+                <span class="text-gray-500"> of </span>
+                <span class="font-medium">{{ paginationInfo.total }}</span>
+                <span class="text-gray-500"> results</span>
               </div>
             </div>
 
-            <!-- Right Section: Page Jump & Navigation -->
-            <div class="flex items-center gap-6">
+            <!-- Right Section: Navigation -->
+            <div class="flex items-center gap-2">
               <!-- Page Jump Input -->
-              <div class="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-                <span class="text-sm font-semibold text-gray-700">Go to:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Go to:</span>
                 <input
                   type="number"
                   :min="1"
@@ -357,33 +334,21 @@
                   v-model.number="currentPage"
                   @keyup.enter="validateAndChangePage(currentPage)"
                   @blur="validateAndChangePage(currentPage)"
-                                     class="w-20 px-3 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent font-semibold"
+                  class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <span class="text-sm text-gray-600">of {{ totalPages }}</span>
               </div>
 
               <!-- Pagination Navigation -->
-              <div class="flex items-center gap-1 bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-                <!-- First Page Button -->
-                <button
-                  @click="changePage(1)"
-                  :disabled="currentPage === 1"
-                  class="p-3 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
-                  title="First Page"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
-                  </svg>
-                </button>
-
+              <div class="flex items-center gap-1 bg-white rounded-lg border border-gray-200 overflow-hidden">
                 <!-- Previous Button -->
                 <button
                   @click="changePage(currentPage - 1)"
                   :disabled="currentPage === 1"
-                  class="p-3 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-r border-gray-200"
                   title="Previous Page"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                   </svg>
                 </button>
@@ -395,9 +360,9 @@
                     :key="page"
                     @click="changePage(page)"
                     :class="[
-                      'px-4 py-3 text-sm font-semibold border-r border-gray-200 transition-all duration-200 hover:bg-gray-50',
+                      'px-3 py-2 text-sm font-medium border-r border-gray-200 transition-colors hover:bg-gray-50',
                       page === currentPage
-                        ? 'bg-gray-600 text-white hover:bg-gray-700 shadow-lg'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : 'text-gray-700 bg-white hover:text-gray-600'
                     ]"
                   >
@@ -409,53 +374,40 @@
                 <button
                   @click="changePage(currentPage + 1)"
                   :disabled="currentPage === totalPages"
-                  class="p-3 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Next Page"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
-
-                <!-- Last Page Button -->
-                <button
-                  @click="changePage(totalPages)"
-                  :disabled="currentPage === totalPages"
-                  class="p-3 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                  title="Last Page"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7"></path>
                   </svg>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Mobile Pagination Layout - Single Line -->
+          <!-- Mobile Pagination Layout -->
           <div class="lg:hidden">
-            <!-- Compact Single Line Pagination -->
-            <div class="flex items-center justify-between gap-2 bg-white px-3 py-3 rounded-xl border border-gray-200 shadow-lg">
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
               <!-- Left: Page Size -->
-              <div class="flex items-center gap-2 flex-shrink-0">
+              <div class="flex items-center gap-2">
                 <select
                   v-model="itemsPerPage"
-                  class="text-xs bg-transparent border-0 px-6 py-1 text-gray-600 focus:ring-0 focus:outline-none cursor-pointer font-semibold"
+                  class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>
                 </select>
-                <span class="text-xs text-gray-500 hidden xs:inline">items</span>
+                <span class="text-xs text-gray-500">items</span>
               </div>
 
               <!-- Center: Navigation Controls -->
-              <div class="flex items-center gap-1 flex-shrink-0">
+              <div class="flex items-center gap-1">
                 <button
                   @click="changePage(currentPage - 1)"
                   :disabled="currentPage === 1"
-                  class="p-2 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
                   title="Previous"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -472,7 +424,7 @@
                 <button
                   @click="changePage(currentPage + 1)"
                   :disabled="currentPage === totalPages"
-                  class="p-2 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
                   title="Next"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,8 +433,8 @@
                 </button>
               </div>
 
-              <!-- Right: Page Jump & Info -->
-              <div class="flex items-center gap-2 flex-shrink-0">
+              <!-- Right: Page Jump -->
+              <div class="flex items-center gap-1">
                 <input
                   type="number"
                   :min="1"
@@ -490,10 +442,9 @@
                   v-model.number="currentPage"
                   @keyup.enter="validateAndChangePage(currentPage)"
                   @blur="validateAndChangePage(currentPage)"
-                                     class="w-12 px-2 py-1 text-xs text-center border border-gray-300 rounded focus:ring-1 focus:ring-gray-500 focus:border-transparent"
+                  class="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Page"
                 />
-                <span class="text-xs text-gray-500 hidden sm:inline">{{ paginationInfo.total }} total</span>
               </div>
             </div>
           </div>
@@ -506,16 +457,15 @@
            <div class="text-gray-500">{{ searchQuery ? 'Try adjusting your search terms' : 'No administrators have been added yet' }}</div>
          </div>
        </div>
-     </main>
+      </main>
+    </div>
 
-       <!-- Sidebar -->
-    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-     <div v-if="showSidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300">
+    <!-- Mobile Sidebar -->
+    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
        <div class="p-6 border-b border-gray-200">
          <div class="flex items-center gap-4">
-           <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-             <img src="/logo/GoTapMode.png" alt="logo" class="w-9 h-9 object-contain" />
-           </div>
+           <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
            <div>
              <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
              <p class="text-sm text-gray-600">Admin Panel</p>
@@ -542,12 +492,18 @@
            </svg>
            NFC Writing
          </router-link>
-         <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
-           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-           </svg>
-           Administrators
-         </router-link>
+                 <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          Administrators
+        </router-link>
          <button @click="logout" class="flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -561,57 +517,55 @@
 
     <!-- Administrator Details Modal -->
     <div v-if="showAdminModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
         <!-- Modal Header -->
-        <div class="bg-gray-900 px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-gray-50 px-4 sm:px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
               </svg>
             </div>
             <div class="min-w-0 flex-1">
-              <h2 class="text-lg sm:text-xl font-bold text-white truncate">Administrator Details</h2>
-              <p class="text-sm sm:text-base text-gray-300 truncate">Complete profile information</p>
+              <h2 class="text-lg font-semibold text-gray-900 truncate">Administrator Details</h2>
+              <p class="text-sm text-gray-600 truncate">Complete profile information</p>
             </div>
           </div>
           <button
             @click="closeModal"
-            class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors duration-200 flex-shrink-0 ml-2"
+            class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition-colors duration-200 flex-shrink-0 ml-2"
           >
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
 
         <!-- Modal Content -->
-        <div v-if="selectedAdmin" class="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 min-h-0">
+        <div v-if="selectedAdmin" class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
           <!-- Profile Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-            <div class="relative flex justify-center sm:justify-start">
-              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gray-800 text-white flex items-center justify-center text-xl sm:text-2xl font-bold">
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <div class="w-16 h-16 rounded-lg bg-gray-600 text-white flex items-center justify-center text-lg font-semibold">
                 {{ getUserInitials(selectedAdmin.name) }}
               </div>
-              <div class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-4 h-4 sm:w-6 sm:h-6 bg-green-500 rounded-full border-2 sm:border-4 border-white">
-                <div class="w-full h-full rounded-full bg-green-500"></div>
-              </div>
+              <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div class="flex-1 text-center sm:text-left">
-              <h3 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">{{ selectedAdmin.name }}</h3>
-              <p class="text-base sm:text-lg text-gray-600">ID: #{{ selectedAdmin.id }}</p>
-              <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-3">
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">{{ selectedAdmin.name }}</h3>
+              <p class="text-sm text-gray-600">ID: #{{ selectedAdmin.id }}</p>
+              <div class="flex items-center gap-2 mt-2">
                 <span :class="[
-                  'inline-flex items-center px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium',
+                  'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
                   selectedAdmin.email_verified_at
                     ? 'bg-green-100 text-green-800'
                     : 'bg-yellow-100 text-yellow-800'
                 ]">
-                  <div :class="`w-2 h-2 rounded-full mr-2 ${selectedAdmin.email_verified_at ? 'bg-green-500' : 'bg-yellow-500'}`"></div>
-                  {{ selectedAdmin.email_verified_at ? 'Email Verified' : 'Pending Verification' }}
+                  <div :class="`w-2 h-2 rounded-full mr-1 ${selectedAdmin.email_verified_at ? 'bg-green-500' : 'bg-yellow-500'}`"></div>
+                  {{ selectedAdmin.email_verified_at ? 'Verified' : 'Pending' }}
                 </span>
-                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-gray-100 text-gray-800">
-                  <div class="w-2 h-2 rounded-full mr-2 bg-gray-500"></div>
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                  <div class="w-2 h-2 rounded-full mr-1 bg-gray-500"></div>
                   Administrator
                 </span>
               </div>
@@ -619,83 +573,38 @@
           </div>
 
           <!-- Information Cards -->
-          <div class="grid gap-3 sm:gap-4">
+          <div class="space-y-3">
             <!-- Email Information -->
-            <div class="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
-              <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-                <div class="flex-1 min-w-0 text-center sm:text-left">
-                  <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Email Address</h4>
-                  <p class="text-sm sm:text-base text-gray-700 break-all">{{ selectedAdmin.email }}</p>
-                  <div class="mt-3 text-xs sm:text-sm text-gray-600">
-                    <span class="font-medium">Status:</span>
-                    <span class="ml-2" :class="selectedAdmin.email_verified_at ? 'text-green-600' : 'text-yellow-600'">
-                      {{ selectedAdmin.email_verified_at ? 'Verified' : 'Pending' }}
-                    </span>
-                  </div>
-                </div>
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-900 mb-2">Email Address</h4>
+              <p class="text-sm text-gray-700 break-all">{{ selectedAdmin.email }}</p>
+              <div class="mt-2 text-xs text-gray-600">
+                <span class="font-medium">Status:</span>
+                <span class="ml-2" :class="selectedAdmin.email_verified_at ? 'text-green-600' : 'text-yellow-600'">
+                  {{ selectedAdmin.email_verified_at ? 'Verified' : 'Pending' }}
+                </span>
               </div>
             </div>
 
             <!-- Account Information -->
-            <div class="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
-              <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-900 mb-3">Account Information</h4>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <p class="text-xs text-gray-600">Joined Date</p>
+                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedAdmin.created_at) }}</p>
                 </div>
-                <div class="flex-1 min-w-0 text-center sm:text-left">
-                  <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Account Information</h4>
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                      <p class="text-xs sm:text-sm text-gray-600">Joined Date</p>
-                      <p class="text-sm sm:text-base font-medium text-gray-900">{{ formatDate(selectedAdmin.created_at) }}</p>
-                    </div>
-                    <div>
-                      <p class="text-xs sm:text-sm text-gray-600">Last Updated</p>
-                      <p class="text-sm sm:text-base font-medium text-gray-900">{{ formatDate(selectedAdmin.updated_at) }}</p>
-                    </div>
-                    <div>
-                      <p class="text-xs sm:text-sm text-gray-600">User ID</p>
-                      <p class="text-sm sm:text-base font-medium text-gray-900">#{{ selectedAdmin.id }}</p>
-                    </div>
-                    <div>
-                      <p class="text-xs sm:text-sm text-gray-600">Role</p>
-                      <p class="text-sm sm:text-base font-medium text-gray-700">Administrator</p>
-                    </div>
-                  </div>
+                <div>
+                  <p class="text-xs text-gray-600">Last Updated</p>
+                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedAdmin.updated_at) }}</p>
                 </div>
-              </div>
-            </div>
-
-            <!-- Verification Status -->
-            <div class="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
-              <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                  </svg>
+                <div>
+                  <p class="text-xs text-gray-600">User ID</p>
+                  <p class="text-sm font-medium text-gray-900">#{{ selectedAdmin.id }}</p>
                 </div>
-                <div class="flex-1 min-w-0 text-center sm:text-left">
-                  <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Account Status</h4>
-                  <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-                    <div class="flex items-center gap-2">
-                      <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                      <span class="text-sm sm:text-base text-gray-900">Active Administrator</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <div :class="`w-3 h-3 rounded-full ${selectedAdmin.email_verified_at ? 'bg-green-500' : 'bg-yellow-500'}`"></div>
-                      <span class="text-sm sm:text-base text-gray-900">Email {{ selectedAdmin.email_verified_at ? 'Verified' : 'Pending' }}</span>
-                    </div>
-                  </div>
-                  <div class="mt-3 text-xs sm:text-sm text-gray-600">
-                    This account has full administrative privileges and access to all system features.
-                  </div>
+                <div>
+                  <p class="text-xs text-gray-600">Role</p>
+                  <p class="text-sm font-medium text-gray-700">Administrator</p>
                 </div>
               </div>
             </div>
@@ -703,15 +612,15 @@
         </div>
 
         <!-- Modal Footer -->
-        <div class="bg-gray-50 px-4 sm:px-6 py-4 border-t border-gray-200 flex-shrink-0">
-          <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <div class="bg-gray-50 px-4 sm:px-6 py-3 border-t border-gray-200 flex-shrink-0">
+          <div class="flex justify-end gap-2">
             <button
               @click="closeModal"
-              class="w-full sm:w-auto px-4 sm:px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 shadow-sm"
+              class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors"
             >
               Close
             </button>
-            <button @click="openEditModal" class="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm">
+            <button @click="openEditModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
               <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
@@ -725,25 +634,25 @@
 
   <!-- Add Administrator Modal -->
   <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden border border-gray-200">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden border border-gray-200">
       <!-- Modal Header -->
-             <div class="bg-gray-600 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-white">Add Administrator</h2>
-                         <p class="text-gray-100">Create a new admin account</p>
+            <h2 class="text-lg font-semibold text-gray-900">Add Administrator</h2>
+            <p class="text-sm text-gray-600">Create a new admin account</p>
           </div>
         </div>
         <button
           @click="closeAddModal"
-          class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors duration-200"
+          class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition-colors"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
@@ -840,18 +749,18 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+      <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
         <button
           @click="closeAddModal"
           :disabled="isSubmitting"
-          class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 shadow-sm disabled:opacity-50"
+          class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           @click="addNewUser"
           :disabled="isSubmitting"
-          class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm disabled:opacity-50 flex items-center gap-2"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           <svg v-if="isSubmitting" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -864,25 +773,25 @@
 
   <!-- Edit Administrator Modal -->
   <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden border border-gray-200">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden border border-gray-200">
       <!-- Modal Header -->
-             <div class="bg-gray-600 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-white">Edit Administrator</h2>
-                         <p class="text-gray-100">Update profile information</p>
+            <h2 class="text-lg font-semibold text-gray-900">Edit Administrator</h2>
+            <p class="text-sm text-gray-600">Update profile information</p>
           </div>
         </div>
         <button
           @click="closeEditModal"
-          class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors duration-200"
+          class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition-colors"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
@@ -989,18 +898,18 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+      <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
         <button
           @click="closeEditModal"
           :disabled="isUpdating"
-          class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 shadow-sm disabled:opacity-50"
+          class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           @click="updateAdministrator"
           :disabled="isUpdating"
-          class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm disabled:opacity-50 flex items-center gap-2"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           <svg v-if="isUpdating" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -1025,6 +934,7 @@ const selectedAdmin = ref(null)
 const searchQuery = ref('')
 const adminName = ref('Admin')
 const showSidebar = ref(false)
+const sidebarCollapsed = ref(false)
 
 // Pagination state
 const currentPage = ref(1)

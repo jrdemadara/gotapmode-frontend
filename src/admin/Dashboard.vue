@@ -1,25 +1,99 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 relative">
-    <!-- Hamburger button -->
-    <button @click="showSidebar = !showSidebar" class="absolute left-3 sm:left-4 top-3 sm:top-4 z-50 w-12 h-12 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg border-2 sm:border border-gray-300 bg-white/95 backdrop-blur flex flex-col items-center justify-center gap-1.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all duration-200">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex">
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:flex flex-col bg-white border-r border-gray-200 shadow-sm" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+      <!-- Sidebar Header -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
+          <div v-if="!sidebarCollapsed" class="flex items-center gap-3">
+            <img class="w-10 h-10" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+            <div>
+              <h1 class="m-0 text-lg font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+              <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+            </div>
+          </div>
+          <!-- Collapse Button -->
+          <button @click="sidebarCollapsed = !sidebarCollapsed" class="w-8 h-8 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors duration-200">
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="flex-1 p-4 space-y-2">
+        <router-link to="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Dashboard</span>
+        </router-link>
+        <router-link to="/admin/users" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Users</span>
+        </router-link>
+        <router-link to="/admin/nfc-writing" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Writing</span>
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Cards</span>
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Administrators</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-gray-200">
+        <button @click="logout" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Mobile Header -->
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+        <div class="px-3 sm:px-6 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left Section - Logo and Brand -->
+            <div class="flex items-center gap-3">
+              <img class="w-12 h-12" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+              <div>
+                <h1 class="m-0 text-xl font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+                <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+              </div>
+            </div>
+
+            <!-- Right Section - Menu Button -->
+            <button @click="showSidebar = !showSidebar" class="w-12 h-12 sm:w-10 sm:h-10 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1.5 sm:gap-1 hover:bg-gray-50 transition-colors duration-200">
       <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
       <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
       <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
     </button>
-
-    <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
-      <!-- Dashboard Header -->
-      <div class="bg-white/95 backdrop-blur rounded-2xl border-2 sm:border border-gray-300 shadow-lg px-6 py-2 sm:px-4 sm:py-5 mt-16 sm:mt-20">
-        <div class="flex items-center justify-center gap-4">
-          <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-12 h-12 sm:w-16 sm:h-16" />
-          <div class="text-center">
-            <div class="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-2">GoTapMode</div>
-            <div class="text-lg sm:text-xl text-gray-600 leading-tight">Activate Connection Instantly</div>
           </div>
         </div>
       </div>
 
-      <div v-if="loading || error" class="bg-white rounded-2xl shadow p-6 text-center">
+      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
+
+      <div v-if="loading || error" class="bg-white rounded-lg border border-gray-200 p-6 text-center">
         <div v-if="loading">Loading admin dashboard…</div>
         <div v-else class="text-red-600">{{ error }}</div>
       </div> 
@@ -27,9 +101,9 @@
       <template v-else>
         <!-- Main Metrics - Responsive Grid -->
         <section>
-          <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+          <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
             <!-- Registered Users -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Registered Users</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.card_users }}</div>
@@ -40,7 +114,7 @@
             </div>
 
             <!-- Cards -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Cards</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.cards }}</div>
@@ -51,7 +125,7 @@
             </div>
 
             <!-- Activated -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Activated</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.activated_cards }}</div>
@@ -62,7 +136,7 @@
             </div>
 
             <!-- Expired Cards -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Expired Cards</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.expired_cards }}</div>
@@ -73,7 +147,7 @@
             </div>
 
             <!-- Unactivated -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Unactivated</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ unactivatedCards }}</div>
@@ -84,7 +158,7 @@
             </div>
 
             <!-- Taps / Day -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Taps / Day</div>
                 <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ last(stats.series?.data?.taps) }}</div>
@@ -98,9 +172,9 @@
 
         <!-- Contact Metrics - Responsive Grid -->
         <section>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+          <div class="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             <!-- Emails -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Emails</div>
                 <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.emails }}</div>
@@ -108,7 +182,7 @@
             </div>
 
             <!-- Phones -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Phones</div>
                 <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.phones }}</div>
@@ -116,7 +190,7 @@
             </div>
 
             <!-- Socials -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Socials</div>
                 <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.socials }}</div>
@@ -124,7 +198,7 @@
             </div>
 
             <!-- Others -->
-            <div class="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100">
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <div class="flex flex-col items-center text-center">
                 <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Others</div>
                 <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.others }}</div>
@@ -134,32 +208,40 @@
         </section>
 
         <!-- Chart and Sidebar Section -->
-        <section class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Chart Section -->
-          <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 xl:col-span-2 border border-gray-100">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-0">Last 14 Days Activity</h3>
-              <div class="flex flex-wrap gap-2">
-                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                  <span class="inline-block w-3 h-3 rounded-full bg-gray-900"></span>
-                  <span class="text-gray-600">Users</span>
+          <div class="bg-white rounded-lg p-4 sm:p-6 lg:p-8 lg:col-span-2 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <!-- Header Section -->
+            <div class="flex flex-col mb-4 sm:mb-6">
+              <div class="mb-3 sm:mb-0">
+                <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1">Activity Overview</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Last 14 days performance metrics</p>
+              </div>
+              <!-- Chart Legend -->
+              <div class="mt-3 sm:mt-4">
+                <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                  <div class="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 bg-gray-50 rounded-md sm:rounded-lg border border-gray-200">
+                    <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gray-900"></span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Users</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 bg-gray-50 rounded-md sm:rounded-lg border border-gray-200">
+                    <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gray-500"></span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Cards</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                  <span class="inline-block w-3 h-3 rounded-full bg-gray-500"></span>
-                  <span class="text-gray-600">Cards</span>
+                  <div class="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 bg-blue-50 rounded-md sm:rounded-lg border border-blue-200">
+                    <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-blue-600"></span>
+                    <span class="text-xs sm:text-sm font-medium text-blue-700">Activations</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                  <span class="inline-block w-3 h-3 rounded-full bg-blue-600"></span>
-                  <span class="text-gray-600">Activations</span>
+                  <div class="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 bg-pink-50 rounded-md sm:rounded-lg border border-pink-200">
+                    <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-pink-600"></span>
+                    <span class="text-xs sm:text-sm font-medium text-pink-700">Taps</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                  <span class="inline-block w-3 h-3 rounded-full bg-pink-600"></span>
-                  <span class="text-gray-600">Taps</span>
                 </div>
               </div>
             </div>
             
-                         <div class="h-64 sm:h-80 lg:h-96 bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <!-- Chart Container -->
+            <div class="h-64 sm:h-72 md:h-80 lg:h-96 bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-100 shadow-inner">
                <div v-if="stats.series?.data && stats.series?.dates" class="w-full h-full">
                  <apexchart 
                    :options="chartOptions" 
@@ -168,23 +250,27 @@
                    width="100%"
                  />
                </div>
-               <div v-else class="flex items-center justify-center h-full text-gray-500">
-                 <div class="text-center">
-                   <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                   <div>Loading chart data...</div>
+               <div v-else class="flex items-center justify-center h-full">
+                 <div class="text-center px-4">
+                   <div class="relative">
+                     <div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-4 border-gray-200 mx-auto mb-3 sm:mb-4"></div>
+                     <div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-4 border-blue-600 border-t-transparent absolute top-0 left-1/2 transform -translate-x-1/2 mb-3 sm:mb-4"></div>
+                   </div>
+                   <div class="text-gray-600 font-medium text-sm sm:text-base">Loading chart data...</div>
+                   <div class="text-xs sm:text-sm text-gray-500 mt-1">Preparing your analytics</div>
                  </div>
                </div>
              </div>
           </div>
 
           <!-- Sidebar Section -->
-          <div class="xl:col-span-1 space-y-4 sm:space-y-6">
+          <div class="lg:col-span-1 space-y-4 sm:space-y-6">
             <!-- Recent Activations -->
-            <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+          <div class="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Recent Activations</h3>
               <div v-if="stats.recent_activated_cards.length === 0" class="text-sm text-gray-500 text-center py-4">No recent activations</div>
               <ul v-else class="space-y-3">
-                <li v-for="c in stats.recent_activated_cards" :key="c.id" class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <li v-for="c in stats.recent_activated_cards" :key="c.id" class="p-3 bg-gray-50 rounded border border-gray-200">
                   <div class="flex items-center justify-between">
                     <div>
                       <div class="font-semibold text-sm text-gray-900">Card {{ c.unique_code }}</div>
@@ -197,10 +283,10 @@
             </div>
 
             <!-- System Health -->
-            <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+          <div class="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">System Health</h3>
               <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
                   <div>
                     <div class="text-sm text-gray-600 font-medium">API Status</div>
                     <div class="text-lg font-bold" :class="health.ok ? 'text-green-600' : 'text-red-600'">
@@ -221,18 +307,14 @@
         </section>
       </template>
     </main>
+    </div>
 
-    <!-- Sidebar overlay -->
-    <div v-if="showSidebar" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" @click="showSidebar=false"></div>
-    
-    <!-- Sidebar -->
-    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-    <div v-if="showSidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300">
+    <!-- Mobile Sidebar -->
+    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-            <img src="/logo/GoTapMode.png" alt="logo" class="w-9 h-9 object-contain" />
-          </div>
+          <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
           <div>
             <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
             <p class="text-sm text-gray-600">Admin Panel</p>
@@ -258,6 +340,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
           </svg>
           NFC Writing
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
         </router-link>
         <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,6 +376,7 @@ const error = ref('')
 const stats = ref({ totals: { admins: 0, card_users: 0, cards: 0, activated_cards: 0, expired_cards: 0 }, series: { dates: [], data: { card_users: [], cards: [], activations: [] } }, recent_activated_cards: [] })
 const adminName = ref('Admin')
 const showSidebar = ref(false)
+const sidebarCollapsed = ref(false)
 const health = ref({ ok: false, time: '', rttMs: '-' })
 
 // derived
@@ -468,21 +557,7 @@ const chartOptions = computed(() => ({
     }
   },
   legend: {
-    position: 'top',
-    horizontalAlign: 'center',
-    fontSize: '13px',
-    fontWeight: 500,
-    offsetY: -5,
-    markers: {
-      width: 8,
-      height: 8,
-      radius: 4,
-      offsetX: -2
-    },
-    itemMargin: {
-      horizontal: 12,
-      vertical: 0
-    }
+    show: false
   },
   dataLabels: {
     enabled: false
@@ -505,9 +580,7 @@ const chartOptions = computed(() => ({
       breakpoint: 768,
       options: {
         legend: {
-          position: 'bottom',
-          horizontalAlign: 'center',
-          fontSize: '12px'
+          show: false
         },
         chart: {
           toolbar: {

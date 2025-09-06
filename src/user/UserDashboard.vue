@@ -125,7 +125,9 @@
         <div class="mt-2 space-y-2">
           <div v-for="(o, idx) in others" :key="o.id || ('o-' + idx)" class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
             <img src="/icons/web.png" class="w-5 h-5" alt="web" />
-            <div class="flex-1 text-sm">{{ o.value }}</div>
+            <div class="flex-1">
+              <div class="text-sm font-medium">{{ getOtherLinkDisplayName(o) }}</div>
+            </div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMainOther(o)" type="button" aria-label="Set main link"
                       class="relative w-10 h-6 rounded-full transition-colors duration-200"
@@ -662,6 +664,83 @@ function getSocialDisplayName(social) {
     return url.substring(0, 30) + '...';
   }
   return url;
+}
+
+// Get smart display name for other links (similar to social media)
+function getOtherLinkDisplayName(link) {
+  const url = link.value;
+  
+  if (!url) return 'Link';
+  
+  try {
+    // Parse the URL to extract meaningful parts
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname;
+    const pathname = urlObj.pathname;
+    
+    // Remove www. prefix
+    const cleanHostname = hostname.replace(/^www\./, '');
+    
+    // Extract domain name (remove subdomains for common services)
+    const domainParts = cleanHostname.split('.');
+    let domain = cleanHostname;
+    
+    // Handle common domains
+    if (domainParts.length > 2) {
+      const mainDomain = domainParts.slice(-2).join('.');
+      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to'].includes(mainDomain)) {
+        domain = mainDomain;
+      }
+    }
+    
+    // Extract meaningful path segments
+    const pathSegments = pathname.split('/').filter(segment => segment && segment !== '');
+    
+    if (pathSegments.length > 0) {
+      // For GitHub, GitLab, etc. - show username/repo
+      if (domain.includes('github.com') || domain.includes('gitlab.com') || domain.includes('bitbucket.org')) {
+        if (pathSegments.length >= 2) {
+          return `${pathSegments[0]}/${pathSegments[1]}`;
+        } else if (pathSegments.length === 1) {
+          return pathSegments[0];
+        }
+      }
+      
+      // For Stack Overflow - show question title or user
+      if (domain.includes('stackoverflow.com')) {
+        if (pathSegments[0] === 'users' && pathSegments[1]) {
+          return `User: ${pathSegments[1]}`;
+        } else if (pathSegments[0] === 'questions' && pathSegments[1]) {
+          return `Question #${pathSegments[1]}`;
+        }
+      }
+      
+      // For Medium, Dev.to - show article title or author
+      if (domain.includes('medium.com') || domain.includes('dev.to')) {
+        if (pathSegments.length >= 2) {
+          return pathSegments[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        } else if (pathSegments.length === 1) {
+          return pathSegments[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      }
+      
+      // For other sites, show the first meaningful path segment
+      const firstSegment = pathSegments[0];
+      if (firstSegment && firstSegment.length > 3) {
+        return firstSegment.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      }
+    }
+    
+    // Fallback: show domain name
+    return domain;
+    
+  } catch (error) {
+    // If URL parsing fails, show truncated version
+    if (url.length > 30) {
+      return url.substring(0, 30) + '...';
+    }
+    return url;
+  }
 }
 
 // Create a vCard file on the fly so OS can prompt saving to contacts

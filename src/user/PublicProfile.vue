@@ -10,7 +10,7 @@
     <!-- Profile card -->
     <section class="w-full max-w-md bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-6">
       <div class="text-center">
-        <img class="w-40 h-40 rounded-full object-cover border-[2px] border-gray-300 mx-auto" :src="profile.photo || '/icons/user.png'" alt="profile" />
+        <img class="w-40 h-40 rounded-full object-cover border-[2px] border-gray-300 mx-auto" :src="profile.photo || '/icons/user.png'" :alt="`${profile.name || 'User'} profile picture`" />
         <h2 class="mt-4 text-xl font-extrabold">{{ profile.name || 'User' }}</h2>
         <p class="text-sm opacity-80" v-if="profile.company">{{ profile.company }}</p>
         <p class="text-sm opacity-70 text-blue-500 font-bold" v-if="profile.position">{{ profile.position }}</p>
@@ -68,6 +68,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '../config/api'
+import { updatePageTitle, updateMetaDescription, updateOpenGraphTags, generateStructuredData } from '../utils/seo.js'
 
 const route = useRoute()
 
@@ -149,10 +150,46 @@ onMounted(async () => {
     if (pr?.company) profile.value.company = pr.company
     if (pr?.position) profile.value.position = pr.position
     if (pr?.bio) profile.value.bio = pr.bio
+
+    // Update SEO after loading profile data
+    updateSEOForProfile()
   } catch (err) {
     console.error('Error loading profile:', err)
   }
 })
+
+function updateSEOForProfile() {
+  const fullName = profile.value.name || 'User'
+  const company = profile.value.company || ''
+  const position = profile.value.position || ''
+  const bio = profile.value.bio || ''
+  
+  // Create SEO-friendly title and description
+  const title = `${fullName}${company ? ` - ${company}` : ''}${position ? ` (${position})` : ''} | GoTapMode`
+  const description = bio || `${fullName}${company ? ` from ${company}` : ''}${position ? ` - ${position}` : ''}. Connect instantly with GoTapMode digital business cards.`
+  
+  // Update page title and meta description
+  updatePageTitle(title)
+  updateMetaDescription(description)
+  
+  // Update Open Graph tags
+  updateOpenGraphTags({
+    title,
+    description,
+    image: profile.value.photo || 'https://gotapmode.info/logo/GoTapMode.png',
+    url: window.location.href
+  })
+  
+  // Add structured data
+  const structuredData = generateStructuredData(profile.value)
+  let scriptTag = document.querySelector('script[type="application/ld+json"]')
+  if (!scriptTag) {
+    scriptTag = document.createElement('script')
+    scriptTag.type = 'application/ld+json'
+    document.head.appendChild(scriptTag)
+  }
+  scriptTag.textContent = JSON.stringify(structuredData)
+}
 
 function dialMain() {
   const n = mainPhone.value?.number

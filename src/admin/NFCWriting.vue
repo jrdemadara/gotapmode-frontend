@@ -1,66 +1,118 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    <!-- Hamburger button -->
-    <button @click="showSidebar = !showSidebar" class="absolute left-3 sm:left-4 top-3 sm:top-4 z-50 w-12 h-12 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg border-2 sm:border border-gray-300 bg-white/95 backdrop-blur flex flex-col items-center justify-center gap-1.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all duration-200">
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-      <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
-    </button>
-
-    <!-- Header -->
-    <div class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
-      <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        <!-- Mobile: Centered Layout -->
-        <div class="flex flex-col items-center py-4 sm:py-6 gap-3 sm:hidden">
-          <div class="flex items-center justify-center w-full">
-            <div class="w-12 h-12 rounded-xl  flex items-center justify-center shadow-lg">
-              <img src="/logo/GoTapMode.png" alt="Logo" class="w-8 h-8 object-contain" />
-            </div>
-          </div>
-          <div class="text-center">
-            <h1 class="text-2xl font-bold text-gray-900">GoTapMode</h1>
-            <p class="text-sm text-gray-600 mt-1">NFC Card Writer</p>
-          </div>
-          <div class="flex items-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-            <div class="w-2 h-2 rounded-full animate-pulse" :class="nfcSupported && nfcEnabled ? 'bg-green-500' : 'bg-red-500'"></div>
-            <span class="text-sm text-gray-600 font-medium">
-              {{ nfcSupported && nfcEnabled ? 'NFC Ready' : 'NFC Not Ready' }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Desktop: Original Layout -->
-        <div class="hidden sm:flex sm:justify-between sm:items-center py-4 sm:py-6 gap-3 sm:gap-0 ml-20">
-          <div class="flex items-center">
-            <div class="w-12 h-12 rounded-xl  flex items-center justify-center shadow-lg mr-4">
-              <img src="/logo/GoTapMode.png" alt="Logo" class="w-8 h-8 object-contain" />
-            </div>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:flex flex-col bg-white border-r border-gray-200 shadow-sm" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+      <!-- Sidebar Header -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
+          <div v-if="!sidebarCollapsed" class="flex items-center gap-3">
+            <img class="w-10 h-10" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
             <div>
-              <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">NFC Card Writer</h1>
-              <p class="text-sm text-gray-600 mt-1">Write and configure NFC cards</p>
+              <h1 class="m-0 text-lg font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+              <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
             </div>
           </div>
-          <div class="flex items-center justify-end space-x-4">
-            <div class="flex items-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-              <div class="w-2 h-2 rounded-full animate-pulse" :class="nfcSupported && nfcEnabled ? 'bg-green-500' : 'bg-red-500'"></div>
-              <span class="text-sm text-gray-600 font-medium">
-                {{ nfcSupported && nfcEnabled ? 'NFC Ready' : 'NFC Not Ready' }}
-              </span>
-            </div>
-          </div>
+          <!-- Collapse Button -->
+          <button @click="sidebarCollapsed = !sidebarCollapsed" class="w-8 h-8 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition-colors duration-200">
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+            <span class="block w-4 h-0.5 bg-gray-700"></span>
+          </button>
         </div>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="flex-1 p-4 space-y-2">
+        <router-link to="/admin/dashboard" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Dashboard</span>
+        </router-link>
+        <router-link to="/admin/users" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Users</span>
+        </router-link>
+        <router-link to="/admin/nfc-writing" class="flex items-center gap-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Writing</span>
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">NFC Cards</span>
+        </router-link>
+        <router-link to="/admin/administrators" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Administrators</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-gray-200">
+        <button @click="logout" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Logout</span>
+        </button>
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 py-6 sm:py-8">
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Mobile Header -->
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+        <div class="px-3 sm:px-6 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left Section - Logo and Brand -->
+            <div class="flex items-center gap-3">
+              <img class="w-12 h-12" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+              <div>
+                <h1 class="m-0 text-xl font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+                <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+              </div>
+            </div>
+
+            <!-- Right Section - Menu Button -->
+            <button @click="showSidebar = !showSidebar" class="w-12 h-12 sm:w-10 sm:h-10 rounded-lg border border-gray-300 bg-white flex flex-col items-center justify-center gap-1.5 sm:gap-1 hover:bg-gray-50 transition-colors duration-200">
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+              <span class="block w-6 sm:w-5 h-0.5 bg-gray-700"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <!-- Page Title -->
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900">NFC Card Writer</h2>
+      </div>
+
+      <!-- NFC Status Indicator -->
+      <div class="flex justify-center">
+        <div class="flex items-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+          <div class="w-2 h-2 rounded-full animate-pulse" :class="nfcSupported && nfcEnabled ? 'bg-green-500' : 'bg-red-500'"></div>
+          <span class="text-sm text-gray-600 font-medium">
+            {{ nfcSupported && nfcEnabled ? 'NFC Ready' : 'NFC Not Ready' }}
+          </span>
+        </div>
+      </div>
       <!-- NFC Card Scanner -->
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-6 sm:mb-8">
-        <div class="flex items-center gap-3 mb-4 sm:mb-6">
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6 mb-4 sm:mb-6 lg:mb-8">
+        <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-6">
           <div class="w-10 h-10 rounded-xl  flex items-center justify-center shadow-md">
             <img src="/icons/scan.png" alt="Scan" class="w-5 h-5" />
           </div>
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900">Scan NFC Card</h2>
+          <h2 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Scan NFC Card</h2>
         </div>
         
         <div class="space-y-4 sm:space-y-6">
@@ -144,6 +196,59 @@
             <p class="text-base text-green-800 font-medium">{{ success }}</p>
           </div>
         </div>
+      </div>
+      </main>
+
+      <!-- Mobile Sidebar -->
+      <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+      <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex items-center gap-4">
+            <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
+              <p class="text-sm text-gray-600">Activate Connection Instantly</p>
+            </div>
+          </div>
+        </div>
+        <nav class="p-6 space-y-4">
+          <router-link to="/admin/dashboard" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+            </svg>
+            Dashboard
+          </router-link>
+          <router-link to="/admin/users" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+            Users
+          </router-link>
+          <router-link to="/admin/nfc-writing" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            NFC Writing
+          </router-link>
+          <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+            NFC Cards
+          </router-link>
+          <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+            Administrators
+          </router-link>
+          <button @click="logout" class="flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 w-full text-left text-base font-medium">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            Logout
+          </button>
+        </nav>
       </div>
     </div>
 
@@ -232,14 +337,12 @@
       </div>
     </div>
 
-    <!-- Sidebar -->
-    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-    <div v-if="showSidebar" class="fixed left-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300">
+    <!-- Mobile Sidebar -->
+    <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-            <img src="/logo/GoTapMode.png" alt="logo" class="w-9 h-9 object-contain" />
-          </div>
+          <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
           <div>
             <h3 class="text-lg font-bold text-gray-900">GoTapMode</h3>
             <p class="text-sm text-gray-600">Admin Panel</p>
@@ -265,6 +368,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
           </svg>
           NFC Writing
+        </router-link>
+        <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          NFC Cards
         </router-link>
         <router-link to="/admin/administrators" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,6 +409,7 @@ const showNfcEnableModal = ref(false)
 const nfcSupported = ref(false)
 const nfcEnabled = ref(false)
 const showSidebar = ref(false)
+const sidebarCollapsed = ref(false)
 
 const cardData = ref({
   unique_code: '',
