@@ -1,57 +1,29 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-        <!-- Professional Header -->
+    <!-- Header -->
     <div class="bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 sm:h-18 md:h-20">
-          <!-- Left Section -->
-          <div class="flex items-center space-x-3 sm:space-x-4">
-            <button @click="$router.push({ name: 'admin-users' })" class="group p-2.5 sm:p-3 rounded-xl bg-white hover:bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Left Section - Logo and Brand -->
+          <div class="flex items-center gap-3">
+            <img class="w-12 h-12" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+            <div>
+              <h1 class="m-0 text-xl font-extrabold tracking-tight text-gray-900">Go Tap Mode</h1>
+              <p class="m-0 text-xs text-gray-600">Activate Connection Instantly</p>
+            </div>
+          </div>
+
+          <!-- Right Section - Back Button and User Info -->
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:block bg-white rounded-lg px-3 py-2 border border-gray-200/60 shadow-sm">
+              <div class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Currently Editing</div>
+              <div class="text-sm font-bold text-gray-900 mt-0.5">{{ user?.name || 'Loading...' }}</div>
+            </div>
+            <button @click="$router.push({ name: 'admin-users' })" class="group p-2.5 sm:p-3 rounded-lg bg-white hover:bg-gray-50 border border-gray-300 transition-colors duration-200">
               <svg class="w-5 h-5 text-gray-600 group-hover:text-gray-800 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-          </button>
-
-            <!-- Mobile Title -->
-            <div class="sm:hidden flex flex-col">
-              <h1 class="text-lg font-bold text-gray-900 tracking-tight">Edit Profile</h1>
-              <p class="text-xs text-gray-600 font-medium">{{ user?.name || 'Loading...' }}</p>
-          </div>
-
-            <div class="hidden sm:flex items-center space-x-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                  </svg>
-          </div>
-                <div class="space-y-0.5">
-                  <h1 class="text-xl font-bold text-gray-900 tracking-tight">Edit User Profile</h1>
-                  <p class="text-sm text-gray-600 font-medium">Manage user information and settings</p>
-        </div>
-          </div>
-        </div>
-          </div>
-
-          <!-- Center - Brand -->
-          <div class="flex items-center space-x-2 sm:space-x-3 bg-gray-50/80 rounded-xl px-3 sm:px-4 py-2 border border-gray-200/60">
-            <div class="relative">
-              <img class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg shadow-sm" src="/logo/GoTapMode.png" alt="GoTapMode" />
-            </div>
-            <div class="hidden sm:block">
-              <span class="text-base font-bold text-gray-800 tracking-wide">GoTapMode</span>
-              <div class="text-xs text-gray-500 font-medium">Admin Panel</div>
-      </div>
-    </div>
-
-          <!-- Right Section -->
-          <div class="flex items-center space-x-4">
-            <div class="text-right hidden sm:block">
-              <div class="bg-white rounded-lg px-3 py-2 border border-gray-200/60 shadow-sm">
-                <div class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Currently Editing</div>
-                <div class="text-sm font-bold text-gray-900 mt-0.5">{{ user?.name || 'Loading...' }}</div>
-              </div>
-            </div>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
