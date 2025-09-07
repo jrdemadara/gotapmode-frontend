@@ -184,6 +184,15 @@
                   placeholder="Enter company name"
                 />
               </div>
+              <div class="md:col-span-2 space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Position</label>
+                <input
+                  v-model="formData.profile.position"
+                  type="text"
+                  class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
+                  placeholder="Enter your position/title"
+                />
+              </div>
               <div class="space-y-3">
                 <label class="block text-sm font-medium text-gray-700">Company Phone</label>
                 <input
@@ -686,6 +695,7 @@ const formData = ref({
     profile_pic: '',
     bio: '',
     company: '',
+    position: '',
     companynumber: '',
     companyemail: '',
     companyadress: ''
@@ -726,19 +736,14 @@ async function saveBasicInfo() {
   savingBasic.value = true
 
   try {
-    // Update personal data separately
+    // Update personal data using admin endpoint
     const personalDataPayload = {
-      user_id: user.value.id,
       first_name: formData.value.personal_data.first_name,
       middle_name: formData.value.personal_data.middle_name || null,
       last_name: formData.value.personal_data.last_name
     }
 
-    if (formData.value.personal_data.id) {
-      personalDataPayload.id = formData.value.personal_data.id
-    }
-
-    await api.post('/card-users/personal-data', personalDataPayload)
+    await adminApi.updateUserPersonalData(user.value.id, personalDataPayload)
 
     showSuccessNotification.value = true
     successMessage.value = 'Personal information updated successfully'
@@ -763,9 +768,9 @@ async function saveProfileInfo() {
 
   try {
     const profilePayload = {
-      user_id: user.value.id,
       bio: formData.value.profile.bio || null,
       company: formData.value.profile.company || null,
+      position: formData.value.profile.position || null,
       companynumber: formData.value.profile.companynumber || null,
       companyemail: formData.value.profile.companyemail || null,
       companyadress: formData.value.profile.companyadress || null,
@@ -776,7 +781,7 @@ async function saveProfileInfo() {
       profilePayload.profile_pic = profilePic.value
     }
 
-    await api.post('/card-users/profile', profilePayload)
+    await adminApi.updateUserProfile(user.value.id, profilePayload)
 
     // Clear the uploaded image after successful save
     profilePic.value = ''
@@ -841,16 +846,23 @@ function selectSocialPlatform(key) {
 async function saveAddPhone() {
   if (!newPhone.value || !user.value) return
   try {
-    const row = await adminApi.addUserPhone(user.value.id, {
+    const response = await adminApi.addUserPhone(user.value.id, {
       phonenumber: newPhone.value,
       type: newPhoneType.value
     })
-    formData.value.phones.unshift({
+    console.log('Add phone response:', response)
+    const row = response.data || response
+    formData.value.phones.push({
       id: row.id,
       number: row.phonenumber || newPhone.value,
       type: row.type || newPhoneType.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first phone, ensure it's set as main in the UI
+    if (formData.value.phones.length === 1) {
+      formData.value.phones[0].isMain = true
+    }
     showAddPhone.value = false
     newPhone.value = ''
     showSuccessNotification.value = true
@@ -869,16 +881,23 @@ async function saveAddPhone() {
 async function saveAddEmail() {
   if (!newEmail.value || !user.value) return
   try {
-    const row = await adminApi.addUserEmail(user.value.id, {
+    const response = await adminApi.addUserEmail(user.value.id, {
       email: newEmail.value,
       type: newEmailType.value
     })
-    formData.value.emails.unshift({
+    console.log('Add email response:', response)
+    const row = response.data || response
+    formData.value.emails.push({
       id: row.id,
       value: row.email || newEmail.value,
       type: row.type || newEmailType.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first email, ensure it's set as main in the UI
+    if (formData.value.emails.length === 1) {
+      formData.value.emails[0].isMain = true
+    }
     showAddEmail.value = false
     newEmail.value = ''
     showSuccessNotification.value = true
@@ -897,16 +916,23 @@ async function saveAddEmail() {
 async function saveAddSocial() {
   if (!newSocial.value || !user.value) return
   try {
-    const row = await adminApi.addUserSocial(user.value.id, {
+    const response = await adminApi.addUserSocial(user.value.id, {
       social: newSocial.value,
       type: newSocialType.value
     })
-    formData.value.socials.unshift({
+    console.log('Add social response:', response)
+    const row = response.data || response
+    formData.value.socials.push({
       id: row.id,
       platform: row.type || newSocialType.value,
       value: row.social || newSocial.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first social, ensure it's set as main in the UI
+    if (formData.value.socials.length === 1) {
+      formData.value.socials[0].isMain = true
+    }
     showAddSocial.value = false
     newSocial.value = ''
     showSuccessNotification.value = true
@@ -925,16 +951,23 @@ async function saveAddSocial() {
 async function saveAddOther() {
   if (!newOther.value || !user.value) return
   try {
-    const row = await adminApi.addUserOther(user.value.id, {
+    const response = await adminApi.addUserOther(user.value.id, {
       others: newOther.value,
       type: 'link'
     })
-    formData.value.others.unshift({
+    console.log('Add other response:', response)
+    const row = response.data || response
+    formData.value.others.push({
       id: row.id,
       value: row.others || newOther.value,
       type: row.type || 'link',
       isMain: !!row.is_main
     })
+    
+    // If this is the first other link, ensure it's set as main in the UI
+    if (formData.value.others.length === 1) {
+      formData.value.others[0].isMain = true
+    }
     showAddOther.value = false
     newOther.value = ''
     showSuccessNotification.value = true
@@ -954,7 +987,10 @@ async function saveAddOther() {
 async function onToggleMainPhone(p) {
   if (!p?.id || !user.value) return
   try {
+    console.log('Setting main phone:', { userId: user.value.id, phoneId: p.id })
     const response = await adminApi.setMainPhone(user.value.id, p.id)
+    console.log('Set main phone response:', response)
+    
     // Update local state with the response
     if (response.phones) {
       formData.value.phones = response.phones.map(phone => ({
@@ -963,6 +999,9 @@ async function onToggleMainPhone(p) {
         type: phone.type || 'personal',
         isMain: !!phone.is_main
       }))
+      console.log('Updated phones:', formData.value.phones)
+    } else {
+      console.warn('No phones in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary phone updated'
@@ -980,7 +1019,10 @@ async function onToggleMainPhone(p) {
 async function onToggleMainEmail(e) {
   if (!e?.id || !user.value) return
   try {
+    console.log('Setting main email:', { userId: user.value.id, emailId: e.id })
     const response = await adminApi.setMainEmail(user.value.id, e.id)
+    console.log('Set main email response:', response)
+    
     if (response.emails) {
       formData.value.emails = response.emails.map(email => ({
         id: email.id,
@@ -988,6 +1030,9 @@ async function onToggleMainEmail(e) {
         type: email.type || 'personal',
         isMain: !!email.is_main
       }))
+      console.log('Updated emails:', formData.value.emails)
+    } else {
+      console.warn('No emails in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary email updated'
@@ -1005,7 +1050,10 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) {
   if (!s?.id || !user.value) return
   try {
+    console.log('Setting main social:', { userId: user.value.id, socialId: s.id })
     const response = await adminApi.setMainSocial(user.value.id, s.id)
+    console.log('Set main social response:', response)
+    
     if (response.socials) {
       formData.value.socials = response.socials.map(social => ({
         id: social.id,
@@ -1013,6 +1061,9 @@ async function onToggleMainSocial(s) {
         value: social.social || social.value || '',
         isMain: !!social.is_main
       }))
+      console.log('Updated socials:', formData.value.socials)
+    } else {
+      console.warn('No socials in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary social link updated'
@@ -1030,7 +1081,10 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) {
   if (!o?.id || !user.value) return
   try {
+    console.log('Setting main other:', { userId: user.value.id, otherId: o.id })
     const response = await adminApi.setMainOther(user.value.id, o.id)
+    console.log('Set main other response:', response)
+    
     if (response.others) {
       formData.value.others = response.others.map(other => ({
         id: other.id,
@@ -1038,6 +1092,9 @@ async function onToggleMainOther(o) {
         type: other.type || 'link',
         isMain: !!other.is_main
       }))
+      console.log('Updated others:', formData.value.others)
+    } else {
+      console.warn('No others in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary link updated'
@@ -1198,15 +1255,15 @@ async function loadUser() {
     const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ') || userData.name || 'Unknown User'
 
     console.log('Personal data extracted:', { firstName, middleName, lastName, fullName })
-
-    // Load contact data separately to ensure we get all contacts
-    let contactData = { phones: [], emails: [], socials: [], others: [] }
-    try {
-      contactData = await api.get(`/contacts/${userId}`)
-    } catch (contactError) {
-      console.warn('Could not load contact data:', contactError)
-      // Continue with empty contact data if contacts endpoint fails
-    }
+    console.log('User data from API:', userData)
+    console.log('Contact data from API:', {
+      phones: userData.phones,
+      emails: userData.emails,
+      socials: userData.socials,
+      others: userData.others
+    })
+    console.log('Socials count:', userData.socials?.length || 0)
+    console.log('Others count:', userData.others?.length || 0)
 
     // Populate form with user data
     formData.value = {
@@ -1222,42 +1279,48 @@ async function loadUser() {
         profile_pic: userData.profile?.profile_pic || '',
         bio: userData.profile?.bio || '',
         company: userData.profile?.company || '',
+        position: userData.profile?.position || '',
         companynumber: userData.profile?.companynumber || '',
         companyemail: userData.profile?.companyemail || '',
         companyadress: userData.profile?.companyadress || ''
       },
       contact_info: userData.contact_info || [],
-      phones: (contactData.phones || userData.phones || []).map(p => ({
+      phones: (userData.phones || []).map(p => ({
         id: p.id,
         number: p.phonenumber || p.number || '',
         type: p.type || 'personal',
         isMain: !!p.is_main
       })),
-      emails: (contactData.emails || userData.emails || []).map(e => ({
+      emails: (userData.emails || []).map(e => ({
         id: e.id,
         value: e.email || e.value || '',
         type: e.type || 'personal',
         isMain: !!e.is_main
       })),
-      socials: (contactData.socials || userData.socials || []).map(s => ({
-        id: s.id,
-        platform: s.type || s.platform || 'link',
-        value: s.social || s.value || '',
-        isMain: !!s.is_main
-      })),
-      others: (contactData.others || userData.others || []).map(o => ({
-        id: o.id,
-        value: o.others || o.value || '',
-        type: o.type || 'link',
-        isMain: !!o.is_main
-      }))
+      socials: (userData.socials || []).map(s => {
+        console.log('Mapping social:', s)
+        return {
+          id: s.id,
+          platform: s.type || s.platform || 'link',
+          value: s.social || s.value || '',
+          isMain: !!s.is_main
+        }
+      }),
+      others: (userData.others || []).map(o => {
+        console.log('Mapping other:', o)
+        return {
+          id: o.id,
+          value: o.others || o.value || '',
+          type: o.type || 'link',
+          isMain: !!o.is_main
+        }
+      })
     }
 
     // Set profile picture preview from loaded data
     profilePicPreview.value = formData.value.profile.profile_pic || ''
 
     console.log('Loaded user data:', formData.value)
-    console.log('Contact data loaded:', contactData)
     console.log('Profile picture preview set to:', profilePicPreview.value)
   } catch (e) {
     console.error('Failed to load user:', e)
