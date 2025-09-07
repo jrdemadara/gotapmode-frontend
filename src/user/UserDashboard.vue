@@ -483,6 +483,51 @@ function validateSocialUrlForPlatform(url, platform) {
       return true
   }
 }
+
+// Check if URL contains only template content (no actual username/profile)
+function hasOnlyTemplateContent(url, platform) {
+  const lowerUrl = url.toLowerCase()
+  
+  // Define template patterns for each platform (full URLs)
+  const templatePatterns = {
+    facebook: ['https://facebook.com/', 'https://fb.com/', 'http://facebook.com/', 'http://fb.com/'],
+    instagram: ['https://instagram.com/', 'http://instagram.com/'],
+    twitter: ['https://twitter.com/', 'https://x.com/', 'http://twitter.com/', 'http://x.com/'],
+    linkedin: ['https://linkedin.com/in/', 'https://linkedin.com/company/', 'http://linkedin.com/in/', 'http://linkedin.com/company/'],
+    youtube: ['https://youtube.com/', 'https://youtu.be/', 'http://youtube.com/', 'http://youtu.be/'],
+    tiktok: ['https://tiktok.com/@', 'http://tiktok.com/@'],
+    snapchat: ['https://snapchat.com/add/', 'http://snapchat.com/add/'],
+    whatsapp: ['https://wa.me/', 'https://whatsapp.com/', 'http://wa.me/', 'http://whatsapp.com/'],
+    telegram: ['https://t.me/', 'http://t.me/'],
+    discord: ['https://discord.gg/', 'https://discord.com/', 'http://discord.gg/', 'http://discord.com/'],
+    github: ['https://github.com/', 'http://github.com/'],
+    behance: ['https://behance.net/', 'http://behance.net/'],
+    dribbble: ['https://dribbble.com/', 'http://dribbble.com/'],
+    pinterest: ['https://pinterest.com/', 'http://pinterest.com/'],
+    reddit: ['https://reddit.com/', 'http://reddit.com/'],
+    twitch: ['https://twitch.tv/', 'http://twitch.tv/'],
+    spotify: ['https://open.spotify.com/', 'http://open.spotify.com/'],
+    soundcloud: ['https://soundcloud.com/', 'http://soundcloud.com/'],
+    vimeo: ['https://vimeo.com/', 'http://vimeo.com/'],
+    medium: ['https://medium.com/', 'http://medium.com/'],
+    patreon: ['https://patreon.com/', 'http://patreon.com/'],
+    onlyfans: ['https://onlyfans.com/', 'http://onlyfans.com/'],
+    link: ['https://', 'http://']
+  }
+  
+  const patterns = templatePatterns[platform] || ['https://', 'http://']
+  console.log('Platform:', platform, 'Patterns:', patterns, 'URL:', lowerUrl)
+  
+  // Check if URL exactly matches any of the template patterns
+  const result = patterns.some(pattern => {
+    const matches = lowerUrl === pattern
+    console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
+    return matches
+  })
+  
+  console.log('Final result:', result)
+  return result
+}
 async function saveAddPhone() {
   if (!userId.value) return
   
@@ -588,6 +633,16 @@ async function saveAddSocial() {
     return
   }
   
+  // Check if URL has actual content (not just template)
+  console.log('Checking template content for:', socialUrl, 'platform:', platform)
+  const isTemplateOnly = hasOnlyTemplateContent(socialUrl, platform)
+  console.log('Is template only:', isTemplateOnly)
+  
+  if (isTemplateOnly) {
+    alert(`Please enter a complete ${platform} URL with your username or profile`)
+    return
+  }
+  
   try {
     await addSocial(socialUrl)
     showAddSocial.value = false
@@ -625,6 +680,12 @@ async function saveAddOther() {
   const existingOther = others.value.find(o => o.value.toLowerCase() === otherUrl.toLowerCase())
   if (existingOther) {
     alert('This URL already exists')
+    return
+  }
+  
+  // Check if URL has actual content (not just template)
+  if (hasOnlyTemplateContent(otherUrl, 'link')) {
+    alert('Please enter a complete URL with actual content')
     return
   }
   
