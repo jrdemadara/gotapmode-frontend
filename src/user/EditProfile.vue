@@ -97,18 +97,22 @@ onMounted(async () => {
     const u = JSON.parse(localStorage.getItem('gtm_user') || 'null')
     userId.value = u?.id || null
     if (!userId.value) return
+    
     // Load personal data
     try {
-      const pd = await api.get(`/card-users/personal-data/${userId.value}`)
+      const pd = await api.get('/card-users/personal-data')
       if (pd) {
         first.value = pd.first_name || ''
         middle.value = pd.middle_name || ''
         last.value = pd.last_name || ''
       }
-    } catch {}
+    } catch (err) {
+      console.error('Error loading personal data:', err)
+    }
+    
     // Load profile
     try {
-      const pr = await api.get(`/card-users/profile/${userId.value}`)
+      const pr = await api.get('/card-users/profile')
       if (pr) {
         bio.value = pr.bio || ''
         company.value = pr.company || ''
@@ -120,8 +124,12 @@ onMounted(async () => {
           profilePicPreview.value = pr.profile_pic
         }
       }
-    } catch {}
-  } catch {}
+    } catch (err) {
+      console.error('Error loading profile:', err)
+    }
+  } catch (err) {
+    console.error('Error in onMounted:', err)
+  }
 })
 
 function onFile(e) {
@@ -141,14 +149,13 @@ async function onSave() {
   try {
     // Save names
     await api.post('/card-users/personal-data', {
-      user_id: userId.value,
       first_name: first.value,
       middle_name: middle.value || null,
       last_name: last.value,
     })
+    
     // Save profile
     const payload = {
-      user_id: userId.value,
       bio: bio.value || null,
       company: company.value || null,
       position: position.value || null,
@@ -161,6 +168,9 @@ async function onSave() {
     }
     await api.post('/card-users/profile', payload)
     router.push({ name: 'dashboard' })
+  } catch (err) {
+    console.error('Error saving profile:', err)
+    alert('Failed to save profile: ' + (err.message || err))
   } finally {
     saving.value = false
   }
