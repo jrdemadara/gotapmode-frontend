@@ -91,112 +91,101 @@
         </div>
       </div>
 
-      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
-      <!-- Page Title -->
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-gray-900">NFC Card Writer</h2>
-      </div>
+      <main class="flex-1 p-4 sm:p-6 space-y-6">
+        <!-- Page Title -->
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-gray-900">NFC Card Writer</h2>
+        </div>
 
-      <!-- NFC Status Indicator -->
-      <div class="flex justify-center">
-        <div class="flex items-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div class="w-2 h-2 rounded-full animate-pulse" :class="nfcSupported && nfcEnabled ? 'bg-green-500' : 'bg-red-500'"></div>
-          <span class="text-sm text-gray-600 font-medium">
-            {{ nfcSupported && nfcEnabled ? 'NFC Ready' : 'NFC Not Ready' }}
-          </span>
-        </div>
-      </div>
-      <!-- NFC Card Scanner -->
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6 mb-4 sm:mb-6 lg:mb-8">
-        <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-6">
-          <div class="w-10 h-10 rounded-xl  flex items-center justify-center shadow-md">
-            <img src="/icons/scan.png" alt="Scan" class="w-5 h-5" />
+        <!-- NFC Status Indicator -->
+        <div class="flex justify-center">
+          <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 border border-gray-200">
+            <div class="w-2 h-2 rounded-full animate-pulse" :class="nfcSupported && nfcEnabled ? 'bg-green-500' : 'bg-red-500'"></div>
+            <span class="text-sm text-gray-600 font-medium">
+              {{ nfcSupported && nfcEnabled ? 'NFC Ready' : 'NFC Not Ready' }}
+            </span>
           </div>
-          <h2 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Scan NFC Card</h2>
         </div>
-        
-        <div class="space-y-4 sm:space-y-6">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Card UID</label>
-            <div class="relative">
+
+        <!-- NFC Card Scanner -->
+        <div class="bg-white border border-gray-200 p-6">
+          <div class="text-center mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Scan NFC Card</h2>
+            <p class="text-sm text-gray-600">Place your NFC card near the device to scan</p>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Card UID</label>
               <input
                 v-model="cardData.unique_code"
                 type="text"
                 readonly
                 placeholder="Scan a card to get UID..."
-                class="w-full px-4 py-3 sm:py-4 border border-gray-300 rounded-xl bg-gray-50/80 text-gray-900 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                class="w-full px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <div class="absolute right-3 top-1/2 -translate-y-1/2">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </div>
+            
+            <div class="flex justify-center gap-3">
+              <button
+                @click="scanNfc"
+                :disabled="scanning || !nfcSupported || !nfcEnabled"
+                class="px-6 py-2 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed text-sm font-medium transition-colors duration-200"
+              >
+                <div class="flex items-center justify-center gap-2">
+                  <svg v-if="!scanning" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                  </svg>
+                  <svg v-else class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.582m0 0a8.001 8.001 0 00-15.356-2m15.356 2H15"></path>
+                  </svg>
+                  {{ scanning ? 'Scanning...' : 'Scan NFC Card' }}
+                </div>
+              </button>
+              
+              <button
+                @click="resetForm"
+                class="px-6 py-2 bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300 text-sm font-medium transition-colors duration-200"
+              >
+                <div class="flex items-center justify-center gap-2">
+                  <img src="/icons/refresh.png" alt="Refresh" class="w-4 h-4" />
+                  Reset Form
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div v-if="error" class="bg-red-50 border border-red-200 p-4">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 mt-0.5">
+              <div class="w-6 h-6 bg-red-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                 </svg>
               </div>
             </div>
-          </div>
-          
-          <button
-            @click="scanNfc"
-            :disabled="scanning || !nfcSupported || !nfcEnabled"
-            class="w-full px-6 py-4 sm:py-5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-sm sm:text-base font-semibold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
-          >
-            <div class="flex items-center justify-center gap-2">
-              <svg v-if="!scanning" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-              </svg>
-              <svg v-else class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.582m0 0a8.001 8.001 0 00-15.356-2m15.356 2H15"></path>
-              </svg>
-              {{ scanning ? 'Scanning...' : 'Scan NFC Card' }}
+            <div class="flex-1">
+              <p class="text-sm text-red-800 font-medium">{{ error }}</p>
             </div>
-          </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Reset Button -->
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-6 sm:mb-8">
-        <div class="flex justify-center">
-          <button
-            @click="resetForm"
-            class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl hover:from-gray-300 hover:to-gray-400 text-base font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
-          >
-            <div class="flex items-center justify-center gap-2">
-              <img src="/icons/refresh.png" alt="Refresh" class="w-5 h-5 opacity-70" />
-              Reset Form
+        <div v-if="success" class="bg-green-50 border border-green-200 p-4">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 mt-0.5">
+              <div class="w-6 h-6 bg-green-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Status Messages -->
-      <div v-if="error" class="bg-red-50/90 backdrop-blur-sm border border-red-200 rounded-2xl p-6 mb-4 sm:mb-6 shadow-lg">
-        <div class="flex items-start gap-3">
-          <div class="flex-shrink-0 mt-0.5">
-            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-              <svg class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
+            <div class="flex-1">
+              <p class="text-sm text-green-800 font-medium">{{ success }}</p>
             </div>
           </div>
-          <div class="flex-1">
-            <p class="text-base text-red-800 font-medium">{{ error }}</p>
-          </div>
         </div>
-      </div>
-
-      <div v-if="success" class="bg-green-50/90 backdrop-blur-sm border border-green-200 rounded-2xl p-6 mb-4 sm:mb-6 shadow-lg">
-        <div class="flex items-start gap-3">
-          <div class="flex-shrink-0 mt-0.5">
-            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-              <svg class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
-            </div>
-          </div>
-          <div class="flex-1">
-            <p class="text-base text-green-800 font-medium">{{ success }}</p>
-          </div>
-        </div>
-      </div>
       </main>
 
       <!-- Mobile Sidebar -->
@@ -253,10 +242,10 @@
     </div>
 
     <!-- Writing Modal -->
-    <div v-if="showWritingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-      <div class="relative top-4 sm:top-20 mx-auto p-4 sm:p-5 border-0 w-11/12 sm:w-96 shadow-2xl rounded-2xl bg-white/95 backdrop-blur-sm max-h-[90vh] overflow-y-auto">
+    <div v-if="showWritingModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+      <div class="relative top-4 sm:top-20 mx-auto p-4 w-11/12 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[90vh] overflow-y-auto">
         <div class="mt-3 text-center">
-          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 shadow-lg">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 shadow-lg">
             <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
             </svg>
@@ -264,15 +253,15 @@
           <h3 class="text-lg sm:text-xl font-bold text-gray-900 mt-4">Write to NFC Card</h3>
           <div class="mt-4 px-4 sm:px-6 py-4 bg-gray-50/80 rounded-xl border border-gray-200/50">
             <div class="text-sm text-gray-700 space-y-3 text-left">
-              <div class="bg-white p-3 rounded-lg border border-gray-200">
+              <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <span class="font-semibold text-gray-800">Card UID:</span><br>
                 <span class="break-all text-gray-600 font-mono text-xs">{{ cardData?.unique_code }}</span>
               </div>
-              <div class="bg-white p-3 rounded-lg border border-gray-200">
+              <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <span class="font-semibold text-gray-800">URL:</span><br>
                 <span class="break-all text-gray-600 font-mono text-xs">{{ cardData?.url || `googlechrome://navigate?url=${encodeURIComponent(`https://192.168.50.56:5173/${cardData?.activation_code || 'Will be generated'}`)}` }}</span>
               </div>
-              <div class="bg-white p-3 rounded-lg border border-gray-200">
+              <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <span class="font-semibold text-gray-800">Activation Code:</span><br>
                 <span class="break-all text-gray-600 font-mono text-xs">{{ cardData?.activation_code || 'Will be generated' }}</span>
               </div>
@@ -283,7 +272,7 @@
             <button
               @click="startWriting"
               :disabled="writing"
-              class="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm sm:text-base font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              class="w-full px-6 py-4 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-400 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               <div class="flex items-center justify-center gap-2">
                 <svg v-if="!writing" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,7 +286,7 @@
             </button>
             <button
               @click="closeWritingModal"
-              class="w-full px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-xl shadow-md hover:from-gray-300 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200 transform hover:scale-105 active:scale-95"
+              class="w-full px-6 py-3 bg-gray-200 text-gray-700 text-sm sm:text-base font-semibold rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200 transform hover:scale-105 active:scale-95"
             >
               Cancel
             </button>
@@ -307,10 +296,10 @@
     </div>
 
     <!-- NFC Enable Modal -->
-    <div v-if="showNfcEnableModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-      <div class="relative top-4 sm:top-20 mx-auto p-4 sm:p-5 border-0 w-11/12 sm:w-96 shadow-2xl rounded-2xl bg-white/95 backdrop-blur-sm max-h-[90vh] overflow-y-auto">
+    <div v-if="showNfcEnableModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+      <div class="relative top-4 sm:top-20 mx-auto p-4 w-11/12 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[90vh] overflow-y-auto">
         <div class="mt-3 text-center">
-          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 shadow-lg">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 shadow-lg">
             <svg class="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
             </svg>
@@ -322,13 +311,13 @@
           <div class="items-center px-2 sm:px-4 py-4 space-y-3">
             <button
               @click="enableNfc"
-              class="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm sm:text-base font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              class="w-full px-6 py-4 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               Try to Enable NFC
             </button>
             <button
               @click="showNfcEnableModal = false"
-              class="w-full px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 text-sm sm:text-base font-semibold rounded-xl shadow-md hover:from-gray-300 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200 transform hover:scale-105 active:scale-95"
+              class="w-full px-6 py-3 bg-gray-200 text-gray-700 text-sm sm:text-base font-semibold rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200 transform hover:scale-105 active:scale-95"
             >
               Close
             </button>
