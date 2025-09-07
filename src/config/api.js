@@ -80,6 +80,8 @@ export const adminApi = {
 
   // NFC Card management
   createNfcCard: (data) => api.post('/admin/nfc-cards', data),
+  getCards: () => api.get('/admin/cards'),
+  deleteCard: (id) => api.delete(`/admin/cards/${id}`),
   getSoftDeletedCards: () => api.get('/admin/cards/soft-deleted'),
   restoreCard: (id) => api.post(`/admin/cards/${id}/restore`),
   forceDeleteCard: (id) => api.delete(`/admin/cards/${id}/force`),
