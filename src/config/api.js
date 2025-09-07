@@ -90,6 +90,9 @@ export const adminApi = {
   getAdministrators: () => api.get('/admin/administrators'),
   createAdministrator: (data) => api.post('/admin/users', data),
   updateAdministrator: (id, data) => api.put(`/admin/administrators/${id}`, data),
+  softDeleteAdministrator: (id) => api.delete(`/admin/administrators/${id}`),
+  getSoftDeletedAdministrators: () => api.get('/admin/administrators/soft-deleted'),
+  restoreAdministrator: (id) => api.post(`/admin/administrators/${id}/restore`),
 };
 
 export const userApi = {

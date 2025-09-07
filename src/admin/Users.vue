@@ -116,15 +116,13 @@
          <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
            <div class="flex flex-col gap-4">
              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                <div class="flex items-center gap-3">
-                   <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-                     <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
-                   </div>
-                 <div>
-                   <h2 class="text-xl font-bold text-gray-900">User Accounts</h2>
-                   <p class="text-sm text-gray-600">Manage and view all registered users</p>
-                 </div>
-               </div>
+              <div class="flex items-center gap-3">
+                <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-10 h-10" />
+                <div>
+                  <h2 class="text-xl font-bold text-gray-900">User Accounts</h2>
+                  <p class="text-sm text-gray-600">Manage and view all registered users</p>
+                </div>
+              </div>
                
              </div>
              

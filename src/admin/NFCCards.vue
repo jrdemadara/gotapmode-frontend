@@ -117,9 +117,7 @@
           <div class="flex flex-col gap-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-                  <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
-                </div>
+                <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-10 h-10" />
                 <div>
                   <h2 class="text-xl font-bold text-gray-900">NFC Cards</h2>
                   <p class="text-sm text-gray-600">Manage and view all NFC cards</p>
