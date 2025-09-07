@@ -81,7 +81,7 @@ export const adminApi = {
   getUserOthers: (userId) => api.get(`/contacts/${userId}`).then(r => r.others || []),
 
   // NFC Card management
-  createNfcCard: (data) => api.post('/admin/nfc-cards', data),
+  createNfcCard: (data) => api.post('/admin/cards', data),
   getCards: () => api.get('/admin/cards'),
   deleteCard: (id) => api.delete(`/admin/cards/${id}`),
   getSoftDeletedCards: () => api.get('/admin/cards/soft-deleted'),
@@ -90,7 +90,7 @@ export const adminApi = {
 
   // Administrator management
   getAdministrators: () => api.get('/admin/administrators'),
-  createAdministrator: (data) => api.post('/admin/users', data),
+  createAdministrator: (data) => api.post('/admin/administrators', data),
   updateAdministrator: (id, data) => api.put(`/admin/administrators/${id}`, data),
   softDeleteAdministrator: (id) => api.delete(`/admin/administrators/${id}`),
   getSoftDeletedAdministrators: () => api.get('/admin/administrators/soft-deleted'),
