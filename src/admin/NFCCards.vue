@@ -176,6 +176,12 @@
               
               <!-- Quick Actions -->
               <div class="flex items-center gap-2 justify-end">
+                <button @click="showRestoreModal = true" class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Restore
+                </button>
                 <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -756,6 +762,140 @@
         </div>
       </div>
     </div>
+
+    <!-- Restore Cards Modal -->
+    <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showRestoreModal = false"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <!-- Modal Header -->
+          <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-xl sm:text-2xl font-bold text-white">GoTapMode - Deleted Cards</h3>
+              <p class="text-sm sm:text-base text-red-100">Manage and restore deleted NFC cards</p>
+            </div>
+            <button @click="showRestoreModal = false" class="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white hover:text-gray-200 transition-all duration-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Modal Content -->
+          <div class="bg-white px-6 py-4">
+            <!-- Search -->
+            <div class="mb-4">
+              <input
+                v-model="restoreSearchQuery"
+                type="text"
+                placeholder="Search deleted cards by ID, user name, or email..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+              <div class="mt-2 flex items-center justify-between">
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">{{ filteredRestoreCards.length }} results</span>
+              </div>
+            </div>
+
+            <!-- Desktop Table for Deleted Cards -->
+            <div v-if="filteredRestoreCards.length > 0" class="hidden sm:block bg-white rounded-lg border border-red-200 shadow-sm overflow-hidden">
+              <table class="w-full">
+                <thead class="bg-red-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Card ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Deleted At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-red-200">
+                  <tr v-for="card in filteredRestoreCards" :key="card.id" class="hover:bg-red-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ card.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <div v-if="card.user">
+                        <div class="font-medium">{{ card.user.name }}</div>
+                        <div class="text-xs text-gray-500">{{ card.user.email }}</div>
+                      </div>
+                      <div v-else class="text-gray-400">No user assigned</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="card.is_activated ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                        {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(card.deleted_at) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button @click="restoreCard(card)" 
+                              class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
+                        Restore
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Cards for Deleted Cards -->
+            <div v-if="filteredRestoreCards.length > 0" class="sm:hidden space-y-4">
+              <div v-for="card in filteredRestoreCards" :key="card.id" 
+                   class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-gray-900">Card #{{ card.id }}</div>
+                      <div class="text-sm text-gray-600">{{ card.user?.name || 'No user assigned' }}</div>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="card.is_activated ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                    {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                  </span>
+                </div>
+                
+                <!-- Deleted Date -->
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-gray-500">Deleted:</span>
+                    <span class="ml-2 font-medium text-gray-900">{{ formatDate(card.deleted_at) }}</span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                  <button @click="restoreCard(card)" 
+                          class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                    Restore Card
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-8">
+              <div class="text-lg font-medium text-gray-900 mb-2">No deleted cards found</div>
+              <div class="text-gray-500">{{ restoreSearchQuery ? 'Try adjusting your search terms' : 'All cards are currently active' }}</div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="bg-gray-50 px-6 py-3 flex justify-end gap-2">
+            <button @click="showRestoreModal = false" 
+                    class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              Close
+            </button>
+            <button @click="loadSoftDeletedCards" 
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -782,6 +922,13 @@ const itemsPerPage = ref(10)
 const showCardModal = ref(false)
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
+
+// Soft delete states
+const softDeletedCards = ref([])
+const showRestoreModal = ref(false)
+const restoreSearchQuery = ref('')
+const cardToRestore = ref(null)
+const isRestoring = ref(false)
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -886,6 +1033,17 @@ const paginationInfo = computed(() => {
   return { start, end, total: filteredCards.value.length }
 })
 
+const filteredRestoreCards = computed(() => {
+  if (!restoreSearchQuery.value) return softDeletedCards.value
+  
+  const query = restoreSearchQuery.value.toLowerCase()
+  return softDeletedCards.value.filter(card => 
+    card.id.toString().includes(query) ||
+    card.user?.name?.toLowerCase().includes(query) ||
+    card.user?.email?.toLowerCase().includes(query)
+  )
+})
+
 // Functions
 function viewCard(card) {
   selectedCard.value = card
@@ -956,6 +1114,39 @@ function resetPagination() {
   currentPage.value = 1
 }
 
+// Soft delete functions
+async function loadSoftDeletedCards() {
+  try {
+    const data = await adminApi.getSoftDeletedCards()
+    softDeletedCards.value = data.cards || []
+  } catch (e) {
+    console.error('Failed to load soft deleted cards:', e)
+    softDeletedCards.value = []
+  }
+}
+
+async function restoreCard(card) {
+  if (!card || isRestoring.value) return
+  
+  try {
+    isRestoring.value = true
+    await adminApi.restoreCard(card.id)
+    
+    // Remove from soft deleted list
+    softDeletedCards.value = softDeletedCards.value.filter(c => c.id !== card.id)
+    
+    // Refresh main cards list
+    await fetchCards()
+    
+    console.log('Card restored successfully')
+  } catch (e) {
+    console.error('Failed to restore card:', e)
+    alert('Failed to restore card: ' + e.message)
+  } finally {
+    isRestoring.value = false
+  }
+}
+
 const changePage = (page) => {
   currentPage.value = page
 }
@@ -998,6 +1189,8 @@ const handleKeyDown = (event) => {
       closeDeleteModal()
     } else if (showCardModal.value) {
       closeCardModal()
+    } else if (showRestoreModal.value) {
+      showRestoreModal.value = false
     }
   }
 }
@@ -1020,10 +1213,18 @@ function logout() {
 
 onMounted(() => {
   fetchCards()
+  loadSoftDeletedCards()
   document.addEventListener('keydown', handleKeyDown)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
+})
+
+// Watch for restore modal to reset search
+watch(showRestoreModal, (newVal) => {
+  if (newVal) {
+    restoreSearchQuery.value = ''
+  }
 })
 </script>

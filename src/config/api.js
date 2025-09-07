@@ -1,8 +1,8 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-//const DEFAULT_BASE = 'https://192.168.50.56:8443/api';
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+const DEFAULT_BASE = 'http://127.0.0.1:8000/api';
+// const DEFAULT_BASE = 'https://api.gotapmode.info/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -79,6 +79,9 @@ export const adminApi = {
 
   // NFC Card management
   createNfcCard: (data) => api.post('/admin/nfc-cards', data),
+  getSoftDeletedCards: () => api.get('/admin/cards/soft-deleted'),
+  restoreCard: (id) => api.post(`/admin/cards/${id}/restore`),
+  forceDeleteCard: (id) => api.delete(`/admin/cards/${id}/force`),
 
   // Administrator management
   getAdministrators: () => api.get('/admin/administrators'),
