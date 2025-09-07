@@ -629,12 +629,13 @@ function goAdministrators() {
 // Logout
 const logout = async () => {
   try {
-    localStorage.removeItem('gtm_admin_token')
-    localStorage.removeItem('gtm_admin_user')
-    router.replace({ name: 'login' })
-  } catch (err) {
-    console.error('Logout error:', err)
+    await adminApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
   }
+  localStorage.removeItem('gtm_admin_token')
+  localStorage.removeItem('gtm_admin_user')
+  router.replace({ name: 'login' })
 }
 
 // Initialize on mount

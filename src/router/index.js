@@ -21,10 +21,10 @@ const routes = [
   { path: '/activate', name: 'activate', component: Activate },
   { path: '/card-validation', name: 'card-validation', component: CardValidation },
   { path: '/:activationCode', name: 'nfc-card', component: CardValidation },
-  { path: '/profile-setup', name: 'profile-setup', component: ProfileSetup },
-  { path: '/profile-details', name: 'profile-details', component: ProfileDetails },
-  { path: '/dashboard', name: 'dashboard', component: UserDashboard },
-  { path: '/edit-profile', name: 'edit-profile', component: EditProfile },
+  { path: '/profile-setup', name: 'profile-setup', component: ProfileSetup, meta: { requiresUser: true } },
+  { path: '/profile-details', name: 'profile-details', component: ProfileDetails, meta: { requiresUser: true } },
+  { path: '/dashboard', name: 'dashboard', component: UserDashboard, meta: { requiresUser: true } },
+  { path: '/edit-profile', name: 'edit-profile', component: EditProfile, meta: { requiresUser: true } },
   { path: '/p/:code', name: 'public-profile', component: PublicProfile },
   { path: '/admin/dashboard', name: 'admin-dashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
   { path: '/admin/users', name: 'admin-users', component: AdminUsers, meta: { requiresAdmin: true } },
@@ -48,6 +48,16 @@ router.beforeEach((to, from, next) => {
       if (!token || !user) return next({ name: 'login', query: { redirect: to.fullPath } })
     } catch {}
   }
+  
+  if (to.meta?.requiresUser) {
+    try {
+      const token = localStorage.getItem('gtm_token')
+      const userRaw = localStorage.getItem('gtm_user')
+      const user = userRaw ? JSON.parse(userRaw) : null
+      if (!token || !user) return next({ name: 'login', query: { redirect: to.fullPath } })
+    } catch {}
+  }
+  
   next()
 })
 

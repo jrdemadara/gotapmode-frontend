@@ -31,7 +31,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { api, userApi } from '../config/api'
 
 const first = ref('')
 const middle = ref('')
@@ -50,8 +50,7 @@ onMounted(() => {
 async function onSubmit() {
   loading.value = true
   try {
-    await api.post('/card-users/personal-data', {
-      user_id: userId.value,
+    await userApi.updatePersonalData({
       first_name: first.value,
       middle_name: middle.value || null,
       last_name: last.value,

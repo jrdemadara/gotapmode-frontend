@@ -609,7 +609,16 @@ function goDashboard() { showSidebar.value = false; try { router.replace({ name:
 function goUsers() { showSidebar.value = false; try { router.push({ name: 'admin-users' }) } catch {} }
 function goNfcWriting() { showSidebar.value = false; try { router.push({ name: 'admin-nfc-writing' }) } catch {} }
 function goAdministrators() { showSidebar.value = false; try { router.push({ name: 'admin-administrators' }) } catch {} }
-function logout() { localStorage.removeItem('gtm_admin_token'); localStorage.removeItem('gtm_admin_user'); router.replace({ name: 'login' }) }
+async function logout() { 
+  try {
+    await adminApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+  }
+  localStorage.removeItem('gtm_admin_token')
+  localStorage.removeItem('gtm_admin_user')
+  router.replace({ name: 'login' })
+}
 
 async function refreshHealth() {
   try { const t0 = performance.now(); const res = await api.get('/health'); const t1 = performance.now(); health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } }

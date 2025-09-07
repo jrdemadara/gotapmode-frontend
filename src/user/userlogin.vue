@@ -118,6 +118,7 @@ const showPassword = ref(false)
        })
        
        // If successful, store card user data and redirect to user dashboard
+       localStorage.setItem('gtm_token', cardUserResponse.token)
        localStorage.setItem('gtm_user', JSON.stringify(cardUserResponse.user))
        
        successMsg.value = 'Welcome back ' + (cardUserResponse.user?.name || cardUserResponse.user?.email || 'User')

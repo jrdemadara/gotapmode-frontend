@@ -47,6 +47,7 @@ export const api = {
 
 export const adminApi = {
   login: (email, password) => api.post('/admin/login', { email, password }),
+  logout: () => api.post('/admin/logout'),
   me: () => api.get('/admin/me'),
   stats: () => api.get('/admin/stats'),
   getUsers: () => api.get('/admin/users'),
@@ -87,6 +88,30 @@ export const adminApi = {
   getAdministrators: () => api.get('/admin/administrators'),
   createAdministrator: (data) => api.post('/admin/users', data),
   updateAdministrator: (id, data) => api.put(`/admin/administrators/${id}`, data),
+};
+
+export const userApi = {
+  login: (email, password) => api.post('/card-users/login', { email, password }),
+  logout: () => api.post('/card-users/logout'),
+  me: () => api.get('/card-users/me'),
+  register: (name, email, password) => api.post('/card-users/register', { name, email, password }),
+  getPersonalData: () => api.get('/card-users/personal-data'),
+  updatePersonalData: (data) => api.post('/card-users/personal-data', data),
+  getProfile: () => api.get('/card-users/profile'),
+  updateProfile: (data) => api.post('/card-users/profile', data),
+  activateCard: (activationCode) => api.post('/cards/activate', { activation_code: activationCode }),
+  
+  // Contact management
+  getContacts: () => api.get('/contacts/'),
+  addPhone: (data) => api.post('/contacts/phones', data),
+  addEmail: (data) => api.post('/contacts/emails', data),
+  addSocial: (data) => api.post('/contacts/socials', data),
+  addOther: (data) => api.post('/contacts/others', data),
+  deleteContact: (table, id) => api.delete(`/contacts/${table}/${id}`),
+  setMainPhone: (id) => api.post(`/contacts/phones/${id}/set-main`),
+  setMainEmail: (id) => api.post(`/contacts/emails/${id}/set-main`),
+  setMainSocial: (id) => api.post(`/contacts/socials/${id}/set-main`),
+  setMainOther: (id) => api.post(`/contacts/others/${id}/set-main`),
 };
 
 

@@ -288,7 +288,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { api, userApi } from '../config/api'
 import Modal from '../components/Modal.vue'
 
 const profile = ref({
@@ -396,17 +396,17 @@ onMounted(async () => {
       loadError.value = 'Not logged in.'
       return
     }
-    const data = await api.get(`/contacts/${userId.value}`)
+    const data = await userApi.getContacts()
     phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
     emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
     socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main }))
     others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main }))
     try {
-      const pd = await api.get(`/card-users/personal-data/${userId.value}`)
+      const pd = await userApi.getPersonalData()
       if (pd?.full_name) profile.value.name = pd.full_name
     } catch (_) {}
     try {
-      const pr = await api.get(`/card-users/profile/${userId.value}`)
+      const pr = await userApi.getProfile()
              if (pr?.profile_pic) profile.value.photo = pr.profile_pic
        if (pr?.company) profile.value.company = pr.company
        if (pr?.bio) profile.value.bio = pr.bio
@@ -428,8 +428,8 @@ onUnmounted(() => {
 })
 
 async function addPhone(v, t) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/phones', { user_id: userId.value, phonenumber: v, type: t || null }); 
+  if (!v) return; 
+  const row = await userApi.addPhone({ phonenumber: v, type: t || null }); 
   const newPhone = { id: row.id, number: row.phonenumber, type: row.type, isMain: !!row.is_main };
   phones.value.push(newPhone);
   
@@ -441,7 +441,7 @@ async function addPhone(v, t) {
 async function onToggleMain(p) { 
   if (!p?.id) return; 
   try { 
-    const res = await api.post(`/contacts/phones/${p.id}/set-main`); 
+    const res = await userApi.setMainPhone(p.id); 
     // Update only the isMain status without reordering
     phones.value.forEach(phone => {
       phone.isMain = phone.id === p.id;
@@ -451,15 +451,15 @@ async function onToggleMain(p) {
 async function deletePhone(phone) {
   if (!phone?.id) return;
   try {
-    await api.delete(`/contacts/phones/${phone.id}`);
+    await userApi.deleteContact('phones', phone.id);
     phones.value = phones.value.filter(p => p.id !== phone.id);
   } catch (error) {
     console.error("Error deleting phone:", error);
   }
 }
 async function addEmail(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/emails', { user_id: userId.value, email: v }); 
+  if (!v) return; 
+  const row = await userApi.addEmail({ email: v }); 
   const newEmail = { id: row.id, value: row.email, isMain: !!row.is_main };
   emails.value.push(newEmail);
   
@@ -469,8 +469,8 @@ async function addEmail(v) {
   }
 }
 async function addSocial(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/socials', { user_id: userId.value, social: v, type: newSocialType.value || 'link' }); 
+  if (!v) return; 
+  const row = await userApi.addSocial({ social: v, type: newSocialType.value || 'link' }); 
   const newSocial = { id: row.id, platform: row.type || 'link', value: row.social, isMain: !!row.is_main };
   socials.value.push(newSocial);
   
@@ -480,8 +480,8 @@ async function addSocial(v) {
   }
 }
 async function addOther(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/others', { user_id: userId.value, others: v }); 
+  if (!v) return; 
+  const row = await userApi.addOther({ others: v }); 
   const newOther = { id: row.id, value: row.others, isMain: !!row.is_main };
   others.value.push(newOther);
   
@@ -493,7 +493,7 @@ async function addOther(v) {
 async function onToggleMainEmail(e) { 
   if (!e?.id) return; 
   try { 
-    const res = await api.post(`/contacts/emails/${e.id}/set-main`); 
+    const res = await userApi.setMainEmail(e.id); 
     // Update only the isMain status without reordering
     emails.value.forEach(email => {
       email.isMain = email.id === e.id;
@@ -503,7 +503,7 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) { 
   if (!s?.id) return; 
   try { 
-    const res = await api.post(`/contacts/socials/${s.id}/set-main`); 
+    const res = await userApi.setMainSocial(s.id); 
     // Update only the isMain status without reordering
     socials.value.forEach(social => {
       social.isMain = social.id === s.id;
@@ -513,7 +513,7 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) { 
   if (!o?.id) return; 
   try { 
-    const res = await api.post(`/contacts/others/${o.id}/set-main`); 
+    const res = await userApi.setMainOther(o.id); 
     // Update only the isMain status without reordering
     others.value.forEach(other => {
       other.isMain = other.id === o.id;
@@ -523,7 +523,7 @@ async function onToggleMainOther(o) {
 async function deleteEmail(email) {
   if (!email?.id) return;
   try {
-    await api.delete(`/contacts/emails/${email.id}`);
+    await userApi.deleteContact('emails', email.id);
     emails.value = emails.value.filter(e => e.id !== email.id);
   } catch (error) {
     console.error("Error deleting email:", error);
@@ -532,7 +532,7 @@ async function deleteEmail(email) {
 async function deleteSocial(social) {
   if (!social?.id) return;
   try {
-    await api.delete(`/contacts/socials/${social.id}`);
+    await userApi.deleteContact('socials', social.id);
     socials.value = socials.value.filter(s => s.id !== social.id);
   } catch (error) {
     console.error("Error deleting social:", error);
@@ -541,7 +541,7 @@ async function deleteSocial(social) {
 async function deleteOther(other) {
   if (!other?.id) return;
   try {
-    await api.delete(`/contacts/others/${other.id}`);
+    await userApi.deleteContact('others', other.id);
     others.value = others.value.filter(o => o.id !== other.id);
   } catch (error) {
     console.error("Error deleting other:", error);
@@ -553,7 +553,12 @@ function goEditProfile() {
   try { router.push({ name: 'edit-profile' }) } catch {}
 }
 
-function doLogout() {
+async function doLogout() {
+  try {
+    await userApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+  }
   localStorage.removeItem('gtm_token')
   localStorage.removeItem('gtm_user')
   window.location.replace('/')
