@@ -27,7 +27,7 @@
         <h2 class="text-xl font-semibold text-red-900 mb-2">Card Validation Failed</h2>
         <p class="text-red-700 mb-6">{{ error }}</p>
         <button
-          @click="retryValidation"
+          @click="goToLogin"
           class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
         >
           Try Again
@@ -205,10 +205,13 @@ const validateCardWithBoth = async (uid, activationCode) => {
         } 
       })
     } else {
-      // Card exists, is activated, and not expired - redirect to public profile
+      // Card exists, is activated, and not expired - redirect to public profile with UID for security
       router.push({ 
         name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
+        params: { code: cardData.value.activation_code },
+        query: { 
+          uid: uid 
+        }
       })
     }
 
@@ -249,10 +252,13 @@ const validateCard = async (uid) => {
         } 
       })
     } else {
-      // Card exists and is activated - redirect to public profile
+      // Card exists and is activated - redirect to public profile with UID for security
       router.push({ 
         name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
+        params: { code: cardData.value.activation_code },
+        query: { 
+          uid: cardData.value.unique_code 
+        }
       })
     }
 
@@ -292,10 +298,13 @@ const validateActivationCode = async (activationCode) => {
         } 
       })
     } else {
-      // Card is activated - redirect to public profile
+      // Card is activated - redirect to public profile with UID for security
       router.push({ 
         name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
+        params: { code: cardData.value.activation_code },
+        query: { 
+          uid: cardData.value.unique_code 
+        }
       })
     }
 
@@ -315,6 +324,11 @@ const retryValidation = () => {
   error.value = null
   loading.value = true
   startNfcScan()
+}
+
+// Go to login page
+const goToLogin = () => {
+  router.push({ name: 'login' })
 }
 
 // Initialize on mount

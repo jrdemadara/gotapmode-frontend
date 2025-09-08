@@ -66,11 +66,12 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api } from '../config/api'
 import { updatePageTitle, updateMetaDescription, updateOpenGraphTags, generateStructuredData } from '../utils/seo.js'
 
 const route = useRoute()
+const router = useRouter()
 
 const profile = ref({ photo: '', name: '', company: '', bio: '' })
 const phones = ref([])
@@ -100,6 +101,47 @@ onMounted(async () => {
         console.error('Card not found by activation code or unique code:', code)
         return
       }
+    }
+
+    // Security check: Always require UID validation for profile access
+    const cardUid = route.query.uid
+    
+    if (!cardUid) {
+      // No UID provided - redirect to card validation to get proper UID
+      console.log('No UID provided, redirecting to card validation')
+      router.push({ 
+        name: 'card-validation', 
+        query: { error: 'Please scan your NFC card to access this profile.' } 
+      })
+      return
+    }
+    
+    try {
+      // Always validate card security with backend
+      const securityResponse = await api.post('/cards/validate-security', {
+        activation_code: code,
+        uid: cardUid
+      })
+      
+      if (!securityResponse.valid) {
+        console.error('Security violation: Card UID validation failed', securityResponse)
+        // Redirect to card validation with security error
+        router.push({ 
+          name: 'card-validation', 
+          query: { error: 'Security violation: This card does not match the registered profile.' } 
+        })
+        return
+      }
+      
+      console.log('Card security validation passed')
+    } catch (err) {
+      console.error('Security validation failed:', err)
+      // Redirect to card validation with security error
+      router.push({ 
+        name: 'card-validation', 
+        query: { error: 'Security validation failed. Please try again.' } 
+      })
+      return
     }
 
     // Check if card is expired
