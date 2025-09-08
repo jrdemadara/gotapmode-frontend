@@ -134,13 +134,15 @@
              
                            <!-- Search Section -->
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="relative w-full sm:w-80 lg:w-96">
-                  <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search by name, email, company, or contacts..."
-                    class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+              <div class="relative w-full sm:w-80 lg:w-96">
+                <input
+                  id="users-search"
+                  name="users-search"
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="Search by name, email, company, or contacts..."
+                  class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
                   <div class="absolute left-4 top-3.5 text-gray-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -437,6 +439,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Show:</span>
                    <select 
+                     id="users-items-per-page"
+                     name="users-items-per-page"
                      v-model="itemsPerPage" 
                   class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                    >
@@ -463,6 +467,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Go to:</span>
                    <input 
+                     id="users-page-jump"
+                     name="users-page-jump"
                      type="number" 
                      :min="1" 
                      :max="totalPages"
@@ -526,6 +532,8 @@
                  <!-- Left: Page Size -->
               <div class="flex items-center gap-2">
                    <select
+                     id="users-items-per-page-mobile"
+                     name="users-items-per-page-mobile"
                      v-model="itemsPerPage"
                   class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                    >
@@ -571,6 +579,8 @@
               <!-- Right: Page Jump -->
               <div class="flex items-center gap-1">
                    <input
+                     id="users-page-jump-mobile"
+                     name="users-page-jump-mobile"
                      type="number"
                      :min="1"
                      :max="totalPages"
@@ -931,6 +941,8 @@
               <div class="flex items-center gap-4">
                 <div class="relative w-80">
                     <input
+                      id="users-restore-search"
+                      name="users-restore-search"
                       v-model="restoreSearchQuery"
                       type="text"
                     placeholder="Search deleted users..."

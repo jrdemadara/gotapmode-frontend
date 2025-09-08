@@ -13,8 +13,8 @@
       </div>
 
       <div class="flex items-center justify-center mb-3">
-        <label class="w-36 h-36 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer">
-          <input type="file" accept="image/*" class="hidden" @change="onFile" />
+        <label for="profile-pic" class="w-36 h-36 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer">
+          <input id="profile-pic" name="profile-pic" type="file" accept="image/*" class="hidden" @change="onFile" />
           <span v-if="!profilePicPreview" class="text-xs opacity-70">Click to upload image</span>
           <img v-else :src="profilePicPreview" class="w-36 h-36 rounded-full object-cover" />
         </label>
@@ -22,28 +22,28 @@
 
       <form class="grid gap-3" @submit.prevent="onSubmit">
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Profile Bio</label>
-          <textarea v-model.trim="bio" rows="3" class="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" placeholder="Tell the online community how awesome you are!"></textarea>
+          <label for="bio" class="block text-xs font-medium mb-1 opacity-80">Profile Bio</label>
+          <textarea id="bio" name="bio" v-model.trim="bio" rows="3" class="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" placeholder="Tell the online community how awesome you are!"></textarea>
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Company/Organization</label>
-          <input v-model.trim="company" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Your company or organization" />
+          <label for="company" class="block text-xs font-medium mb-1 opacity-80">Company/Organization</label>
+          <input id="company" name="company" v-model.trim="company" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Your company or organization" />
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Position/Job Title</label>
-          <input v-model.trim="position" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Your job title or position" />
+          <label for="position" class="block text-xs font-medium mb-1 opacity-80">Position/Job Title</label>
+          <input id="position" name="position" v-model.trim="position" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Your job title or position" />
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Company/Organization Tel. No. / Mobile No.</label>
-          <input v-model.trim="companynumber" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="e.g. +1 555 123 4567" />
+          <label for="companynumber" class="block text-xs font-medium mb-1 opacity-80">Company/Organization Tel. No. / Mobile No.</label>
+          <input id="companynumber" name="companynumber" v-model.trim="companynumber" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="e.g. +1 555 123 4567" />
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Company/Organization Email Address</label>
-          <input v-model.trim="companyemail" type="email" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="name@company.com" />
+          <label for="companyemail" class="block text-xs font-medium mb-1 opacity-80">Company/Organization Email Address</label>
+          <input id="companyemail" name="companyemail" v-model.trim="companyemail" type="email" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="name@company.com" />
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Company/Organization Address</label>
-          <input v-model.trim="companyadress" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Street, City, State / Region" />
+          <label for="companyadress" class="block text-xs font-medium mb-1 opacity-80">Company/Organization Address</label>
+          <input id="companyadress" name="companyadress" v-model.trim="companyadress" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 px-3.5 text-[15px] shadow-sm" placeholder="Street, City, State / Region" />
         </div>
 
         <button type="submit" :disabled="loading" class="mt-2 h-12 rounded-lg w-full bg-primary text-white font-semibold">Finish setting up My Profile</button>

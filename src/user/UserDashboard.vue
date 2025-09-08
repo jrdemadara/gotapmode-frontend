@@ -155,12 +155,12 @@
     <Modal v-model="showAddPhone" title="Add Phone">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Phone number</label>
-          <input v-model="newPhone" type="tel" inputmode="tel" placeholder="e.g. 0977 301 6902" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-phone" class="block text-xs font-medium mb-1">Phone number</label>
+          <input id="new-phone" name="new-phone" v-model="newPhone" type="tel" inputmode="tel" placeholder="e.g. 0977 301 6902" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Type</label>
-          <select v-model="newPhoneType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <label for="new-phone-type" class="block text-xs font-medium mb-1">Type</label>
+          <select id="new-phone-type" name="new-phone-type" v-model="newPhoneType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
             <option value="telephone">Telephone</option>
@@ -179,12 +179,12 @@
     <Modal v-model="showAddEmail" title="Add Email">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Email</label>
-          <input v-model="newEmail" type="email" placeholder="name@company.com" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-email" class="block text-xs font-medium mb-1">Email</label>
+          <input id="new-email" name="new-email" v-model="newEmail" type="email" placeholder="name@company.com" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Type</label>
-          <select v-model="newEmailType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <label for="new-email-type" class="block text-xs font-medium mb-1">Type</label>
+          <select id="new-email-type" name="new-email-type" v-model="newEmailType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
           </select>
@@ -202,13 +202,13 @@
     <Modal v-model="showAddSocial" title="Add Social Link">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">URL / Username</label>
-          <input v-model="newSocial" placeholder="https://platform/username" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-social" class="block text-xs font-medium mb-1">URL / Username</label>
+          <input id="new-social" name="new-social" v-model="newSocial" placeholder="https://platform/username" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Platform</label>
+          <label for="social-platform-select" class="block text-xs font-medium mb-1">Platform</label>
           <div class="relative" ref="socialPlatformContainer">
-            <button type="button" @click="toggleSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
+            <button id="social-platform-select" type="button" @click="toggleSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
               <span class="flex items-center gap-2">
                 <img :src="currentSocialPlatform.icon" class="w-5 h-5" />
                 <span>{{ currentSocialPlatform.label }}</span>
@@ -238,8 +238,8 @@
     <Modal v-model="showAddOther" title="Add Other Link">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Link</label>
-          <input v-model="newOther" placeholder="https://your-link" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-other" class="block text-xs font-medium mb-1">Link</label>
+          <input id="new-other" name="new-other" v-model="newOther" placeholder="https://your-link" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
       </div>
       <template #footer>
@@ -522,7 +522,7 @@ function hasOnlyTemplateContent(url, platform) {
   const result = patterns.some(pattern => {
     const matches = lowerUrl === pattern
     console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
-    return matches
+    return matches 
   })
   
   console.log('Final result:', result)
@@ -1184,7 +1184,7 @@ export default {
             <span>{{ label }}</span>
           </div>
           <div class="flex gap-2 px-3 pb-2">
-            <input :placeholder="placeholder" v-model="input" class="flex-1 h-10 rounded-lg border border-gray-300 px-3" />
+            <input id="add-input" name="add-input" :placeholder="placeholder" v-model="input" class="flex-1 h-10 rounded-lg border border-gray-300 px-3" />
             <button @click="onAdd" class="px-3 h-10 rounded-lg bg-black text-white">Add</button>
           </div>
         </div>

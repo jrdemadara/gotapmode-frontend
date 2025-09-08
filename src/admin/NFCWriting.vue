@@ -122,8 +122,10 @@
           
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Card UID</label>
+              <label for="card-uid" class="block text-sm font-medium text-gray-700 mb-2">Card UID</label>
               <input
+                id="card-uid"
+                name="card-uid"
                 v-model="cardData.unique_code"
                 type="text"
                 readonly

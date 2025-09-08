@@ -135,6 +135,8 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div class="relative w-full sm:w-80 lg:w-96">
                 <input
+                  id="admin-search"
+                  name="admin-search"
                   v-model="searchQuery"
                   type="text"
                   placeholder="Search by name, email, or ID..."
@@ -359,6 +361,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Show:</span>
                 <select
+                  id="admin-items-per-page"
+                  name="admin-items-per-page"
                   v-model="itemsPerPage"
                   class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -385,6 +389,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Go to:</span>
                 <input
+                  id="admin-page-jump"
+                  name="admin-page-jump"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -448,6 +454,8 @@
               <!-- Left: Page Size -->
               <div class="flex items-center gap-2">
                 <select
+                  id="admin-items-per-page-mobile"
+                  name="admin-items-per-page-mobile"
                   v-model="itemsPerPage"
                   class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -493,6 +501,8 @@
               <!-- Right: Page Jump -->
               <div class="flex items-center gap-1">
                 <input
+                  id="admin-page-jump-mobile"
+                  name="admin-page-jump-mobile"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -742,8 +752,10 @@
             </label>
             <input
               id="name"
+              name="name"
               v-model="newUser.name"
               type="text"
+              autocomplete="name"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Enter full name"
@@ -757,8 +769,10 @@
             </label>
             <input
               id="email"
+              name="email"
               v-model="newUser.email"
               type="email"
+              autocomplete="email"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="admin@example.com"
@@ -772,8 +786,10 @@
             </label>
             <input
               id="password"
+              name="password"
               v-model="newUser.password"
               type="password"
+              autocomplete="new-password"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Minimum 8 characters"
@@ -787,8 +803,10 @@
             </label>
             <input
               id="password_confirmation"
+              name="password_confirmation"
               v-model="newUser.password_confirmation"
               type="password"
+              autocomplete="new-password"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Confirm your password"
@@ -797,9 +815,9 @@
 
           <!-- Admin Role (Fixed) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="block text-sm font-medium text-gray-700 mb-2">
               Role <span class="text-red-500">*</span>
-            </label>
+            </div>
                          <div class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-lg">
                <svg class="w-5 h-5 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -891,8 +909,10 @@
             </label>
             <input
               id="edit_name"
+              name="edit_name"
               v-model="editForm.name"
               type="text"
+              autocomplete="name"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Enter full name"
@@ -906,8 +926,10 @@
             </label>
             <input
               id="edit_email"
+              name="edit_email"
               v-model="editForm.email"
               type="email"
+              autocomplete="email"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="admin@example.com"
@@ -921,8 +943,10 @@
             </label>
             <input
               id="edit_password"
+              name="edit_password"
               v-model="editForm.password"
               type="password"
+              autocomplete="new-password"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Leave blank to keep current password"
             />
@@ -936,8 +960,10 @@
             </label>
             <input
               id="edit_password_confirmation"
+              name="edit_password_confirmation"
               v-model="editForm.password_confirmation"
               type="password"
+              autocomplete="new-password"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200"
               placeholder="Confirm new password"
@@ -946,9 +972,9 @@
 
           <!-- Admin Role (Fixed) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="block text-sm font-medium text-gray-700 mb-2">
               Role <span class="text-red-500">*</span>
-            </label>
+            </div>
                          <div class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-lg">
                <svg class="w-5 h-5 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -1023,6 +1049,8 @@
           <div class="mb-6">
             <div class="relative w-full max-w-md">
               <input
+                id="admin-restore-search"
+                name="admin-restore-search"
                 v-model="restoreSearchQuery"
                 type="text"
                 placeholder="Search deleted administrators..."
