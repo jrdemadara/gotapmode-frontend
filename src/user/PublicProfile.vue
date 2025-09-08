@@ -85,64 +85,31 @@ const mainWeb = computed(() => others.value.find(o => o.isMain) || others.value[
 const mainSocial = computed(() => socials.value.find(s => s.isMain) || socials.value[0] || null)
 
 onMounted(async () => {
-  const code = route.params.code || route.query.unique || route.query.code
-  if (!code) return
+  const hash = route.params.code
+  
+  if (!hash) {
+    console.log('No hash provided, redirecting to card validation')
+    router.push({ 
+      name: 'card-validation', 
+      query: { error: 'Please scan your NFC card to access this profile.' } 
+    })
+    return
+  }
 
   try {
-    // First, try to find the card by activation code
-    let card
-    try {
-      card = await api.get(`/cards/activation/${encodeURIComponent(code)}`)
-    } catch (err) {
-      // If activation code not found, try to find by unique code (fallback)
-      try {
-        card = await api.get(`/cards/${encodeURIComponent(code)}`)
-      } catch (err2) {
-        console.error('Card not found by activation code or unique code:', code)
-        return
-      }
+    // Validate hash and get card data
+    const response = await api.get(`/cards/validate-hash/${hash}`)
+    
+    if (!response.valid) {
+      console.error('Invalid hash:', response.message)
+      router.push({ 
+        name: 'card-validation', 
+        query: { error: 'Invalid card. Please scan a valid NFC card.' } 
+      })
+      return
     }
 
-    // Security check: Always require UID validation for profile access
-    const cardUid = route.query.uid
-    
-    if (!cardUid) {
-      // No UID provided - redirect to card validation to get proper UID
-      console.log('No UID provided, redirecting to card validation')
-      router.push({ 
-        name: 'card-validation', 
-        query: { error: 'Please scan your NFC card to access this profile.' } 
-      })
-      return
-    }
-    
-    try {
-      // Always validate card security with backend
-      const securityResponse = await api.post('/cards/validate-security', {
-        activation_code: code,
-        uid: cardUid
-      })
-      
-      if (!securityResponse.valid) {
-        console.error('Security violation: Card UID validation failed', securityResponse)
-        // Redirect to card validation with security error
-        router.push({ 
-          name: 'card-validation', 
-          query: { error: 'Security violation: This card does not match the registered profile.' } 
-        })
-        return
-      }
-      
-      console.log('Card security validation passed')
-    } catch (err) {
-      console.error('Security validation failed:', err)
-      // Redirect to card validation with security error
-      router.push({ 
-        name: 'card-validation', 
-        query: { error: 'Security validation failed. Please try again.' } 
-      })
-      return
-    }
+    const card = response.card
 
     // Check if card is expired
     if (card.expiry_date) {
@@ -159,7 +126,7 @@ onMounted(async () => {
       }
     }
 
-    const userId = card?.card_user_id
+    const userId = card.card_user_id
     if (!userId) {
       console.error('Card found but no user linked:', card)
       return
@@ -197,6 +164,10 @@ onMounted(async () => {
     updateSEOForProfile()
   } catch (err) {
     console.error('Error loading profile:', err)
+    router.push({ 
+      name: 'card-validation', 
+      query: { error: 'Failed to load profile. Please try again.' } 
+    })
   }
 })
 
