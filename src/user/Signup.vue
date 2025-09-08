@@ -62,7 +62,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { api, userApi } from '../config/api'
 
 const activation = ref('')
 const email = ref('')
@@ -96,12 +96,33 @@ async function onSubmit() {
   loading.value = true
   try {
     const guessedName = email.value?.split('@')[0] || 'New User'
-    const user = await api.post('/card-users/register', { name: guessedName, email: email.value, password: password.value })
-    await api.post('/cards/activate', { activation_code: activation.value, user_id: user.id })
-    localStorage.setItem('gtm_user', JSON.stringify(user))
+    
+    // Step 1: Register the user
+    const user = await userApi.register(guessedName, email.value, password.value)
+    
+    // Step 2: Login the user to get authentication token
+    const loginResponse = await userApi.login(email.value, password.value)
+    
+    // Step 3: Store the token and user data
+    localStorage.setItem('gtm_token', loginResponse.token)
+    localStorage.setItem('gtm_user', JSON.stringify(loginResponse.user))
+    
+    // Step 4: Activate the card (now authenticated)
+    await userApi.activateCard(activation.value)
+    
     router.push({ name: 'profile-setup' })
   } catch (e) {
-    errorMsg.value = String(e.message || e)
+    // Show more detailed error information
+    if (e.response?.data?.errors) {
+      const errors = e.response.data.errors
+      const errorMessages = []
+      for (const field in errors) {
+        errorMessages.push(`${field}: ${errors[field].join(', ')}`)
+      }
+      errorMsg.value = errorMessages.join('; ')
+    } else {
+      errorMsg.value = String(e.message || e)
+    }
   } finally {
     loading.value = false
   }

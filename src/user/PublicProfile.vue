@@ -66,11 +66,12 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api } from '../config/api'
 import { updatePageTitle, updateMetaDescription, updateOpenGraphTags, generateStructuredData } from '../utils/seo.js'
 
 const route = useRoute()
+const router = useRouter()
 
 const profile = ref({ photo: '', name: '', company: '', bio: '' })
 const phones = ref([])
@@ -84,23 +85,31 @@ const mainWeb = computed(() => others.value.find(o => o.isMain) || others.value[
 const mainSocial = computed(() => socials.value.find(s => s.isMain) || socials.value[0] || null)
 
 onMounted(async () => {
-  const code = route.params.code || route.query.unique || route.query.code
-  if (!code) return
+  const hash = route.params.code
+  
+  if (!hash) {
+    console.log('No hash provided, redirecting to card validation')
+    router.push({ 
+      name: 'card-validation', 
+      query: { error: 'Please scan your NFC card to access this profile.' } 
+    })
+    return
+  }
 
   try {
-    // First, try to find the card by activation code
-    let card
-    try {
-      card = await api.get(`/cards/activation/${encodeURIComponent(code)}`)
-    } catch (err) {
-      // If activation code not found, try to find by unique code (fallback)
-      try {
-        card = await api.get(`/cards/${encodeURIComponent(code)}`)
-      } catch (err2) {
-        console.error('Card not found by activation code or unique code:', code)
-        return
-      }
+    // Validate hash and get card data
+    const response = await api.get(`/cards/validate-hash/${hash}`)
+    
+    if (!response.valid) {
+      console.error('Invalid hash:', response.message)
+      router.push({ 
+        name: 'card-validation', 
+        query: { error: 'Invalid card. Please scan a valid NFC card.' } 
+      })
+      return
     }
+
+    const card = response.card
 
     // Check if card is expired
     if (card.expiry_date) {
@@ -117,7 +126,7 @@ onMounted(async () => {
       }
     }
 
-    const userId = card?.card_user_id
+    const userId = card.card_user_id
     if (!userId) {
       console.error('Card found but no user linked:', card)
       return
@@ -155,6 +164,10 @@ onMounted(async () => {
     updateSEOForProfile()
   } catch (err) {
     console.error('Error loading profile:', err)
+    router.push({ 
+      name: 'card-validation', 
+      query: { error: 'Failed to load profile. Please try again.' } 
+    })
   }
 })
 

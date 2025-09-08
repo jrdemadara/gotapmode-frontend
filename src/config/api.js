@@ -1,7 +1,7 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-//const DEFAULT_BASE = 'https://192.168.50.56:8443/api';
+// const DEFAULT_BASE = 'http://127.0.0.1:8000/api';
 const DEFAULT_BASE = 'https://api.gotapmode.info/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
@@ -47,30 +47,33 @@ export const api = {
 
 export const adminApi = {
   login: (email, password) => api.post('/admin/login', { email, password }),
+  logout: () => api.post('/admin/logout'),
   me: () => api.get('/admin/me'),
   stats: () => api.get('/admin/stats'),
   getUsers: () => api.get('/admin/users'),
   getUser: (id) => api.get(`/admin/users/${id}`),
   getSoftDeletedUsers: () => api.get('/admin/users/soft-deleted'),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
+  updateUserPersonalData: (id, data) => api.post(`/admin/users/${id}/personal-data`, data),
+  updateUserProfile: (id, data) => api.post(`/admin/users/${id}/profile`, data),
   softDeleteUser: (id) => api.delete(`/admin/users/${id}`),
   restoreUser: (id) => api.post(`/admin/users/${id}/restore`),
 
   // Contact management functions
-  addUserPhone: (userId, data) => api.post('/contacts/phones', { user_id: userId, ...data }),
-  addUserEmail: (userId, data) => api.post('/contacts/emails', { user_id: userId, ...data }),
-  addUserSocial: (userId, data) => api.post('/contacts/socials', { user_id: userId, ...data }),
-  addUserOther: (userId, data) => api.post('/contacts/others', { user_id: userId, ...data }),
+  addUserPhone: (userId, data) => api.post(`/admin/users/${userId}/phones`, data),
+  addUserEmail: (userId, data) => api.post(`/admin/users/${userId}/emails`, data),
+  addUserSocial: (userId, data) => api.post(`/admin/users/${userId}/socials`, data),
+  addUserOther: (userId, data) => api.post(`/admin/users/${userId}/others`, data),
 
-  removeUserPhone: (userId, phoneId) => api.delete(`/contacts/phones/${phoneId}`),
-  removeUserEmail: (userId, emailId) => api.delete(`/contacts/emails/${emailId}`),
-  removeUserSocial: (userId, socialId) => api.delete(`/contacts/socials/${socialId}`),
-  removeUserOther: (userId, otherId) => api.delete(`/contacts/others/${otherId}`),
+  removeUserPhone: (userId, phoneId) => api.delete(`/admin/users/${userId}/phones/${phoneId}`),
+  removeUserEmail: (userId, emailId) => api.delete(`/admin/users/${userId}/emails/${emailId}`),
+  removeUserSocial: (userId, socialId) => api.delete(`/admin/users/${userId}/socials/${socialId}`),
+  removeUserOther: (userId, otherId) => api.delete(`/admin/users/${userId}/others/${otherId}`),
 
-  setMainPhone: (userId, phoneId) => api.post(`/contacts/phones/${phoneId}/set-main`),
-  setMainEmail: (userId, emailId) => api.post(`/contacts/emails/${emailId}/set-main`),
-  setMainSocial: (userId, socialId) => api.post(`/contacts/socials/${socialId}/set-main`),
-  setMainOther: (userId, otherId) => api.post(`/contacts/others/${otherId}/set-main`),
+  setMainPhone: (userId, phoneId) => api.post(`/admin/users/${userId}/phones/${phoneId}/set-main`),
+  setMainEmail: (userId, emailId) => api.post(`/admin/users/${userId}/emails/${emailId}/set-main`),
+  setMainSocial: (userId, socialId) => api.post(`/admin/users/${userId}/socials/${socialId}/set-main`),
+  setMainOther: (userId, otherId) => api.post(`/admin/users/${userId}/others/${otherId}/set-main`),
 
   getUserPhones: (userId) => api.get(`/contacts/${userId}`).then(r => r.phones || []),
   getUserEmails: (userId) => api.get(`/contacts/${userId}`).then(r => r.emails || []),
@@ -78,12 +81,44 @@ export const adminApi = {
   getUserOthers: (userId) => api.get(`/contacts/${userId}`).then(r => r.others || []),
 
   // NFC Card management
-  createNfcCard: (data) => api.post('/admin/nfc-cards', data),
+  createNfcCard: (data) => api.post('/admin/cards', data),
+  getCards: () => api.get('/admin/cards'),
+  deleteCard: (id) => api.delete(`/admin/cards/${id}`),
+  getSoftDeletedCards: () => api.get('/admin/cards/soft-deleted'),
+  restoreCard: (id) => api.post(`/admin/cards/${id}/restore`),
+  forceDeleteCard: (id) => api.delete(`/admin/cards/${id}/force`),
 
   // Administrator management
   getAdministrators: () => api.get('/admin/administrators'),
-  createAdministrator: (data) => api.post('/admin/users', data),
+  createAdministrator: (data) => api.post('/admin/administrators', data),
   updateAdministrator: (id, data) => api.put(`/admin/administrators/${id}`, data),
+  softDeleteAdministrator: (id) => api.delete(`/admin/administrators/${id}`),
+  getSoftDeletedAdministrators: () => api.get('/admin/administrators/soft-deleted'),
+  restoreAdministrator: (id) => api.post(`/admin/administrators/${id}/restore`),
+};
+
+export const userApi = {
+  login: (email, password) => api.post('/card-users/login', { email, password }),
+  logout: () => api.post('/card-users/logout'),
+  me: () => api.get('/card-users/me'),
+  register: (name, email, password) => api.post('/card-users/register', { name, email, password }),
+  getPersonalData: () => api.get('/card-users/personal-data'),
+  updatePersonalData: (data) => api.post('/card-users/personal-data', data),
+  getProfile: () => api.get('/card-users/profile'),
+  updateProfile: (data) => api.post('/card-users/profile', data),
+  activateCard: (activationCode) => api.post('/cards/activate', { activation_code: activationCode }),
+  
+  // Contact management
+  getContacts: () => api.get('/contacts/'),
+  addPhone: (data) => api.post('/contacts/phones', data),
+  addEmail: (data) => api.post('/contacts/emails', data),
+  addSocial: (data) => api.post('/contacts/socials', data),
+  addOther: (data) => api.post('/contacts/others', data),
+  deleteContact: (table, id) => api.delete(`/contacts/${table}/${id}`),
+  setMainPhone: (id) => api.post(`/contacts/phones/${id}/set-main`),
+  setMainEmail: (id) => api.post(`/contacts/emails/${id}/set-main`),
+  setMainSocial: (id) => api.post(`/contacts/socials/${id}/set-main`),
+  setMainOther: (id) => api.post(`/contacts/others/${id}/set-main`),
 };
 
 

@@ -27,7 +27,7 @@
         <h2 class="text-xl font-semibold text-red-900 mb-2">Card Validation Failed</h2>
         <p class="text-red-700 mb-6">{{ error }}</p>
         <button
-          @click="retryValidation"
+          @click="goToLogin"
           class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
         >
           Try Again
@@ -101,15 +101,8 @@ const startNfcScan = async () => {
     await ndef.scan()
 
     ndef.addEventListener('reading', async ({ message, serialNumber }) => {
-      const uid = serialNumber || 'Unknown UID'
-      
-      if (uid && uid !== 'Unknown UID') {
-        // Card detected, now read the URL from the card
-        await readCardData(message, uid)
-      } else {
-        error.value = 'No valid card detected. Please try again.'
-        loading.value = false
-      }
+      // Card detected, now read the URL from the card
+      await readCardData(message)
     })
 
     ndef.addEventListener('readingerror', () => {
@@ -136,8 +129,8 @@ const startNfcScan = async () => {
   }
 }
 
-// New function to read card data (URL and UID)
-const readCardData = async (message, uid) => {
+// Function to read card data (URL only)
+const readCardData = async (message) => {
   try {
     let activationCode = null
     
@@ -168,8 +161,8 @@ const readCardData = async (message, uid) => {
       return
     }
 
-    // Now validate using both UID and activation code
-    await validateCardWithBoth(uid, activationCode)
+    // Generate hash and redirect
+    await generateHashAndRedirect(activationCode)
 
   } catch (err) {
     error.value = 'Failed to read card data: ' + (err.message || 'Unknown error')
@@ -177,40 +170,25 @@ const readCardData = async (message, uid) => {
   }
 }
 
-// Enhanced validation function that uses both UID and activation code
-const validateCardWithBoth = async (uid, activationCode) => {
+// Generate hash and redirect to profile
+const generateHashAndRedirect = async (activationCode) => {
   try {
     loading.value = true
     error.value = null
     success.value = null
 
-    console.log('Validating card with UID:', uid, 'and activation code:', activationCode)
+    console.log('Generating hash for activation code:', activationCode)
 
-    // Use the new validation endpoint
-    const response = await api.post('/cards/validate', {
-      unique_code: uid,
+    // Generate hash from activation code
+    const response = await api.post('/cards/generate-hash', {
       activation_code: activationCode
     })
 
-    cardData.value = response
-
-    // Check activation status
-    if (!cardData.value.is_activated || cardData.value.is_activated === 0) {
-      // Card exists but not activated - redirect to activate.vue
-      router.push({ 
-        name: 'activate', 
-        query: { 
-          unique_code: uid,
-          activation_code: cardData.value.activation_code 
-        } 
-      })
-    } else {
-      // Card exists, is activated, and not expired - redirect to public profile
-      router.push({ 
-        name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
-      })
-    }
+    // Redirect to public profile with hash
+    router.push({ 
+      name: 'public-profile', 
+      params: { code: response.hash }
+    })
 
   } catch (err) {
     if (err.response?.status === 404) {
@@ -249,11 +227,8 @@ const validateCard = async (uid) => {
         } 
       })
     } else {
-      // Card exists and is activated - redirect to public profile
-      router.push({ 
-        name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
-      })
+      // Card exists and is activated - generate hash and redirect
+      await generateHashAndRedirect(cardData.value.activation_code)
     }
 
   } catch (err) {
@@ -292,11 +267,8 @@ const validateActivationCode = async (activationCode) => {
         } 
       })
     } else {
-      // Card is activated - redirect to public profile
-      router.push({ 
-        name: 'public-profile', 
-        params: { code: cardData.value.activation_code } 
-      })
+      // Card is activated - generate hash and redirect
+      await generateHashAndRedirect(cardData.value.activation_code)
     }
 
   } catch (err) {
@@ -315,6 +287,11 @@ const retryValidation = () => {
   error.value = null
   loading.value = true
   startNfcScan()
+}
+
+// Go to login page
+const goToLogin = () => {
+  router.push({ name: 'login' })
 }
 
 // Initialize on mount

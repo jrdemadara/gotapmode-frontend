@@ -208,19 +208,21 @@
         <div class="text-left">
           <label class="block text-xs font-medium mb-1">Platform</label>
           <div class="relative" ref="socialPlatformContainer">
-            <button type="button" @click="showSocialTypePicker = !showSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
+            <button type="button" @click="toggleSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
               <span class="flex items-center gap-2">
                 <img :src="currentSocialPlatform.icon" class="w-5 h-5" />
                 <span>{{ currentSocialPlatform.label }}</span>
               </span>
               <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.063l3.71-3.832a.75.75 0 111.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
             </button>
-            <div v-if="showSocialTypePicker" class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 sm:max-h-48 max-h-40">
-              <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)" class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
-                <img :src="p.icon" class="w-5 h-5 flex-shrink-0" />
-                <span class="text-sm">{{ p.label }}</span>
-              </button>
-            </div>
+            <teleport to="body">
+              <div v-if="showSocialTypePicker" class="fixed z-[9999] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="background-color: white !important; opacity: 1 !important; backdrop-filter: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;" :style="dropdownStyle">
+                <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)" class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
+                  <img :src="p.icon" class="w-5 h-5 flex-shrink-0" />
+                  <span class="text-sm">{{ p.label }}</span>
+                </button>
+              </div>
+            </teleport>
           </div>
         </div>
       </div>
@@ -286,9 +288,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { api, userApi } from '../config/api'
 import Modal from '../components/Modal.vue'
 
 const profile = ref({
@@ -319,12 +321,13 @@ const newEmail = ref('')
 const newEmailType = ref('personal')
 const showAddSocial = ref(false)
 const newSocial = ref('')
-const newSocialType = ref('link')
+const newSocialType = ref('facebook')
 const showAddOther = ref(false)
 const newOther = ref('')
 
 // Refs for click-outside handling
 const socialPlatformContainer = ref(null)
+const dropdownStyle = ref({})
 
 // Social platforms list with icons
 const socialPlatforms = [
@@ -350,12 +353,63 @@ const socialPlatforms = [
 
 ]
 const showSocialTypePicker = ref(false)
-const currentSocialPlatform = ref(socialPlatforms.find(p => p.key === newSocialType.value) || socialPlatforms[socialPlatforms.length - 1])
+const currentSocialPlatform = ref(socialPlatforms.find(p => p.key === newSocialType.value) || socialPlatforms[0])
 function selectSocialPlatform(key) {
   newSocialType.value = key
   currentSocialPlatform.value = socialPlatforms.find(p => p.key === key) || socialPlatforms[0]
   showSocialTypePicker.value = false
+  
+  // Auto-fill the textbox with platform-specific URL template
+  const platformTemplates = {
+    facebook: 'https://facebook.com/',
+    instagram: 'https://instagram.com/',
+    twitter: 'https://twitter.com/',
+    linkedin: 'https://linkedin.com/in/',
+    youtube: 'https://youtube.com/@',
+    tiktok: 'https://tiktok.com/@',
+    snapchat: 'https://snapchat.com/add/',
+    whatsapp: 'https://wa.me/',
+    telegram: 'https://t.me/',
+    discord: 'https://discord.gg/',
+    github: 'https://github.com/',
+    behance: 'https://behance.net/',
+    dribbble: 'https://dribbble.com/',
+    pinterest: 'https://pinterest.com/',
+    reddit: 'https://reddit.com/user/',
+    twitch: 'https://twitch.tv/',
+    spotify: 'https://open.spotify.com/user/',
+    soundcloud: 'https://soundcloud.com/',
+    vimeo: 'https://vimeo.com/',
+    medium: 'https://medium.com/@',
+    patreon: 'https://patreon.com/',
+    onlyfans: 'https://onlyfans.com/',
+    link: 'https://'
+  }
+  
+  newSocial.value = platformTemplates[key] || 'https://'
 }
+
+function updateDropdownPosition() {
+  if (socialPlatformContainer.value && showSocialTypePicker.value) {
+    const rect = socialPlatformContainer.value.getBoundingClientRect()
+    dropdownStyle.value = {
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`
+    }
+  }
+}
+
+function toggleSocialTypePicker() {
+  showSocialTypePicker.value = !showSocialTypePicker.value
+  if (showSocialTypePicker.value) {
+    // Use nextTick to ensure DOM is updated before calculating position
+    nextTick(() => {
+      updateDropdownPosition()
+    })
+  }
+}
+
 
 // Click outside handler for dropdowns
 function handleClickOutside(event) {
@@ -365,27 +419,284 @@ function handleClickOutside(event) {
 }
 function openAddPhone() { showAddPhone.value = true; newPhone.value = '' }
 function openAddEmail() { showAddEmail.value = true; newEmail.value = '' }
-function openAddSocial() { showAddSocial.value = true; newSocial.value = '' }
+function openAddSocial() { 
+  showAddSocial.value = true
+  // Initialize with Facebook as default
+  newSocialType.value = 'facebook'
+  currentSocialPlatform.value = socialPlatforms.find(p => p.key === 'facebook') || socialPlatforms[0]
+  newSocial.value = 'https://facebook.com/'
+}
 function openAddOther() { showAddOther.value = true; newOther.value = '' }
+
+// Platform-specific URL validation
+function validateSocialUrlForPlatform(url, platform) {
+  const lowerUrl = url.toLowerCase()
+  
+  switch (platform) {
+    case 'facebook':
+      return lowerUrl.includes('facebook.com/') || lowerUrl.includes('fb.com/')
+    case 'instagram':
+      return lowerUrl.includes('instagram.com/')
+    case 'twitter':
+      return lowerUrl.includes('twitter.com/') || lowerUrl.includes('x.com/')
+    case 'linkedin':
+      return lowerUrl.includes('linkedin.com/in/') || lowerUrl.includes('linkedin.com/company/')
+    case 'youtube':
+      return lowerUrl.includes('youtube.com/') || lowerUrl.includes('youtu.be/')
+    case 'tiktok':
+      return lowerUrl.includes('tiktok.com/@')
+    case 'snapchat':
+      return lowerUrl.includes('snapchat.com/add/')
+    case 'whatsapp':
+      return lowerUrl.includes('wa.me/') || lowerUrl.includes('whatsapp.com/')
+    case 'telegram':
+      return lowerUrl.includes('t.me/')
+    case 'discord':
+      return lowerUrl.includes('discord.gg/') || lowerUrl.includes('discord.com/')
+    case 'github':
+      return lowerUrl.includes('github.com/')
+    case 'behance':
+      return lowerUrl.includes('behance.net/')
+    case 'dribbble':
+      return lowerUrl.includes('dribbble.com/')
+    case 'pinterest':
+      return lowerUrl.includes('pinterest.com/')
+    case 'reddit':
+      return lowerUrl.includes('reddit.com/')
+    case 'twitch':
+      return lowerUrl.includes('twitch.tv/')
+    case 'spotify':
+      return lowerUrl.includes('open.spotify.com/')
+    case 'soundcloud':
+      return lowerUrl.includes('soundcloud.com/')
+    case 'vimeo':
+      return lowerUrl.includes('vimeo.com/')
+    case 'medium':
+      return lowerUrl.includes('medium.com/')
+    case 'patreon':
+      return lowerUrl.includes('patreon.com/')
+    case 'onlyfans':
+      return lowerUrl.includes('onlyfans.com/')
+    case 'link':
+      return true // Generic link, any valid URL is acceptable
+    default:
+      return true
+  }
+}
+
+// Check if URL contains only template content (no actual username/profile)
+function hasOnlyTemplateContent(url, platform) {
+  const lowerUrl = url.toLowerCase()
+  
+  // Define template patterns for each platform (full URLs)
+  const templatePatterns = {
+    facebook: ['https://facebook.com/', 'https://fb.com/', 'http://facebook.com/', 'http://fb.com/'],
+    instagram: ['https://instagram.com/', 'http://instagram.com/'],
+    twitter: ['https://twitter.com/', 'https://x.com/', 'http://twitter.com/', 'http://x.com/'],
+    linkedin: ['https://linkedin.com/in/', 'https://linkedin.com/company/', 'http://linkedin.com/in/', 'http://linkedin.com/company/'],
+    youtube: ['https://youtube.com/', 'https://youtu.be/', 'http://youtube.com/', 'http://youtu.be/'],
+    tiktok: ['https://tiktok.com/@', 'http://tiktok.com/@'],
+    snapchat: ['https://snapchat.com/add/', 'http://snapchat.com/add/'],
+    whatsapp: ['https://wa.me/', 'https://whatsapp.com/', 'http://wa.me/', 'http://whatsapp.com/'],
+    telegram: ['https://t.me/', 'http://t.me/'],
+    discord: ['https://discord.gg/', 'https://discord.com/', 'http://discord.gg/', 'http://discord.com/'],
+    github: ['https://github.com/', 'http://github.com/'],
+    behance: ['https://behance.net/', 'http://behance.net/'],
+    dribbble: ['https://dribbble.com/', 'http://dribbble.com/'],
+    pinterest: ['https://pinterest.com/', 'http://pinterest.com/'],
+    reddit: ['https://reddit.com/', 'http://reddit.com/'],
+    twitch: ['https://twitch.tv/', 'http://twitch.tv/'],
+    spotify: ['https://open.spotify.com/', 'http://open.spotify.com/'],
+    soundcloud: ['https://soundcloud.com/', 'http://soundcloud.com/'],
+    vimeo: ['https://vimeo.com/', 'http://vimeo.com/'],
+    medium: ['https://medium.com/', 'http://medium.com/'],
+    patreon: ['https://patreon.com/', 'http://patreon.com/'],
+    onlyfans: ['https://onlyfans.com/', 'http://onlyfans.com/'],
+    link: ['https://', 'http://']
+  }
+  
+  const patterns = templatePatterns[platform] || ['https://', 'http://']
+  console.log('Platform:', platform, 'Patterns:', patterns, 'URL:', lowerUrl)
+  
+  // Check if URL exactly matches any of the template patterns
+  const result = patterns.some(pattern => {
+    const matches = lowerUrl === pattern
+    console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
+    return matches
+  })
+  
+  console.log('Final result:', result)
+  return result
+}
 async function saveAddPhone() {
-  if (!newPhone.value || !userId.value) return
-  await addPhone(newPhone.value, newPhoneType.value)
-  showAddPhone.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const phone = newPhone.value?.trim()
+  if (!phone) {
+    alert('Please enter a phone number')
+    return
+  }
+  
+  // Remove all non-digit characters for validation
+  const cleanPhone = phone.replace(/\D/g, '')
+  if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+    alert('Please enter a valid phone number (7-15 digits)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingPhone = phones.value.find(p => p.number.replace(/\D/g, '') === cleanPhone)
+  if (existingPhone) {
+    alert('This phone number already exists')
+    return
+  }
+  
+  try {
+    await addPhone(phone, newPhoneType.value)
+    showAddPhone.value = false
+    newPhone.value = ''
+  } catch (error) {
+    alert('Failed to add phone number. Please try again.')
+    console.error('Phone save error:', error)
+  }
 }
 async function saveAddEmail() {
-  if (!newEmail.value || !userId.value) return
-  await addEmail(newEmail.value)
-  showAddEmail.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const email = newEmail.value?.trim()
+  if (!email) {
+    alert('Please enter an email address')
+    return
+  }
+  
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address')
+    return
+  }
+  
+  // Check for duplicates (case insensitive)
+  const existingEmail = emails.value.find(e => e.value.toLowerCase() === email.toLowerCase())
+  if (existingEmail) {
+    alert('This email address already exists')
+    return
+  }
+  
+  try {
+    await addEmail(email)
+    showAddEmail.value = false
+    newEmail.value = ''
+  } catch (error) {
+    alert('Failed to add email address. Please try again.')
+    console.error('Email save error:', error)
+  }
 }
 async function saveAddSocial() {
-  if (!newSocial.value || !userId.value) return
-  await addSocial(newSocial.value)
-  showAddSocial.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const socialUrl = newSocial.value?.trim()
+  if (!socialUrl) {
+    alert('Please enter a social media URL')
+    return
+  }
+  
+  // URL validation
+  try {
+    new URL(socialUrl)
+  } catch (error) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check if URL starts with http/https
+  if (!socialUrl.startsWith('http://') && !socialUrl.startsWith('https://')) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingSocial = socials.value.find(s => s.value.toLowerCase() === socialUrl.toLowerCase())
+  if (existingSocial) {
+    alert('This social media URL already exists')
+    return
+  }
+  
+  // Platform-specific validation
+  const platform = newSocialType.value
+  const isValidForPlatform = validateSocialUrlForPlatform(socialUrl, platform)
+  if (!isValidForPlatform) {
+    alert(`Please enter a valid ${platform} URL`)
+    return
+  }
+  
+  // Check if URL has actual content (not just template)
+  console.log('Checking template content for:', socialUrl, 'platform:', platform)
+  const isTemplateOnly = hasOnlyTemplateContent(socialUrl, platform)
+  console.log('Is template only:', isTemplateOnly)
+  
+  if (isTemplateOnly) {
+    alert(`Please enter a complete ${platform} URL with your username or profile`)
+    return
+  }
+  
+  try {
+    await addSocial(socialUrl)
+    showAddSocial.value = false
+    newSocial.value = ''
+  } catch (error) {
+    alert('Failed to add social media link. Please try again.')
+    console.error('Social save error:', error)
+  }
 }
 async function saveAddOther() {
-  if (!newOther.value || !userId.value) return
-  await addOther(newOther.value)
-  showAddOther.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const otherUrl = newOther.value?.trim()
+  if (!otherUrl) {
+    alert('Please enter a URL')
+    return
+  }
+  
+  // URL validation
+  try {
+    new URL(otherUrl)
+  } catch (error) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check if URL starts with http/https
+  if (!otherUrl.startsWith('http://') && !otherUrl.startsWith('https://')) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingOther = others.value.find(o => o.value.toLowerCase() === otherUrl.toLowerCase())
+  if (existingOther) {
+    alert('This URL already exists')
+    return
+  }
+  
+  // Check if URL has actual content (not just template)
+  if (hasOnlyTemplateContent(otherUrl, 'link')) {
+    alert('Please enter a complete URL with actual content')
+    return
+  }
+  
+  try {
+    await addOther(otherUrl)
+    showAddOther.value = false
+    newOther.value = ''
+  } catch (error) {
+    alert('Failed to add link. Please try again.')
+    console.error('Other save error:', error)
+  }
 }
 
 onMounted(async () => {
@@ -396,17 +707,17 @@ onMounted(async () => {
       loadError.value = 'Not logged in.'
       return
     }
-    const data = await api.get(`/contacts/${userId.value}`)
-    phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
-    emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
-    socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main }))
-    others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main }))
+    const data = await userApi.getContacts()
+    phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+    emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+    socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+    others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
     try {
-      const pd = await api.get(`/card-users/personal-data/${userId.value}`)
+      const pd = await userApi.getPersonalData()
       if (pd?.full_name) profile.value.name = pd.full_name
     } catch (_) {}
     try {
-      const pr = await api.get(`/card-users/profile/${userId.value}`)
+      const pr = await userApi.getProfile()
              if (pr?.profile_pic) profile.value.photo = pr.profile_pic
        if (pr?.company) profile.value.company = pr.company
        if (pr?.bio) profile.value.bio = pr.bio
@@ -428,8 +739,8 @@ onUnmounted(() => {
 })
 
 async function addPhone(v, t) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/phones', { user_id: userId.value, phonenumber: v, type: t || null }); 
+  if (!v) return; 
+  const row = await userApi.addPhone({ phonenumber: v, type: t || null }); 
   const newPhone = { id: row.id, number: row.phonenumber, type: row.type, isMain: !!row.is_main };
   phones.value.push(newPhone);
   
@@ -441,7 +752,7 @@ async function addPhone(v, t) {
 async function onToggleMain(p) { 
   if (!p?.id) return; 
   try { 
-    const res = await api.post(`/contacts/phones/${p.id}/set-main`); 
+    const res = await userApi.setMainPhone(p.id); 
     // Update only the isMain status without reordering
     phones.value.forEach(phone => {
       phone.isMain = phone.id === p.id;
@@ -451,15 +762,15 @@ async function onToggleMain(p) {
 async function deletePhone(phone) {
   if (!phone?.id) return;
   try {
-    await api.delete(`/contacts/phones/${phone.id}`);
+    await userApi.deleteContact('phones', phone.id);
     phones.value = phones.value.filter(p => p.id !== phone.id);
   } catch (error) {
     console.error("Error deleting phone:", error);
   }
 }
 async function addEmail(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/emails', { user_id: userId.value, email: v }); 
+  if (!v) return; 
+  const row = await userApi.addEmail({ email: v }); 
   const newEmail = { id: row.id, value: row.email, isMain: !!row.is_main };
   emails.value.push(newEmail);
   
@@ -469,8 +780,8 @@ async function addEmail(v) {
   }
 }
 async function addSocial(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/socials', { user_id: userId.value, social: v, type: newSocialType.value || 'link' }); 
+  if (!v) return; 
+  const row = await userApi.addSocial({ social: v, type: newSocialType.value || 'link' }); 
   const newSocial = { id: row.id, platform: row.type || 'link', value: row.social, isMain: !!row.is_main };
   socials.value.push(newSocial);
   
@@ -480,8 +791,8 @@ async function addSocial(v) {
   }
 }
 async function addOther(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/others', { user_id: userId.value, others: v }); 
+  if (!v) return; 
+  const row = await userApi.addOther({ others: v }); 
   const newOther = { id: row.id, value: row.others, isMain: !!row.is_main };
   others.value.push(newOther);
   
@@ -493,7 +804,7 @@ async function addOther(v) {
 async function onToggleMainEmail(e) { 
   if (!e?.id) return; 
   try { 
-    const res = await api.post(`/contacts/emails/${e.id}/set-main`); 
+    const res = await userApi.setMainEmail(e.id); 
     // Update only the isMain status without reordering
     emails.value.forEach(email => {
       email.isMain = email.id === e.id;
@@ -503,7 +814,7 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) { 
   if (!s?.id) return; 
   try { 
-    const res = await api.post(`/contacts/socials/${s.id}/set-main`); 
+    const res = await userApi.setMainSocial(s.id); 
     // Update only the isMain status without reordering
     socials.value.forEach(social => {
       social.isMain = social.id === s.id;
@@ -513,7 +824,7 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) { 
   if (!o?.id) return; 
   try { 
-    const res = await api.post(`/contacts/others/${o.id}/set-main`); 
+    const res = await userApi.setMainOther(o.id); 
     // Update only the isMain status without reordering
     others.value.forEach(other => {
       other.isMain = other.id === o.id;
@@ -523,7 +834,7 @@ async function onToggleMainOther(o) {
 async function deleteEmail(email) {
   if (!email?.id) return;
   try {
-    await api.delete(`/contacts/emails/${email.id}`);
+    await userApi.deleteContact('emails', email.id);
     emails.value = emails.value.filter(e => e.id !== email.id);
   } catch (error) {
     console.error("Error deleting email:", error);
@@ -532,7 +843,7 @@ async function deleteEmail(email) {
 async function deleteSocial(social) {
   if (!social?.id) return;
   try {
-    await api.delete(`/contacts/socials/${social.id}`);
+    await userApi.deleteContact('socials', social.id);
     socials.value = socials.value.filter(s => s.id !== social.id);
   } catch (error) {
     console.error("Error deleting social:", error);
@@ -541,7 +852,7 @@ async function deleteSocial(social) {
 async function deleteOther(other) {
   if (!other?.id) return;
   try {
-    await api.delete(`/contacts/others/${other.id}`);
+    await userApi.deleteContact('others', other.id);
     others.value = others.value.filter(o => o.id !== other.id);
   } catch (error) {
     console.error("Error deleting other:", error);
@@ -553,7 +864,12 @@ function goEditProfile() {
   try { router.push({ name: 'edit-profile' }) } catch {}
 }
 
-function doLogout() {
+async function doLogout() {
+  try {
+    await userApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+  }
   localStorage.removeItem('gtm_token')
   localStorage.removeItem('gtm_user')
   window.location.replace('/')
