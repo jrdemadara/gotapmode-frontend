@@ -135,6 +135,8 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div class="relative w-full sm:w-80 lg:w-96">
                 <input
+                  id="nfc-search"
+                  name="nfc-search"
                   v-model="searchQuery"
                   type="text"
                   placeholder="Search by card ID, user name, or email..."
@@ -398,6 +400,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Show:</span>
                 <select
+                  id="nfc-items-per-page"
+                  name="nfc-items-per-page"
                   v-model="itemsPerPage"
                   class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -424,6 +428,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Go to:</span>
                 <input
+                  id="nfc-page-jump"
+                  name="nfc-page-jump"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -487,6 +493,8 @@
               <!-- Left: Page Size -->
               <div class="flex items-center gap-2">
                 <select
+                  id="nfc-items-per-page-mobile"
+                  name="nfc-items-per-page-mobile"
                   v-model="itemsPerPage"
                   class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -532,6 +540,8 @@
               <!-- Right: Page Jump -->
               <div class="flex items-center gap-1">
                 <input
+                  id="nfc-page-jump-mobile"
+                  name="nfc-page-jump-mobile"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -853,6 +863,8 @@
               <div class="flex items-center gap-4">
                 <div class="relative w-80">
                   <input
+                    id="nfc-restore-search"
+                    name="nfc-restore-search"
                     v-model="restoreSearchQuery"
                     type="text"
                     placeholder="Search deleted cards..."

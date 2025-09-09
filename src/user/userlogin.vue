@@ -17,7 +17,7 @@
               <path d="M3.75 4h16.5A1.75 1.75 0 0 1 22 5.75v12.5A1.75 1.75 0 0 1 20.25 20H3.75A1.75 1.75 0 0 1 2 18.25V5.75A1.75 1.75 0 0 1 3.75 4Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
               <path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <input id="email" v-model.trim="email" type="email" autocomplete="email" placeholder="you@example.com" class="block w-full h-11 rounded-lg border border-gray-300 bg-white pl-9 pr-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+            <input id="email" name="email" v-model.trim="email" type="email" autocomplete="email" placeholder="you@example.com" class="block w-full h-11 rounded-lg border border-gray-300 bg-white pl-9 pr-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
           </div>
         </div>
 
@@ -27,7 +27,7 @@
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-70 text-gray-500">
               <path d="M12 1.75a3.75 3.75 0 00-3.75 3.75V8H6.5A2.5 2.5 0 004 10.5v7A2.5 2.5 0 006.5 20h11a2.5 2.5 0 002.5-2.5v-7A2.5 2.5 0 0017.5 8H15.75V5.5A3.75 3.75 0 0012 1.75zm-2.25 6.25V5.5a2.25 2.25 0 114.5 0V8h-4.5z"/>
             </svg>
-            <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••" class="block w-full h-11 rounded-lg border border-gray-300 bg-white pl-9 pr-12 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+            <input id="password" name="password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••" class="block w-full h-11 rounded-lg border border-gray-300 bg-white pl-9 pr-12 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
             <button type="button" @click="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 opacity-70 hover:opacity-100 transition-opacity">
               <svg v-if="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5 text-gray-500">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>

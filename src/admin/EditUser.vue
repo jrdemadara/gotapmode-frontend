@@ -100,8 +100,10 @@
             <!-- Personal Data Section -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                <label for="edit-first-name" class="block text-sm font-medium text-gray-700">First Name</label>
                 <input
+                  id="edit-first-name"
+                  name="edit-first-name"
                   v-model="formData.personal_data.first_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -109,8 +111,10 @@
                 />
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                <label for="edit-middle-name" class="block text-sm font-medium text-gray-700">Middle Name</label>
                 <input
+                  id="edit-middle-name"
+                  name="edit-middle-name"
                   v-model="formData.personal_data.middle_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -118,8 +122,10 @@
                 />
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                <label for="edit-last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
                 <input
+                  id="edit-last-name"
+                  name="edit-last-name"
                   v-model="formData.personal_data.last_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -161,8 +167,8 @@
           <div class="p-6">
             <!-- Profile Picture Upload -->
             <div class="flex items-center justify-center mb-6">
-              <label class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer overflow-hidden hover:border-emerald-400 hover:shadow-lg transition-all duration-300 group">
-                <input type="file" accept="image/*" class="hidden" @change="onProfilePicFile" />
+              <label for="profile-pic-file" class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer overflow-hidden hover:border-emerald-400 hover:shadow-lg transition-all duration-300 group">
+                <input id="profile-pic-file" name="profile-pic-file" type="file" accept="image/*" class="hidden" @change="onProfilePicFile" />
                 <img v-if="profilePicPreview" :src="profilePicPreview" class="w-24 h-24 object-cover" alt="Company Profile" />
                 <div v-else class="text-center p-2">
                   <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,8 +182,10 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                <label for="edit-company" class="block text-sm font-medium text-gray-700">Company Name</label>
                 <input
+                  id="edit-company"
+                  name="edit-company"
                   v-model="formData.profile.company"
                   type="text"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -185,8 +193,10 @@
                 />
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Position</label>
+                <label for="edit-position" class="block text-sm font-medium text-gray-700">Position</label>
                 <input
+                  id="edit-position"
+                  name="edit-position"
                   v-model="formData.profile.position"
                   type="text"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -194,8 +204,10 @@
                 />
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Phone</label>
+                <label for="edit-companynumber" class="block text-sm font-medium text-gray-700">Company Phone</label>
                 <input
+                  id="edit-companynumber"
+                  name="edit-companynumber"
                   v-model="formData.profile.companynumber"
                   type="tel"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -203,8 +215,10 @@
                 />
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Email</label>
+                <label for="edit-companyemail" class="block text-sm font-medium text-gray-700">Company Email</label>
                 <input
+                  id="edit-companyemail"
+                  name="edit-companyemail"
                   v-model="formData.profile.companyemail"
                   type="email"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -212,8 +226,10 @@
                 />
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Address</label>
+                <label for="edit-companyadress" class="block text-sm font-medium text-gray-700">Company Address</label>
                 <textarea
+                  id="edit-companyadress"
+                  name="edit-companyadress"
                   v-model="formData.profile.companyadress"
                   rows="4"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none placeholder-gray-400"
@@ -221,8 +237,10 @@
                 ></textarea>
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Bio</label>
+                <label for="edit-bio" class="block text-sm font-medium text-gray-700">Bio</label>
                 <textarea
+                  id="edit-bio"
+                  name="edit-bio"
                   v-model="formData.profile.bio"
                   rows="4"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none placeholder-gray-400"
@@ -443,8 +461,10 @@
         </div>
         <div class="p-6 space-y-4">
                   <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+            <label for="edit-new-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
                     <input
+              id="edit-new-phone"
+              name="edit-new-phone"
               v-model="newPhone"
               type="tel"
               placeholder="e.g. +1 234 567 8900"
@@ -452,8 +472,10 @@
                     />
                   </div>
                   <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            <label for="edit-new-phone-type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
             <select
+              id="edit-new-phone-type"
+              name="edit-new-phone-type"
               v-model="newPhoneType"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
@@ -482,8 +504,10 @@
         </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <label for="edit-new-email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                     <input
+              id="edit-new-email"
+              name="edit-new-email"
               v-model="newEmail"
               type="email"
               placeholder="name@company.com"
@@ -491,8 +515,10 @@
                     />
                   </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            <label for="edit-new-email-type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
             <select
+              id="edit-new-email-type"
+              name="edit-new-email-type"
               v-model="newEmailType"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
@@ -520,8 +546,10 @@
         </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">URL / Username</label>
+            <label for="edit-new-social" class="block text-sm font-medium text-gray-700 mb-2">URL / Username</label>
                       <input
+              id="edit-new-social"
+              name="edit-new-social"
               v-model="newSocial"
               type="url"
               placeholder="https://platform.com/username"
@@ -529,7 +557,7 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+            <label for="edit-new-social-platform" class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
             <div class="relative">
               <button
                 type="button"
@@ -578,8 +606,10 @@
               </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Link</label>
+            <label for="edit-new-other" class="block text-sm font-medium text-gray-700 mb-2">Link</label>
             <input
+              id="edit-new-other"
+              name="edit-new-other"
               v-model="newOther"
               type="url"
               placeholder="https://your-website.com"

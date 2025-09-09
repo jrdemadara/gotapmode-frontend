@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // const DEFAULT_BASE = 'http://127.0.0.1:8000/api';
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+ const DEFAULT_BASE = 'https://api.gotapmode.info/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
