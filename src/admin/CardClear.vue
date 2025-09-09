@@ -123,14 +123,14 @@
           
           <div class="space-y-4">
             <div>
-              <label for="card-clear-uid" class="block text-sm font-medium text-gray-700 mb-2">Card UID</label>
+              <label for="card-written-url" class="block text-sm font-medium text-gray-700 mb-2">Written URL</label>
               <input
-                id="card-clear-uid"
-                name="card-clear-uid"
-                v-model="cardData.unique_code"
+                id="card-written-url"
+                name="card-written-url"
+                v-model="cardData.written_url"
                 type="text"
                 readonly
-                placeholder="Scan a card to get UID..."
+                placeholder="Scan a card to view written URL..."
                 class="w-full px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
@@ -211,8 +211,8 @@
           <div class="mt-4 px-4 sm:px-6 py-4 bg-red-50/80 rounded-xl border border-red-200/50">
             <div class="text-sm text-red-800 space-y-3 text-left">
               <div class="bg-white p-3 rounded-lg border border-red-200 shadow-sm">
-                <span class="font-semibold text-red-800">Card UID:</span><br>
-                <span class="break-all text-red-600 font-mono text-xs">{{ cardData?.unique_code }}</span>
+                <span class="font-semibold text-red-800">Written URL:</span><br>
+                <span class="break-all text-red-600 font-mono text-xs">{{ cardData?.written_url || 'No URL found' }}</span>
               </div>
               <p class="text-red-700 font-medium">
                 <strong>Warning:</strong> This action will clear the URL and data written to the NFC card. This cannot be undone.
@@ -358,6 +358,7 @@ const sidebarCollapsed = ref(false)
 
 const cardData = ref({
   unique_code: '',
+  written_url: '',
   id: null
 })
 
@@ -379,6 +380,28 @@ const scanNfc = async () => {
     ndef.addEventListener('reading', async ({ message, serialNumber }) => {
       const uid = serialNumber || 'Unknown UID'
       cardData.value.unique_code = uid
+      
+      // Read the URL from the NFC card
+      let writtenUrl = 'No URL found'
+      if (message.records && message.records.length > 0) {
+        for (const record of message.records) {
+          if (record.recordType === 'url') {
+            const decoder = new TextDecoder()
+            writtenUrl = decoder.decode(record.data)
+            break
+          } else if (record.recordType === 'text') {
+            const decoder = new TextDecoder()
+            const textData = decoder.decode(record.data)
+            // Check if it's a URL (starts with http)
+            if (textData.startsWith('http')) {
+              writtenUrl = textData
+              break
+            }
+          }
+        }
+      }
+      
+      cardData.value.written_url = writtenUrl
       scanning.value = false
       
       // If serial is detected, proceed directly to clearing confirmation
@@ -428,23 +451,20 @@ const startClearing = async () => {
   error.value = null
   success.value = null
 
-  try {
-    // Clear the NFC card by writing empty data
-    const ndef = new NDEFReader()
-    
-    // Write empty records to clear the card
-    await ndef.write({
-      records: [
-        {
-          recordType: 'text',
-          data: ''
-        },
-        {
-          recordType: 'url',
-          data: ''
-        }
-      ]
-    })
+    try {
+      // Clear the NFC card by writing empty data
+      const ndef = new NDEFReader()
+      
+      // Write a single empty text record to clear the card
+      // Don't try to write empty URL records as they're invalid
+      await ndef.write({
+        records: [
+          {
+            recordType: 'text',
+            data: ''
+          }
+        ]
+      })
     
     success.value = 'NFC card cleared successfully! The card data has been erased.'
     
@@ -480,6 +500,7 @@ const closeClearModal = () => {
 const resetForm = () => {
   cardData.value = {
     unique_code: '',
+    written_url: '',
     id: null
   }
   error.value = null
