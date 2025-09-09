@@ -121,7 +121,9 @@ onMounted(async () => {
         companyemail.value = pr.companyemail || ''
         companyadress.value = pr.companyadress || ''
         if (pr.profile_pic) {
-          profilePicPreview.value = pr.profile_pic
+          // Add cache busting parameter to force image reload
+          const separator = pr.profile_pic.includes('?') ? '&' : '?'
+          profilePicPreview.value = `${pr.profile_pic}${separator}v=${Date.now()}`
         }
       }
     } catch (err) {
