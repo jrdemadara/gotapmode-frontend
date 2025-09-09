@@ -907,79 +907,27 @@ function formatPosition(position) {
 
 // Get smart display name for social media links
 function getSocialDisplayName(social) {
-  const url = social.value;
   const platform = social.platform;
   
-  // Extract username from common social media URLs
-  if (platform === 'facebook' && url.includes('facebook.com/')) {
-    const username = url.split('facebook.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'instagram' && url.includes('instagram.com/')) {
-    const username = url.split('instagram.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'linkedin' && url.includes('linkedin.com/in/')) {
-    const username = url.split('linkedin.com/in/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'twitter' && url.includes('twitter.com/')) {
-    const username = url.split('twitter.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'youtube' && url.includes('youtube.com/')) {
-    if (url.includes('/channel/')) {
-      return 'Channel';
-    } else if (url.includes('/user/') || url.includes('/c/')) {
-      const username = url.split('/').pop()?.split('?')[0];
-      return username || 'Profile';
-    }
-    return 'Video';
-  }
-  if (platform === 'tiktok' && url.includes('tiktok.com/')) {
-    const username = url.split('tiktok.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'discord' && url.includes('discord.gg/')) {
-    const invite = url.split('discord.gg/')[1]?.split('?')[0];
-    return invite || 'Server';
-  }
-  if (platform === 'telegram' && url.includes('t.me/')) {
-    const username = url.split('t.me/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Channel';
-  }
-  if (platform === 'skype' && url.includes('skype:')) {
-    const username = url.split('skype:')[1]?.split('?')[0];
-    return username || 'Contact';
-  }
-  if (platform === 'snapchat' && url.includes('snapchat.com/')) {
-    const username = url.split('snapchat.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'viber' && url.includes('viber.com/')) {
-    const username = url.split('viber.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Contact';
-  }
-  if (platform === 'whatsapp' && url.includes('wa.me/')) {
-    const phone = url.split('wa.me/')[1]?.split('?')[0];
-    return phone || 'Contact';
-  }
-  if (platform === 'reddit' && url.includes('reddit.com/')) {
-    if (url.includes('/r/')) {
-      const subreddit = url.split('/r/')[1]?.split('/')[0];
-      return subreddit ? `r/${subreddit}` : 'Community';
-    } else if (url.includes('/u/')) {
-      const username = url.split('/u/')[1]?.split('/')[0];
-      return username ? `u/${username}` : 'User';
-    }
-    return 'Profile';
-  }
+  // Return only the platform name with proper formatting
+  const platformNames = {
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    linkedin: 'LinkedIn',
+    twitter: 'X (Twitter)',
+    youtube: 'YouTube',
+    tiktok: 'TikTok',
+    discord: 'Discord',
+    telegram: 'Telegram',
+    skype: 'Skype',
+    snapchat: 'Snapchat',
+    viber: 'Viber',
+    whatsapp: 'WhatsApp',
+    reddit: 'Reddit',
+    link: 'Link'
+  };
   
-  // Fallback: show truncated URL
-  if (url.length > 30) {
-    return url.substring(0, 30) + '...';
-  }
-  return url;
+  return platformNames[platform] || 'Social Media';
 }
 
 // Get smart display name for other links (similar to social media)
@@ -989,10 +937,9 @@ function getOtherLinkDisplayName(link) {
   if (!url) return 'Link';
   
   try {
-    // Parse the URL to extract meaningful parts
+    // Parse the URL to extract the domain name
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
-    const pathname = urlObj.pathname;
     
     // Remove www. prefix
     const cleanHostname = hostname.replace(/^www\./, '');
@@ -1001,61 +948,22 @@ function getOtherLinkDisplayName(link) {
     const domainParts = cleanHostname.split('.');
     let domain = cleanHostname;
     
-    // Handle common domains
+    // Handle common domains - show main domain for known services
     if (domainParts.length > 2) {
       const mainDomain = domainParts.slice(-2).join('.');
-      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to'].includes(mainDomain)) {
+      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to', 'codepen.io', 'jsfiddle.net', 'repl.it', 'codesandbox.io'].includes(mainDomain)) {
         domain = mainDomain;
       }
     }
     
-    // Extract meaningful path segments
-    const pathSegments = pathname.split('/').filter(segment => segment && segment !== '');
-    
-    if (pathSegments.length > 0) {
-      // For GitHub, GitLab, etc. - show username/repo
-      if (domain.includes('github.com') || domain.includes('gitlab.com') || domain.includes('bitbucket.org')) {
-        if (pathSegments.length >= 2) {
-          return `${pathSegments[0]}/${pathSegments[1]}`;
-        } else if (pathSegments.length === 1) {
-          return pathSegments[0];
-        }
-      }
-      
-      // For Stack Overflow - show question title or user
-      if (domain.includes('stackoverflow.com')) {
-        if (pathSegments[0] === 'users' && pathSegments[1]) {
-          return `User: ${pathSegments[1]}`;
-        } else if (pathSegments[0] === 'questions' && pathSegments[1]) {
-          return `Question #${pathSegments[1]}`;
-        }
-      }
-      
-      // For Medium, Dev.to - show article title or author
-      if (domain.includes('medium.com') || domain.includes('dev.to')) {
-        if (pathSegments.length >= 2) {
-          return pathSegments[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        } else if (pathSegments.length === 1) {
-          return pathSegments[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        }
-      }
-      
-      // For other sites, show the first meaningful path segment
-      const firstSegment = pathSegments[0];
-      if (firstSegment && firstSegment.length > 3) {
-        return firstSegment.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      }
-    }
-    
-    // Fallback: show domain name
-    return domain;
+    // Capitalize the first letter of each word in the domain
+    return domain.split('.').map(part => 
+      part.charAt(0).toUpperCase() + part.slice(1)
+    ).join('.');
     
   } catch (error) {
-    // If URL parsing fails, show truncated version
-    if (url.length > 30) {
-      return url.substring(0, 30) + '...';
-    }
-    return url;
+    // If URL parsing fails, show "Website" as fallback
+    return 'Website';
   }
 }
 
