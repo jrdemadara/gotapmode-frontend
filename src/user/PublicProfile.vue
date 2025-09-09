@@ -238,7 +238,10 @@ function openUrl(u) {
 }
 
 function cleanUrl(u) {
-  try { return new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u).host } catch { return u }
+  try { 
+    const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u)
+    return url.host.replace(/^www\./, '')
+  } catch { return u }
 }
 
 // Helper function to convert image URL to base64
