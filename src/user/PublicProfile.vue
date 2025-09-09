@@ -148,7 +148,9 @@ onMounted(async () => {
     // Update profile data
     if (pd?.full_name) profile.value.name = pd.full_name
     if (pr?.profile_pic) {
-      profile.value.photo = pr.profile_pic
+      // Add cache busting parameter to force image reload
+      const separator = pr.profile_pic.includes('?') ? '&' : '?'
+      profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
       console.log('Loaded profile pic:', pr.profile_pic)
       console.log('Profile pic type:', typeof pr.profile_pic)
       if (pr.profile_pic) {

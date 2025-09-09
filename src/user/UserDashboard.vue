@@ -718,7 +718,13 @@ onMounted(async () => {
     } catch (_) {}
     try {
       const pr = await userApi.getProfile()
-             if (pr?.profile_pic) profile.value.photo = pr.profile_pic
+             if (pr?.profile_pic) {
+               // Add cache busting parameter
+               const separator = pr.profile_pic.includes('?') ? '&' : '?'
+               profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
+             } else {
+               profile.value.photo = ''
+             }
        if (pr?.company) profile.value.company = pr.company
        if (pr?.bio) profile.value.bio = pr.bio
        if (pr?.position) profile.value.position = pr.position
@@ -1053,6 +1059,29 @@ function openOtherLink(other) {
       navigator.clipboard?.writeText?.(other.value)
     } catch {}
   }
+}
+
+function forceImageReload() {
+  if (profile.value.photo) {
+    const separator = profile.value.photo.includes('?') ? '&' : '?'
+    profile.value.photo = `${profile.value.photo.split('?')[0]}${separator}v=${Date.now()}`
+  }
+}
+
+async function reloadProfileData() {
+  try {
+    const pr = await userApi.getProfile()
+    if (pr?.profile_pic) {
+      // Add cache busting parameter
+      const separator = pr.profile_pic.includes('?') ? '&' : '?'
+      profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
+    } else {
+      profile.value.photo = ''
+    }
+    if (pr?.company) profile.value.company = pr.company
+    if (pr?.bio) profile.value.bio = pr.bio
+    if (pr?.position) profile.value.position = pr.position
+  } catch (_) {}
 }
 </script>
 
