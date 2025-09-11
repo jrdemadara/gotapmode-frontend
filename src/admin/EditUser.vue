@@ -673,7 +673,7 @@ const savingProfile = ref(false)
 const savingContacts = ref(false)
 
 // Profile picture upload variables
-const profilePic = ref('')
+const profilePicFile = ref(null) // Store actual file for multipart
 const profilePicPreview = ref('')
 
 const error = ref('')
@@ -798,24 +798,28 @@ async function saveProfileInfo() {
   savingProfile.value = true
 
   try {
-    const profilePayload = {
-      bio: formData.value.profile.bio || null,
-      company: formData.value.profile.company || null,
-      position: formData.value.profile.position || null,
-      companynumber: formData.value.profile.companynumber || null,
-      companyemail: formData.value.profile.companyemail || null,
-      companyadress: formData.value.profile.companyadress || null,
+    // Create FormData for multipart submission
+    const multipartData = new FormData()
+    
+    // Add profile data
+    multipartData.append('bio', formData.value.profile.bio || '')
+    multipartData.append('company', formData.value.profile.company || '')
+    multipartData.append('position', formData.value.profile.position || '')
+    multipartData.append('companynumber', formData.value.profile.companynumber || '')
+    multipartData.append('companyemail', formData.value.profile.companyemail || '')
+    multipartData.append('companyadress', formData.value.profile.companyadress || '')
+    
+    // Add profile picture as actual file (not base64)
+    if (profilePicFile.value) {
+      multipartData.append('profile_pic_file', profilePicFile.value)
     }
 
-    // Include profile picture if a new one was uploaded
-    if (profilePic.value && profilePic.value.startsWith('data:')) {
-      profilePayload.profile_pic = profilePic.value
-    }
-
-    await adminApi.updateUserProfile(user.value.id, profilePayload)
+    await adminApi.updateUserProfile(user.value.id, multipartData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
 
     // Clear the uploaded image after successful save
-    profilePic.value = ''
+    profilePicFile.value = null
 
     showSuccessNotification.value = true
     successMessage.value = 'Profile information updated successfully'
@@ -828,7 +832,15 @@ async function saveProfileInfo() {
 
   } catch (e) {
     console.error('Failed to update profile:', e)
-    alert('Failed to update profile: ' + (e.message || e))
+    
+    // Enhanced error handling
+    if (e.response?.status === 413) {
+      alert('File too large! Please choose a smaller image.')
+    } else if (e.response?.data?.message) {
+      alert('Failed to update profile: ' + e.response.data.message)
+    } else {
+      alert('Failed to update profile: ' + (e.message || e))
+    }
   }
 
   savingProfile.value = false
@@ -1248,9 +1260,13 @@ function socialIcon(platform) {
 function onProfilePicFile(e) {
   const file = e.target.files?.[0]
   if (!file) return
+  
+  // Store the actual file for multipart submission
+  profilePicFile.value = file
+  
+  // Create preview
   const reader = new FileReader()
   reader.onload = () => {
-    profilePic.value = reader.result
     profilePicPreview.value = reader.result
   }
   reader.readAsDataURL(file)

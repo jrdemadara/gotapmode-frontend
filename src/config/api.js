@@ -55,7 +55,7 @@ export const adminApi = {
   getSoftDeletedUsers: () => api.get('/admin/users/soft-deleted'),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   updateUserPersonalData: (id, data) => api.post(`/admin/users/${id}/personal-data`, data),
-  updateUserProfile: (id, data) => api.post(`/admin/users/${id}/profile`, data),
+  updateUserProfile: (id, data, config = {}) => api.post(`/admin/users/${id}/profile`, data, config),
   softDeleteUser: (id) => api.delete(`/admin/users/${id}`),
   restoreUser: (id) => api.post(`/admin/users/${id}/restore`),
 
