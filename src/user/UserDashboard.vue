@@ -21,7 +21,7 @@
 
     <!-- Profile header -->
     <div class="flex flex-col items-center mb-6">
-      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user-circle.svg'" alt="profile" />
+      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user.png'" alt="profile" />
              <h2 class="mt-4 text-xl font-extrabold">{{ formatPosition(profile.name) }}</h2>
        <p class="text-sm opacity-80 font-bold">{{formatPosition(profile.company) }}</p>
        <p class="text-sm opacity-70 font-bold text-blue-500" v-if="profile.position">{{ formatPosition(profile.position) }}</p>
@@ -256,7 +256,7 @@
       <!-- Header -->
       <div class="px-5 pt-6 pb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <img :src="profile.photo || '/icons/user-circle.svg'" alt="avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
+          <img :src="profile.photo || '/icons/user.png'" alt="avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
           <div>
             <div class="text-sm font-extrabold leading-tight">{{ profile.name || 'User' }}</div>
             <div class="text-xs opacity-70">GoTapMode</div>
@@ -292,6 +292,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, userApi } from '../config/api'
 import Modal from '../components/Modal.vue'
+import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({
   photo: '',
@@ -719,9 +720,7 @@ onMounted(async () => {
     try {
       const pr = await userApi.getProfile()
              if (pr?.profile_pic) {
-               // Add cache busting parameter
-               const separator = pr.profile_pic.includes('?') ? '&' : '?'
-               profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
+               profile.value.photo = processProfileImage(pr.profile_pic)
              } else {
                profile.value.photo = ''
              }
@@ -881,8 +880,8 @@ async function doLogout() {
   window.location.replace('/')
 }
 
-const phoneActions = [ { icon: '/icons/call.svg', title: 'Call' } ]
-const emailActions = [ { icon: '/icons/send.svg', title: 'Send' } ]
+const phoneActions = [ { icon: '/icons/phone-call.png', title: 'Call' } ]
+const emailActions = [ { icon: '/icons/send.png', title: 'Send' } ]
 
 function socialIcon(platform) {
   const map = {
@@ -1072,9 +1071,7 @@ async function reloadProfileData() {
   try {
     const pr = await userApi.getProfile()
     if (pr?.profile_pic) {
-      // Add cache busting parameter
-      const separator = pr.profile_pic.includes('?') ? '&' : '?'
-      profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
+      profile.value.photo = processProfileImage(pr.profile_pic)
     } else {
       profile.value.photo = ''
     }

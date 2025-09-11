@@ -72,6 +72,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../config/api'
+import { processProfileImage } from '../utils/imageUtils'
 
 const router = useRouter()
 const userId = ref(null)
@@ -121,9 +122,7 @@ onMounted(async () => {
         companyemail.value = pr.companyemail || ''
         companyadress.value = pr.companyadress || ''
         if (pr.profile_pic) {
-          // Add cache busting parameter to force image reload
-          const separator = pr.profile_pic.includes('?') ? '&' : '?'
-          profilePicPreview.value = `${pr.profile_pic}${separator}v=${Date.now()}`
+          profilePicPreview.value = processProfileImage(pr.profile_pic)
         }
       }
     } catch (err) {

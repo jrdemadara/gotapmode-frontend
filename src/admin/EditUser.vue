@@ -661,6 +661,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { adminApi, api } from '../config/api'
+import { getImageUrl } from '../utils/imageUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -1348,7 +1349,7 @@ async function loadUser() {
     }
 
     // Set profile picture preview from loaded data
-    profilePicPreview.value = formData.value.profile.profile_pic || ''
+    profilePicPreview.value = getImageUrl(formData.value.profile.profile_pic)
 
     console.log('Loaded user data:', formData.value)
     console.log('Profile picture preview set to:', profilePicPreview.value)

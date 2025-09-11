@@ -69,6 +69,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../config/api'
 import { updatePageTitle, updateMetaDescription, updateOpenGraphTags, generateStructuredData } from '../utils/seo.js'
+import { processProfileImage } from '../utils/imageUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -148,15 +149,7 @@ onMounted(async () => {
     // Update profile data
     if (pd?.full_name) profile.value.name = pd.full_name
     if (pr?.profile_pic) {
-      // Add cache busting parameter to force image reload
-      const separator = pr.profile_pic.includes('?') ? '&' : '?'
-      profile.value.photo = `${pr.profile_pic}${separator}v=${Date.now()}`
-      console.log('Loaded profile pic:', pr.profile_pic)
-      console.log('Profile pic type:', typeof pr.profile_pic)
-      if (pr.profile_pic) {
-        console.log('Profile pic starts with data:', pr.profile_pic.startsWith('data:'))
-        console.log('Profile pic starts with http:', pr.profile_pic.startsWith('http'))
-      }
+      profile.value.photo = processProfileImage(pr.profile_pic)
     }
     if (pr?.company) profile.value.company = pr.company
     if (pr?.position) profile.value.position = pr.position
@@ -249,16 +242,27 @@ function cleanUrl(u) {
 // Helper function to convert image URL to base64
 async function imageUrlToBase64(url) {
   try {
-    const response = await fetch(url)
+    // Add cache busting to ensure we get the latest image
+    const urlWithCacheBust = url.includes('?') ? `${url}&cb=${Date.now()}` : `${url}?cb=${Date.now()}`
+    
+    const response = await fetch(urlWithCacheBust, {
+      mode: 'cors',
+      credentials: 'omit'
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
     const blob = await response.blob()
+    
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onloadend = () => resolve(reader.result)
-      reader.onerror = reject
+      reader.onerror = (error) => reject(error)
       reader.readAsDataURL(blob)
     })
   } catch (error) {
-    console.error('Error converting image to base64:', error)
     return null
   }
 }
@@ -309,13 +313,6 @@ async function saveToContacts() {
   const fullName = profile.value.name || 'Contact'
   const org = profile.value.company || ''
   
-  // Debug: Log photo information
-  console.log('Photo data:', profile.value.photo)
-  console.log('Photo type:', typeof profile.value.photo)
-  if (profile.value.photo) {
-    console.log('Photo starts with data:', profile.value.photo.startsWith('data:'))
-    console.log('Photo starts with http:', profile.value.photo.startsWith('http'))
-  }
   
   // Clean and validate the full name for iOS compatibility
   const cleanName = fullName.trim().replace(/[^\w\s-]/g, '') || 'Contact'
@@ -362,35 +359,42 @@ async function saveToContacts() {
       const base64Data = profile.value.photo.split(',')[1]
       if (base64Data) {
         photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64Data}`
-        console.log('Using base64 data URL photo')
       }
     } else if (profile.value.photo.startsWith('http')) {
-      // It's a URL - convert to base64 for better compatibility
+      // It's a URL - convert to API route first to avoid CORS issues
+      // Extract the relative path from the full URL
+      let relativePath = profile.value.photo
+      if (profile.value.photo.includes('/storage/')) {
+        relativePath = profile.value.photo.split('/storage/')[1]
+      } else if (profile.value.photo.includes('/api/image/')) {
+        relativePath = profile.value.photo.split('/api/image/')[1]
+      }
+      
+      // Remove cache busting parameters
+      relativePath = relativePath.split('?')[0]
+      
+      // Use API route which has CORS enabled
+      const apiUrl = `${window.location.origin}/api/image/${relativePath}`
+      
       try {
-        const base64Data = await imageUrlToBase64(profile.value.photo)
+        const base64Data = await imageUrlToBase64(apiUrl)
         if (base64Data) {
           const base64String = base64Data.split(',')[1]
           photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64String}`
-          console.log('Converted URL to base64 photo')
         } else {
-          // Fallback to URI format if conversion fails
-          photoLine = `PHOTO;VALUE=URI:${profile.value.photo}`
-          console.log('Using URI photo format as fallback')
+          // Fallback to URI format
+          photoLine = `PHOTO;VALUE=URI:${apiUrl}`
         }
       } catch (err) {
-        console.warn('Could not convert photo URL to base64:', err)
-        photoLine = `PHOTO;VALUE=URI:${profile.value.photo}`
-        console.log('Using URI photo format due to conversion error')
+        // Try to use the API URL directly as URI
+        photoLine = `PHOTO;VALUE=URI:${apiUrl}`
       }
     } else {
       // Assume it's already base64 data
       photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${profile.value.photo}`
-      console.log('Using raw base64 photo data')
     }
   }
   
-  console.log('Final photo line:', photoLine)
-
   const v = [
     'BEGIN:VCARD',
     'VERSION:3.0',
@@ -404,17 +408,12 @@ async function saveToContacts() {
     ...webLines,
     'END:VCARD',
   ].filter(Boolean).join('\n')
-  
-  console.log('vCard content preview:', v.substring(0, 500) + '...')
 
   const blob = new Blob([v], { type: 'text/vcard;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
   a.download = `${cleanName.replace(/[^a-z0-9_-]+/gi,'_')}.vcf`
-  
-  console.log('Downloading vCard with size:', blob.size, 'bytes')
-  console.log('Photo included:', !!photoLine)
   
   document.body.appendChild(a)
   a.click()
