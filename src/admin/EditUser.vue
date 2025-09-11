@@ -1365,10 +1365,32 @@ async function loadUser() {
     }
 
     // Set profile picture preview from loaded data
-    profilePicPreview.value = getImageUrl(formData.value.profile.profile_pic)
+    const profileData = formData.value.profile || {}
+    const profilePicUrl = profileData.profile_pic_url || profileData.profile_pic
+    console.log('Profile data:', profileData)
+    console.log('Profile picture URL from API:', profilePicUrl)
+    
+    if (profilePicUrl) {
+      // If it's already a full URL, use it directly; otherwise process it
+      if (profilePicUrl.startsWith('http') || profilePicUrl.startsWith('data:')) {
+        profilePicPreview.value = profilePicUrl
+      } else {
+        const processedUrl = getImageUrl(profilePicUrl)
+        console.log('Processed URL with getImageUrl:', processedUrl)
+        profilePicPreview.value = processedUrl
+      }
+      console.log('Profile picture preview set to:', profilePicPreview.value)
+    } else {
+      profilePicPreview.value = ''
+      console.log('No profile picture found, clearing preview')
+    }
 
     console.log('Loaded user data:', formData.value)
-    console.log('Profile picture preview set to:', profilePicPreview.value)
+    console.log('Profile data specifically:', formData.value.profile)
+    console.log('Profile picture fields:', {
+      profile_pic: formData.value.profile.profile_pic,
+      profile_pic_url: formData.value.profile.profile_pic_url
+    })
   } catch (e) {
     console.error('Failed to load user:', e)
     error.value = e?.message || 'Failed to load user'
