@@ -58,7 +58,7 @@ import { useRouter } from 'vue-router'
 import { api, http } from '../config/api'
 
 const userId = ref(null)
-const profilePic = ref('')
+const profilePicFile = ref(null) // Store the actual file for multipart
 const profilePicPreview = ref('')
 const bio = ref('')
 const company = ref('')
@@ -79,9 +79,13 @@ onMounted(() => {
 function onFile(e) {
   const file = e.target.files?.[0]
   if (!file) return
+  
+  // Store the actual file for multipart submission
+  profilePicFile.value = file
+  
+  // Create preview
   const reader = new FileReader()
   reader.onload = () => {
-    profilePic.value = reader.result
     profilePicPreview.value = reader.result
   }
   reader.readAsDataURL(file)
@@ -92,9 +96,13 @@ async function onSubmit() {
   try {
     const form = new FormData()
     form.append('user_id', userId.value)
-    if (profilePic.value && profilePic.value.startsWith('data:')) {
-      form.append('profile_pic', profilePic.value)
+    
+    // Add profile picture as actual file (not base64)
+    if (profilePicFile.value) {
+      form.append('profile_pic_file', profilePicFile.value)
     }
+    
+    // Add other form fields
     if (bio.value) form.append('bio', bio.value)
     if (company.value) form.append('company', company.value)
     if (position.value) form.append('position', position.value)
@@ -102,8 +110,21 @@ async function onSubmit() {
     if (companyemail.value) form.append('companyemail', companyemail.value)
     if (companyadress.value) form.append('companyadress', companyadress.value)
 
-    await http.post('/card-users/profile', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+    await http.post('/card-users/profile', form, { 
+      headers: { 'Content-Type': 'multipart/form-data' } 
+    })
     router.push({ name: 'dashboard' })
+  } catch (err) {
+    console.error('Error saving profile:', err)
+    
+    // Enhanced error handling
+    if (err.response?.status === 413) {
+      alert('File too large! Please choose a smaller image.')
+    } else if (err.response?.data?.message) {
+      alert('Failed to save profile: ' + err.response.data.message)
+    } else {
+      alert('Failed to save profile: ' + (err.message || err))
+    }
   } finally {
     loading.value = false
   }
@@ -111,5 +132,3 @@ async function onSubmit() {
 </script>
 
 <style scoped></style>
-
-

@@ -83,7 +83,7 @@ const middle = ref('')
 const last = ref('')
 
 // Profile
-const profilePic = ref('')
+const profilePicFile = ref(null) // Store the actual file for multipart
 const profilePicPreview = ref('')
 const bio = ref('')
 const company = ref('')
@@ -136,9 +136,13 @@ onMounted(async () => {
 function onFile(e) {
   const file = e.target.files?.[0]
   if (!file) return
+  
+  // Store the actual file for multipart submission
+  profilePicFile.value = file
+  
+  // Create preview
   const reader = new FileReader()
   reader.onload = () => {
-    profilePic.value = reader.result
     profilePicPreview.value = reader.result
   }
   reader.readAsDataURL(file)
@@ -148,30 +152,46 @@ async function onSave() {
   if (!userId.value) return
   saving.value = true
   try {
-    // Save names
-    await api.post('/card-users/personal-data', {
-      first_name: first.value,
-      middle_name: middle.value || null,
-      last_name: last.value,
+    // Create FormData for multipart submission
+    const formData = new FormData()
+    
+    // Add personal data
+    formData.append('first_name', first.value)
+    formData.append('middle_name', middle.value || '')
+    formData.append('last_name', last.value)
+    
+    // Add profile data
+    formData.append('bio', bio.value || '')
+    formData.append('company', company.value || '')
+    formData.append('position', position.value || '')
+    formData.append('companynumber', companynumber.value || '')
+    formData.append('companyemail', companyemail.value || '')
+    formData.append('companyadress', companyadress.value || '')
+    
+    // Add profile picture as actual file (not base64)
+    if (profilePicFile.value) {
+      formData.append('profile_pic_file', profilePicFile.value)
+    }
+    
+    // Send everything in ONE multipart request
+    await api.post('/card-users/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     })
     
-    // Save profile
-    const payload = {
-      bio: bio.value || null,
-      company: company.value || null,
-      position: position.value || null,
-      companynumber: companynumber.value || null,
-      companyemail: companyemail.value || null,
-      companyadress: companyadress.value || null,
-    }
-    if (profilePic.value && profilePic.value.startsWith('data:')) {
-      payload.profile_pic = profilePic.value
-    }
-    await api.post('/card-users/profile', payload)
     router.push({ name: 'dashboard' })
   } catch (err) {
     console.error('Error saving profile:', err)
-    alert('Failed to save profile: ' + (err.message || err))
+    
+    // Enhanced error handling
+    if (err.response?.status === 413) {
+      alert('File too large! Please choose a smaller image.')
+    } else if (err.response?.data?.message) {
+      alert('Failed to save profile: ' + err.response.data.message)
+    } else {
+      alert('Failed to save profile: ' + (err.message || err))
+    }
   } finally {
     saving.value = false
   }
@@ -183,5 +203,3 @@ function goBack() {
 </script>
 
 <style scoped></style>
-
-
