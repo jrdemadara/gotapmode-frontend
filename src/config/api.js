@@ -1,8 +1,8 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-// const DEFAULT_BASE = 'http://127.0.0.1:8000/api';
- const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+// const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
+const DEFAULT_BASE = 'https://api.gotapmode.info/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -55,7 +55,7 @@ export const adminApi = {
   getSoftDeletedUsers: () => api.get('/admin/users/soft-deleted'),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   updateUserPersonalData: (id, data) => api.post(`/admin/users/${id}/personal-data`, data),
-  updateUserProfile: (id, data) => api.post(`/admin/users/${id}/profile`, data),
+  updateUserProfile: (id, data, config = {}) => api.post(`/admin/users/${id}/profile`, data, config),
   softDeleteUser: (id) => api.delete(`/admin/users/${id}`),
   restoreUser: (id) => api.post(`/admin/users/${id}/restore`),
 

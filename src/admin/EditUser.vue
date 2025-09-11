@@ -661,6 +661,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { adminApi, api } from '../config/api'
+import { getImageUrl } from '../utils/imageUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -672,7 +673,7 @@ const savingProfile = ref(false)
 const savingContacts = ref(false)
 
 // Profile picture upload variables
-const profilePic = ref('')
+const profilePicFile = ref(null) // Store actual file for multipart
 const profilePicPreview = ref('')
 
 const error = ref('')
@@ -797,24 +798,28 @@ async function saveProfileInfo() {
   savingProfile.value = true
 
   try {
-    const profilePayload = {
-      bio: formData.value.profile.bio || null,
-      company: formData.value.profile.company || null,
-      position: formData.value.profile.position || null,
-      companynumber: formData.value.profile.companynumber || null,
-      companyemail: formData.value.profile.companyemail || null,
-      companyadress: formData.value.profile.companyadress || null,
+    // Create FormData for multipart submission
+    const multipartData = new FormData()
+    
+    // Add profile data
+    multipartData.append('bio', formData.value.profile.bio || '')
+    multipartData.append('company', formData.value.profile.company || '')
+    multipartData.append('position', formData.value.profile.position || '')
+    multipartData.append('companynumber', formData.value.profile.companynumber || '')
+    multipartData.append('companyemail', formData.value.profile.companyemail || '')
+    multipartData.append('companyadress', formData.value.profile.companyadress || '')
+    
+    // Add profile picture as actual file (not base64)
+    if (profilePicFile.value) {
+      multipartData.append('profile_pic_file', profilePicFile.value)
     }
 
-    // Include profile picture if a new one was uploaded
-    if (profilePic.value && profilePic.value.startsWith('data:')) {
-      profilePayload.profile_pic = profilePic.value
-    }
-
-    await adminApi.updateUserProfile(user.value.id, profilePayload)
+    await adminApi.updateUserProfile(user.value.id, multipartData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
 
     // Clear the uploaded image after successful save
-    profilePic.value = ''
+    profilePicFile.value = null
 
     showSuccessNotification.value = true
     successMessage.value = 'Profile information updated successfully'
@@ -827,7 +832,15 @@ async function saveProfileInfo() {
 
   } catch (e) {
     console.error('Failed to update profile:', e)
-    alert('Failed to update profile: ' + (e.message || e))
+    
+    // Enhanced error handling
+    if (e.response?.status === 413) {
+      alert('File too large! Please choose a smaller image.')
+    } else if (e.response?.data?.message) {
+      alert('Failed to update profile: ' + e.response.data.message)
+    } else {
+      alert('Failed to update profile: ' + (e.message || e))
+    }
   }
 
   savingProfile.value = false
@@ -1247,9 +1260,13 @@ function socialIcon(platform) {
 function onProfilePicFile(e) {
   const file = e.target.files?.[0]
   if (!file) return
+  
+  // Store the actual file for multipart submission
+  profilePicFile.value = file
+  
+  // Create preview
   const reader = new FileReader()
   reader.onload = () => {
-    profilePic.value = reader.result
     profilePicPreview.value = reader.result
   }
   reader.readAsDataURL(file)
@@ -1348,10 +1365,32 @@ async function loadUser() {
     }
 
     // Set profile picture preview from loaded data
-    profilePicPreview.value = formData.value.profile.profile_pic || ''
+    const profileData = formData.value.profile || {}
+    const profilePicUrl = profileData.profile_pic_url || profileData.profile_pic
+    console.log('Profile data:', profileData)
+    console.log('Profile picture URL from API:', profilePicUrl)
+    
+    if (profilePicUrl) {
+      // If it's already a full URL, use it directly; otherwise process it
+      if (profilePicUrl.startsWith('http') || profilePicUrl.startsWith('data:')) {
+        profilePicPreview.value = profilePicUrl
+      } else {
+        const processedUrl = getImageUrl(profilePicUrl)
+        console.log('Processed URL with getImageUrl:', processedUrl)
+        profilePicPreview.value = processedUrl
+      }
+      console.log('Profile picture preview set to:', profilePicPreview.value)
+    } else {
+      profilePicPreview.value = ''
+      console.log('No profile picture found, clearing preview')
+    }
 
     console.log('Loaded user data:', formData.value)
-    console.log('Profile picture preview set to:', profilePicPreview.value)
+    console.log('Profile data specifically:', formData.value.profile)
+    console.log('Profile picture fields:', {
+      profile_pic: formData.value.profile.profile_pic,
+      profile_pic_url: formData.value.profile.profile_pic_url
+    })
   } catch (e) {
     console.error('Failed to load user:', e)
     error.value = e?.message || 'Failed to load user'
