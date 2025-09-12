@@ -274,6 +274,13 @@
           </span>
           <span class="opacity-60">›</span>
         </button>
+        <button @click="goProfilePhoto" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
+          <span class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center text-xs shadow-sm">PP</span>
+            <span class="text-sm">Profile Photo</span>
+          </span>
+          <span class="opacity-60">›</span>
+        </button>
         <button @click="doLogout" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
           <span class="flex items-center gap-3">
             <span class="w-9 h-9 rounded-xl bg-red-600/90 text-white flex items-center justify-center text-xs shadow-sm">LO</span>
@@ -867,6 +874,11 @@ async function deleteOther(other) {
 function goEditProfile() {
   showSidebar.value = false
   try { router.push({ name: 'edit-profile' }) } catch {}
+}
+
+function goProfilePhoto() {
+  showSidebar.value = false
+  try { router.push({ name: 'profile-photo' }) } catch {}
 }
 
 async function doLogout() {
