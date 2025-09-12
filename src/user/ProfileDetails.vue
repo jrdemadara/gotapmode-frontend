@@ -111,7 +111,10 @@ async function onSubmit() {
     if (companyadress.value) form.append('companyadress', companyadress.value)
 
     await http.post('/card-users/profile', form, { 
-      headers: { 'Content-Type': 'multipart/form-data' } 
+      headers: { 
+        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
+        'Accept': 'application/json'
+      } 
     })
     router.push({ name: 'dashboard' })
   } catch (err) {

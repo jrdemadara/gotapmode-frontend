@@ -152,31 +152,27 @@ async function onSave() {
   if (!userId.value) return
   saving.value = true
   try {
-    // Create FormData for multipart submission
+    // 1) Update personal data (names)
+    await api.post('/card-users/personal-data', {
+      first_name: first.value,
+      middle_name: middle.value || null,
+      last_name: last.value,
+    })
+
+    // 2) Update profile (company, bio, picture, etc.) via multipart
     const formData = new FormData()
-    
-    // Add personal data
-    formData.append('first_name', first.value)
-    formData.append('middle_name', middle.value || '')
-    formData.append('last_name', last.value)
-    
-    // Add profile data
-    formData.append('bio', bio.value || '')
-    formData.append('company', company.value || '')
-    formData.append('position', position.value || '')
-    formData.append('companynumber', companynumber.value || '')
-    formData.append('companyemail', companyemail.value || '')
-    formData.append('companyadress', companyadress.value || '')
-    
-    // Add profile picture as actual file (not base64)
-    if (profilePicFile.value) {
-      formData.append('profile_pic_file', profilePicFile.value)
-    }
-    
-    // Send everything in ONE multipart request
+    if (bio.value) formData.append('bio', bio.value)
+    if (company.value) formData.append('company', company.value)
+    if (position.value) formData.append('position', position.value)
+    if (companynumber.value) formData.append('companynumber', companynumber.value)
+    if (companyemail.value) formData.append('companyemail', companyemail.value)
+    if (companyadress.value) formData.append('companyadress', companyadress.value)
+    if (profilePicFile.value) formData.append('profile_pic_file', profilePicFile.value)
+
     await api.post('/card-users/profile', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
+        'Accept': 'application/json'
       }
     })
     

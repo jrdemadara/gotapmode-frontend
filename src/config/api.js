@@ -1,8 +1,8 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-// const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+// const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -14,7 +14,7 @@ export const http = axios.create({
   baseURL: BACKEND_BASE,
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
-  withCredentials: false,
+  withCredentials: true,
 });
 
 http.interceptors.request.use((config) => {
@@ -32,8 +32,14 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (res) => res,
   (error) => {
-    const msg = error?.response?.data?.message || error?.message || 'Request failed';
-    return Promise.reject(new Error(msg));
+    // Preserve response object so callers can branch on status codes
+    if (error?.response) {
+      const e = new Error(error.response?.data?.message || error.message || 'Request failed');
+      e.response = error.response;
+      e.config = error.config;
+      return Promise.reject(e);
+    }
+    return Promise.reject(error);
   }
 );
 
