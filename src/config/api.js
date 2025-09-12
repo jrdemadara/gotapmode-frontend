@@ -1,8 +1,8 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
-// const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
+//const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -12,9 +12,11 @@ export const FRONTEND_BASE = (import.meta?.env?.VITE_FRONTEND_BASE || DEFAULT_FR
 
 export const http = axios.create({
   baseURL: BACKEND_BASE,
-  headers: { 'Content-Type': 'application/json' },
+  // Do NOT set Content-Type globally; let axios/browser infer per request
+  headers: { 'Accept': 'application/json' },
   timeout: 15000,
-  withCredentials: true,
+  // We use Bearer tokens, not cookies; credentials are unnecessary and can trigger stricter CORS
+  withCredentials: false,
 });
 
 http.interceptors.request.use((config) => {
@@ -24,6 +26,12 @@ http.interceptors.request.use((config) => {
     if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // If sending FormData, ensure Content-Type is unset so browser sets boundary
+    if (config.data instanceof FormData) {
+      if (config.headers && 'Content-Type' in config.headers) {
+        delete config.headers['Content-Type'];
+      }
     }
   } catch {}
   return config;
@@ -62,6 +70,7 @@ export const adminApi = {
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   updateUserPersonalData: (id, data) => api.post(`/admin/users/${id}/personal-data`, data),
   updateUserProfile: (id, data, config = {}) => api.post(`/admin/users/${id}/profile`, data, config),
+  updateUserProfilePhoto: (id, formData, config = {}) => api.post(`/admin/users/${id}/profile/picture`, formData, config),
   softDeleteUser: (id) => api.delete(`/admin/users/${id}`),
   restoreUser: (id) => api.post(`/admin/users/${id}/restore`),
 
