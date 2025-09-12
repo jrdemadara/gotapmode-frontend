@@ -24,5 +24,5 @@ jobs:
             cd /var/www/html/gotapmode || exit
             git fetch origin main
             git reset --hard origin/main
-            npm install
+            npm install --legacy-peer-deps
             npm run build
