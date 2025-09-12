@@ -373,8 +373,14 @@ async function saveToContacts() {
       // Remove cache busting parameters
       relativePath = relativePath.split('?')[0]
       
-      // Use API route which has CORS enabled
-      const apiUrl = `${window.location.origin}/api/image/${relativePath}`
+      // Use API route which has CORS enabled on the API origin
+      try {
+        const { BACKEND_BASE } = await import('../config/api')
+        const apiOrigin = new URL(BACKEND_BASE).origin
+        var apiUrl = `${apiOrigin}/api/image/${relativePath}`
+      } catch (_) {
+        var apiUrl = `/api/image/${relativePath}`
+      }
       
       try {
         const base64Data = await imageUrlToBase64(apiUrl)

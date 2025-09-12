@@ -815,7 +815,10 @@ async function saveProfileInfo() {
     }
 
     await adminApi.updateUserProfile(user.value.id, multipartData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 
+        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
+        'Accept': 'application/json'
+      }
     })
 
     // Clear the uploaded image after successful save
