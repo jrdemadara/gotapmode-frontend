@@ -7,14 +7,7 @@
     </div>
 
     <section class="w-full max-w-2xl bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-5 sm:p-7">
-      <!-- Avatar -->
-      <div class="flex items-center justify-center mb-5">
-        <label for="profile-pic-edit" class="w-32 h-32 rounded-full border border-black bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden">
-          <input id="profile-pic-edit" name="profile-pic-edit" type="file" accept="image/*" class="hidden" @change="onFile" />
-          <img v-if="profilePicPreview" :src="profilePicPreview" class="w-32 h-32 object-cover border border-black" />
-          <span v-else class="text-xs opacity-70">Click to upload</span>
-        </label>
-      </div>
+      <!-- Avatar preview and photo change removed as requested -->
 
       <!-- Full name -->
       <div class="grid sm:grid-cols-3 gap-3">
@@ -71,7 +64,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { api, http } from '../config/api'
 import { processProfileImage } from '../utils/imageUtils'
 
 const router = useRouter()
@@ -83,7 +76,7 @@ const middle = ref('')
 const last = ref('')
 
 // Profile
-const profilePicFile = ref(null) // Store the actual file for multipart
+//const profilePicFile = ref(null) // deprecated here; handled in ProfilePhoto page
 const profilePicPreview = ref('')
 const bio = ref('')
 const company = ref('')
@@ -133,27 +126,14 @@ onMounted(async () => {
   }
 })
 
-function onFile(e) {
-  const file = e.target.files?.[0]
-  if (!file) return
-  
-  // Store the actual file for multipart submission
-  profilePicFile.value = file
-  
-  // Create preview
-  const reader = new FileReader()
-  reader.onload = () => {
-    profilePicPreview.value = reader.result
-  }
-  reader.readAsDataURL(file)
-}
+// Photo upload moved to ProfilePhoto page
 
 async function onSave() {
   if (!userId.value) return
   saving.value = true
   try {
     // 1) Update personal data (names)
-    await api.post('/card-users/personal-data', {
+    await http.post('/card-users/personal-data', {
       first_name: first.value,
       middle_name: middle.value || null,
       last_name: last.value,
@@ -167,23 +147,16 @@ async function onSave() {
     if (companynumber.value) formData.append('companynumber', companynumber.value)
     if (companyemail.value) formData.append('companyemail', companyemail.value)
     if (companyadress.value) formData.append('companyadress', companyadress.value)
-    if (profilePicFile.value) formData.append('profile_pic_file', profilePicFile.value)
+    // Profile photo is now uploaded in a dedicated page
 
-    await api.post('/card-users/profile', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
-        'Accept': 'application/json'
-      }
-    })
+    await http.post('/card-users/profile', formData)
     
     router.push({ name: 'dashboard' })
   } catch (err) {
     console.error('Error saving profile:', err)
     
     // Enhanced error handling
-    if (err.response?.status === 413) {
-      alert('File too large! Please choose a smaller image.')
-    } else if (err.response?.data?.message) {
+    if (err.response?.data?.message) {
       alert('Failed to save profile: ' + err.response.data.message)
     } else {
       alert('Failed to save profile: ' + (err.message || err))

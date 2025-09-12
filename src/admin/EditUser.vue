@@ -165,19 +165,18 @@
             </div>
           </div>
           <div class="p-6">
-            <!-- Profile Picture Upload -->
-            <div class="flex items-center justify-center mb-6">
-              <label for="profile-pic-file" class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer overflow-hidden hover:border-emerald-400 hover:shadow-lg transition-all duration-300 group">
-                <input id="profile-pic-file" name="profile-pic-file" type="file" accept="image/*" class="hidden" @change="onProfilePicFile" />
-                <img v-if="profilePicPreview" :src="profilePicPreview" class="w-24 h-24 object-cover" alt="Company Profile" />
+            <!-- Profile Picture -->
+            <div class="flex flex-col items-center justify-center mb-6">
+              <div class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                <img v-if="profilePicPreview" :src="profilePicPreview" class="w-24 h-24 object-cover" alt="Profile" />
                 <div v-else class="text-center p-2">
-                  <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                   </svg>
-                  <span class="text-xs text-gray-600 font-medium">Upload logo</span>
-                  <p class="text-xs text-gray-400">PNG, JPG up to 5MB</p>
+                  <span class="text-xs text-gray-600 font-medium">No photo</span>
                 </div>
-              </label>
+              </div>
+              <button @click="openPhotoModal" type="button" class="mt-3 px-3 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-black transition-colors">Change Photo</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -496,6 +495,29 @@
       </div>
     </div>
 
+    <!-- Change Photo Modal -->
+    <div v-if="showPhotoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full mx-4">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 rounded-t-2xl">
+          <h3 class="text-lg font-semibold text-gray-900">Change Profile Photo</h3>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-center mb-4">
+            <label for="admin-photo" class="w-28 h-28 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden">
+              <input id="admin-photo" type="file" accept="image/*" class="hidden" @change="onPickAdminPhoto" />
+              <img v-if="newPhotoPreview" :src="newPhotoPreview" class="w-28 h-28 object-cover" />
+              <span v-else class="text-xs text-gray-500">Click to choose</span>
+            </label>
+          </div>
+          <p class="text-xs text-center text-gray-500">PNG/JPG up to 5MB</p>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+          <button @click="showPhotoModal=false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+          <button @click="saveAdminPhoto" :disabled="!newPhotoFile" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-black disabled:opacity-50">Save</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Email Modal -->
     <div v-if="showAddEmail" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full mx-4">
@@ -675,6 +697,9 @@ const savingContacts = ref(false)
 // Profile picture upload variables
 const profilePicFile = ref(null) // Store actual file for multipart
 const profilePicPreview = ref('')
+const showPhotoModal = ref(false)
+const newPhotoFile = ref(null)
+const newPhotoPreview = ref('')
 
 const error = ref('')
 const user = ref(null)
@@ -798,28 +823,27 @@ async function saveProfileInfo() {
   savingProfile.value = true
 
   try {
-    // Create FormData for multipart submission
-    const multipartData = new FormData()
-    
-    // Add profile data
-    multipartData.append('bio', formData.value.profile.bio || '')
-    multipartData.append('company', formData.value.profile.company || '')
-    multipartData.append('position', formData.value.profile.position || '')
-    multipartData.append('companynumber', formData.value.profile.companynumber || '')
-    multipartData.append('companyemail', formData.value.profile.companyemail || '')
-    multipartData.append('companyadress', formData.value.profile.companyadress || '')
-    
-    // Add profile picture as actual file (not base64)
-    if (profilePicFile.value) {
-      multipartData.append('profile_pic_file', profilePicFile.value)
-    }
-
-    await adminApi.updateUserProfile(user.value.id, multipartData, {
-      headers: { 
-        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
-        'Accept': 'application/json'
-      }
+    // First update textual profile fields (no photo here)
+    await adminApi.updateUserProfile(user.value.id, {
+      bio: formData.value.profile.bio || '',
+      company: formData.value.profile.company || '',
+      position: formData.value.profile.position || '',
+      companynumber: formData.value.profile.companynumber || '',
+      companyemail: formData.value.profile.companyemail || '',
+      companyadress: formData.value.profile.companyadress || ''
     })
+
+    // Then upload profile photo if present using dedicated endpoint
+    if (profilePicFile.value) {
+      const photoForm = new FormData()
+      photoForm.append('profile_pic_file', profilePicFile.value)
+      const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      try { console.log('Admin photo upload logs (profile save):', photoResp?.logs) } catch {}
+    }
 
     // Clear the uploaded image after successful save
     profilePicFile.value = null
@@ -844,6 +868,7 @@ async function saveProfileInfo() {
     } else {
       alert('Failed to update profile: ' + (e.message || e))
     }
+    try { console.log('Admin photo upload error logs (profile save):', e?.response?.data?.logs) } catch {}
   }
 
   savingProfile.value = false
@@ -1273,6 +1298,42 @@ function onProfilePicFile(e) {
     profilePicPreview.value = reader.result
   }
   reader.readAsDataURL(file)
+}
+
+function openPhotoModal() {
+  showPhotoModal.value = true
+  newPhotoFile.value = null
+  newPhotoPreview.value = ''
+}
+
+function onPickAdminPhoto(e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  if (!/^image\//.test(f.type) || f.size > 5 * 1024 * 1024) {
+    alert('Please select an image up to 5MB.')
+    e.target.value = ''
+    return
+  }
+  newPhotoFile.value = f
+  const reader = new FileReader()
+  reader.onload = () => { newPhotoPreview.value = reader.result }
+  reader.readAsDataURL(f)
+}
+
+async function saveAdminPhoto() {
+  if (!user.value || !newPhotoFile.value) return
+  try {
+    const fd = new FormData()
+    fd.append('profile_pic_file', newPhotoFile.value)
+    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    try { console.log('Admin photo upload logs (modal):', resp?.logs) } catch {}
+    // Reflect new preview immediately
+    profilePicPreview.value = newPhotoPreview.value
+    showPhotoModal.value = false
+  } catch (e) {
+    try { console.log('Admin photo upload error logs (modal):', e?.response?.data?.logs) } catch {}
+    alert(e?.response?.data?.message || e.message || 'Upload failed')
+  }
 }
 
 async function loadUser() {

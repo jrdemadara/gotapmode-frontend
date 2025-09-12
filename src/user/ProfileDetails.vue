@@ -12,13 +12,7 @@
         <p class="text-xs opacity-80">You can always change these details<br/>in your account page</p>
       </div>
 
-      <div class="flex items-center justify-center mb-3">
-        <label for="profile-pic" class="w-36 h-36 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer">
-          <input id="profile-pic" name="profile-pic" type="file" accept="image/*" class="hidden" @change="onFile" />
-          <span v-if="!profilePicPreview" class="text-xs opacity-70">Click to upload image</span>
-          <img v-else :src="profilePicPreview" class="w-36 h-36 rounded-full object-cover" />
-        </label>
-      </div>
+      <!-- Profile photo upload removed; handled in ProfilePhoto page -->
 
       <form class="grid gap-3" @submit.prevent="onSubmit">
         <div>
@@ -58,8 +52,7 @@ import { useRouter } from 'vue-router'
 import { api, http } from '../config/api'
 
 const userId = ref(null)
-const profilePicFile = ref(null) // Store the actual file for multipart
-const profilePicPreview = ref('')
+// Photo upload removed; handled separately in ProfilePhoto page
 const bio = ref('')
 const company = ref('')
 const position = ref('')
@@ -76,47 +69,22 @@ onMounted(() => {
   } catch {}
 })
 
-function onFile(e) {
-  const file = e.target.files?.[0]
-  if (!file) return
-  
-  // Store the actual file for multipart submission
-  profilePicFile.value = file
-  
-  // Create preview
-  const reader = new FileReader()
-  reader.onload = () => {
-    profilePicPreview.value = reader.result
-  }
-  reader.readAsDataURL(file)
-}
+// onFile removed
 
 async function onSubmit() {
   loading.value = true
   try {
-    const form = new FormData()
-    form.append('user_id', userId.value)
-    
-    // Add profile picture as actual file (not base64)
-    if (profilePicFile.value) {
-      form.append('profile_pic_file', profilePicFile.value)
-    }
-    
-    // Add other form fields
-    if (bio.value) form.append('bio', bio.value)
-    if (company.value) form.append('company', company.value)
-    if (position.value) form.append('position', position.value)
-    if (companynumber.value) form.append('companynumber', companynumber.value)
-    if (companyemail.value) form.append('companyemail', companyemail.value)
-    if (companyadress.value) form.append('companyadress', companyadress.value)
-
-    await http.post('/card-users/profile', form, { 
-      headers: { 
-        'Content-Type': 'multipart/form-data; charset=utf-8; boundary=' + Math.random().toString().substring(2),
-        'Accept': 'application/json'
-      } 
-    })
-    router.push({ name: 'dashboard' })
+    // Save text fields only; photo handled in ProfilePhoto page
+    const textForm = new FormData()
+    if (bio.value) textForm.append('bio', bio.value)
+    if (company.value) textForm.append('company', company.value)
+    if (position.value) textForm.append('position', position.value)
+    if (companynumber.value) textForm.append('companynumber', companynumber.value)
+    if (companyemail.value) textForm.append('companyemail', companyemail.value)
+    if (companyadress.value) textForm.append('companyadress', companyadress.value)
+    await http.post('/card-users/profile', textForm)
+    // Continue onboarding to ProfilePhoto page
+    router.push({ name: 'profile-photo' })
   } catch (err) {
     console.error('Error saving profile:', err)
     
