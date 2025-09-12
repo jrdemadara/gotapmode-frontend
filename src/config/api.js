@@ -16,7 +16,7 @@ export const http = axios.create({
   headers: { 'Accept': 'application/json' },
   timeout: 15000,
   // We use Bearer tokens, not cookies; credentials are unnecessary and can trigger stricter CORS
-  withCredentials: false,
+  withCredentials: true,
 });
 
 http.interceptors.request.use((config) => {
