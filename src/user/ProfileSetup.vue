@@ -31,7 +31,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, userApi } from '../config/api'
+import {userApi } from '../config/api'
 
 const first = ref('')
 const middle = ref('')

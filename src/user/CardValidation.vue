@@ -100,7 +100,7 @@ const startNfcScan = async () => {
     const ndef = new NDEFReader()
     await ndef.scan()
 
-    ndef.addEventListener('reading', async ({ message, serialNumber }) => {
+    ndef.addEventListener('reading', async ({ message}) => {
       // Card detected, now read the URL from the card
       await readCardData(message)
     })
@@ -282,12 +282,6 @@ const validateActivationCode = async (activationCode) => {
   }
 }
 
-// Retry validation
-const retryValidation = () => {
-  error.value = null
-  loading.value = true
-  startNfcScan()
-}
 
 // Go to login page
 const goToLogin = () => {

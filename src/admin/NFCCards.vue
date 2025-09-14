@@ -1117,7 +1117,7 @@ const isDeleting = ref(false)
 const softDeletedCards = ref([])
 const showRestoreModal = ref(false)
 const restoreSearchQuery = ref('')
-const cardToRestore = ref(null)
+
 const isRestoring = ref(false)
 
 const formatDate = (dateString) => {

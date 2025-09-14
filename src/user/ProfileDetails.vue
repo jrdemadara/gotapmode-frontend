@@ -49,7 +49,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, http } from '../config/api'
+import { api} from '../config/api'
 
 const userId = ref(null)
 // Photo upload removed; handled separately in ProfilePhoto page
