@@ -64,7 +64,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, http } from '../config/api'
+import { api, http, userApi } from '../config/api'
 import { processProfileImage } from '../utils/imageUtils'
 
 const router = useRouter()
@@ -130,28 +130,43 @@ onMounted(async () => {
 
 async function onSave() {
   if (!userId.value) return
+  
+  // Validate required fields
+  if (!first.value.trim()) {
+    alert('First name is required')
+    return
+  }
+  if (!last.value.trim()) {
+    alert('Last name is required')
+    return
+  }
+  
   saving.value = true
+  
   try {
-    // 1) Update personal data (names)
-    await http.post('/card-users/personal-data', {
-      first_name: first.value,
-      middle_name: middle.value || null,
-      last_name: last.value,
-    })
-
-    // 2) Update profile (company, bio, picture, etc.) via multipart
-    const formData = new FormData()
-    if (bio.value) formData.append('bio', bio.value)
-    if (company.value) formData.append('company', company.value)
-    if (position.value) formData.append('position', position.value)
-    if (companynumber.value) formData.append('companynumber', companynumber.value)
-    if (companyemail.value) formData.append('companyemail', companyemail.value)
-    if (companyadress.value) formData.append('companyadress', companyadress.value)
-    // Profile photo is now uploaded in a dedicated page
-
-    await http.post('/card-users/profile', formData)
+    console.log('Saving complete profile...')
     
+    // Use the new combined endpoint that saves both tables atomically
+    await userApi.updateCompleteProfile({
+      // Personal data (PersonalData table) - required fields
+      first_name: first.value.trim(),
+      middle_name: middle.value.trim() || null,
+      last_name: last.value.trim(),
+      
+      // Profile data (Profile table) - optional fields
+      bio: bio.value.trim() || null,
+      company: company.value.trim() || null,
+      position: position.value.trim() || null,
+      companynumber: companynumber.value.trim() || null,
+      companyemail: companyemail.value.trim() || null,
+      companyadress: companyadress.value.trim() || null,
+    })
+    
+    console.log('Complete profile saved successfully')
+    
+    // Success - redirect to dashboard
     router.push({ name: 'dashboard' })
+    
   } catch (err) {
     console.error('Error saving profile:', err)
     
@@ -159,7 +174,7 @@ async function onSave() {
     if (err.response?.data?.message) {
       alert('Failed to save profile: ' + err.response.data.message)
     } else {
-      alert('Failed to save profile: ' + (err.message || err))
+      alert('Failed to save profile: ' + (err.message || 'Unknown error'))
     }
   } finally {
     saving.value = false

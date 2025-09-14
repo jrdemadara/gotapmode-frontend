@@ -1,8 +1,8 @@
 // Axios-based API client with proxy-friendly base URL
 import axios from 'axios';
 
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
-// const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
+// const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -16,7 +16,7 @@ export const http = axios.create({
   headers: { 'Accept': 'application/json' },
   timeout: 15000,
   // We use Bearer tokens, not cookies; credentials are unnecessary and can trigger stricter CORS
-  withCredentials: true,
+  withCredentials: false,
 });
 
 http.interceptors.request.use((config) => {
@@ -121,6 +121,7 @@ export const userApi = {
   updatePersonalData: (data) => api.post('/card-users/personal-data', data),
   getProfile: () => api.get('/card-users/profile'),
   updateProfile: (data) => api.post('/card-users/profile', data),
+  updateCompleteProfile: (data) => api.post('/card-users/complete-profile', data),
   activateCard: (activationCode) => api.post('/cards/activate', { activation_code: activationCode }),
   
   // Contact management

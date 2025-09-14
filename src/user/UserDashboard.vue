@@ -715,26 +715,44 @@ onMounted(async () => {
       loadError.value = 'Not logged in.'
       return
     }
-    const data = await userApi.getContacts()
-    phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    try {
-      const pd = await userApi.getPersonalData()
-      if (pd?.full_name) profile.value.name = pd.full_name
-    } catch (_) {}
-    try {
-      const pr = await userApi.getProfile()
-             if (pr?.profile_pic) {
-               profile.value.photo = processProfileImage(pr.profile_pic)
-             } else {
-               profile.value.photo = ''
-             }
-       if (pr?.company) profile.value.company = pr.company
-       if (pr?.bio) profile.value.bio = pr.bio
-       if (pr?.position) profile.value.position = pr.position
-    } catch (_) {}
+
+    // OPTIMIZED: Load all data in parallel instead of sequential
+    const [contactsData, personalData, profileData] = await Promise.all([
+      userApi.getContacts(),
+      userApi.getPersonalData().catch(() => null),
+      userApi.getProfile().catch(() => null)
+    ])
+
+    // OPTIMIZED: Transform data with helper function
+    const transformContacts = (data, type) => {
+      return (data || []).map(r => {
+        const base = { id: r.id, isMain: !!r.is_main }
+        switch(type) {
+          case 'phones': return { ...base, number: r.phonenumber, type: r.type }
+          case 'emails': return { ...base, value: r.email, type: r.type }
+          case 'socials': return { ...base, platform: r.type || 'link', value: r.social }
+          case 'others': return { ...base, value: r.others }
+          default: return base
+        }
+      }).sort((a, b) => a.id - b.id)
+    }
+
+    phones.value = transformContacts(contactsData.phones, 'phones')
+    emails.value = transformContacts(contactsData.emails, 'emails')
+    socials.value = transformContacts(contactsData.socials, 'socials')
+    others.value = transformContacts(contactsData.others, 'others')
+
+    // Update profile data
+    if (personalData?.full_name) profile.value.name = personalData.full_name
+    if (profileData?.profile_pic) {
+      profile.value.photo = processProfileImage(profileData.profile_pic)
+    } else {
+      profile.value.photo = ''
+    }
+    if (profileData?.company) profile.value.company = profileData.company
+    if (profileData?.bio) profile.value.bio = profileData.bio
+    if (profileData?.position) profile.value.position = profileData.position
+
   } catch (e) {
     loadError.value = e?.message || 'Failed to load dashboard.'
   } finally {

@@ -80,8 +80,48 @@ async function upload() {
     hasSavedPhoto.value = true
     router.push({ name: 'dashboard' })
   } catch (err) {
-    try { console.log('Upload error logs:', err?.response?.data?.logs) } catch {}
-    alert(err?.response?.data?.message || err.message || 'Upload failed')
+    console.error('Profile photo upload error:', err)
+    
+    // Enhanced error handling with specific messages for different error types
+    let errorMessage = 'Upload failed. Please try again.'
+    
+    if (err?.response?.data) {
+      const errorData = err.response.data
+      const errorType = errorData.error_type
+      
+      switch (errorType) {
+        case 'directory_creation_failed':
+          errorMessage = 'Unable to create storage folder. Please contact support for assistance.'
+          break
+        case 'permission_denied':
+          errorMessage = 'Permission denied. Unable to save the image. Please contact support.'
+          break
+        case 'storage_full':
+        case 'disk_full':
+          errorMessage = 'Server storage is full. Please contact support.'
+          break
+        case 'file_save_failed':
+          errorMessage = 'Failed to save the image file. Please try again.'
+          break
+        default:
+          errorMessage = errorData.message || 'Upload failed. Please try again.'
+      }
+      
+      // Log detailed error information for debugging
+      if (errorData.logs) {
+        console.log('Upload error logs:', errorData.logs)
+      }
+    } else if (err?.response?.status === 413) {
+      errorMessage = 'Image file is too large. Please choose a smaller image (max 5MB).'
+    } else if (err?.response?.status === 422) {
+      errorMessage = 'Invalid image format. Please choose a valid image file (JPG, PNG, GIF, WebP).'
+    } else if (err?.response?.status === 500) {
+      errorMessage = 'Server error occurred. Please try again later.'
+    } else if (err?.message?.includes('Network Error') || err?.code === 'ERR_NETWORK') {
+      errorMessage = 'Network error. Please check your connection and try again.'
+    }
+    
+    alert(errorMessage)
   } finally {
     saving.value = false
   }
