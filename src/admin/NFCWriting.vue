@@ -443,7 +443,7 @@ const scanNfc = async () => {
     const ndef = new NDEFReader()
     await ndef.scan()
 
-    ndef.addEventListener('reading', async ({ message, serialNumber }) => {
+    ndef.addEventListener('reading', async ({ serialNumber }) => {
       const uid = serialNumber || 'Unknown UID'
       cardData.value.unique_code = uid
       scanning.value = false
@@ -529,7 +529,7 @@ const startWriting = async () => {
     // After successful writing, save to database
     try {
 
-      const response = await adminApi.createNfcCard(cardData.value)
+      await adminApi.createNfcCard(cardData.value)
       
       success.value = 'URL and activation code written to NFC card and saved to database successfully!'
       
@@ -612,27 +612,6 @@ const enableNfc = async () => {
     error.value = 'Failed to enable NFC: ' + err.message
     showNfcEnableModal.value = false
   }
-}
-
-// Navigation functions
-function goDashboard() {
-  showSidebar.value = false
-  router.push({ name: 'admin-dashboard' })
-}
-
-function goUsers() {
-  showSidebar.value = false
-  router.push({ name: 'admin-users' })
-}
-
-function goNfcWriting() {
-  showSidebar.value = false
-  router.push({ name: 'admin-nfc-writing' })
-}
-
-function goAdministrators() {
-  showSidebar.value = false
-  router.push({ name: 'admin-administrators' })
 }
 
 // Logout

@@ -681,12 +681,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { adminApi, api } from '../config/api'
-import { getImageUrl } from '../utils/imageUtils'
+import { addCacheBusting, processProfileImage } from '../utils/imageUtils'
 
 const route = useRoute()
-const router = useRouter()
 
 const loading = ref(true)
 
@@ -762,28 +761,6 @@ const formData = ref({
   socials: [],
         others: []
 })
-
-// Functions
-function addContactInfo() {
-  formData.value.contact_info.push({
-    type: 'phone',
-    value: '',
-    is_main: false
-  })
-}
-
-function removeContactInfo(index) {
-  formData.value.contact_info.splice(index, 1)
-}
-
-function addCard() {
-  formData.value.cards.push({
-    unique_code: '',
-    activation_code: '',
-    is_activated: false
-  })
-}
-
 
 
 // Individual save functions
@@ -874,31 +851,6 @@ async function saveProfileInfo() {
   savingProfile.value = false
 }
 
-async function saveContactsInfo() {
-  if (!user.value) return
-  savingContacts.value = true
-
-  try {
-    await adminApi.updateUser(user.value.id, {
-      contact_info: formData.value.contact_info
-    })
-
-    showSuccessNotification.value = true
-    successMessage.value = 'Contact information updated successfully'
-
-    if (notificationTimer.value) clearTimeout(notificationTimer.value)
-    notificationTimer.value = setTimeout(() => {
-      showSuccessNotification.value = false
-      successMessage.value = ''
-    }, 3000)
-
-  } catch (e) {
-    console.error('Failed to update contacts:', e)
-    alert('Failed to update contacts: ' + e.message)
-  }
-
-  savingContacts.value = false
-}
 
 
 
@@ -1284,21 +1236,6 @@ function socialIcon(platform) {
   return map[platform] || '/icons/web.png'
 }
 
-// Profile picture upload function
-function onProfilePicFile(e) {
-  const file = e.target.files?.[0]
-  if (!file) return
-  
-  // Store the actual file for multipart submission
-  profilePicFile.value = file
-  
-  // Create preview
-  const reader = new FileReader()
-  reader.onload = () => {
-    profilePicPreview.value = reader.result
-  }
-  reader.readAsDataURL(file)
-}
 
 function openPhotoModal() {
   showPhotoModal.value = true
@@ -1327,7 +1264,7 @@ async function saveAdminPhoto() {
     fd.append('profile_pic_file', newPhotoFile.value)
     const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
     try { console.log('Admin photo upload logs (modal):', resp?.logs) } catch {}
-    // Reflect new preview immediately
+    // Reflect new preview immediately (data URL doesn't need cache busting)
     profilePicPreview.value = newPhotoPreview.value
     showPhotoModal.value = false
   } catch (e) {
@@ -1435,12 +1372,12 @@ async function loadUser() {
     console.log('Profile picture URL from API:', profilePicUrl)
     
     if (profilePicUrl) {
-      // If it's already a full URL, use it directly; otherwise process it
+      // If it's already a full URL, add cache busting; otherwise process it with cache busting
       if (profilePicUrl.startsWith('http') || profilePicUrl.startsWith('data:')) {
-        profilePicPreview.value = profilePicUrl
+        profilePicPreview.value = addCacheBusting(profilePicUrl)
       } else {
-        const processedUrl = getImageUrl(profilePicUrl)
-        console.log('Processed URL with getImageUrl:', processedUrl)
+        const processedUrl = processProfileImage(profilePicUrl)
+        console.log('Processed URL with cache busting:', processedUrl)
         profilePicPreview.value = processedUrl
       }
       console.log('Profile picture preview set to:', profilePicPreview.value)

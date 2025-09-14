@@ -59,7 +59,9 @@ function startIdle() {
         }
       } catch (e) {
         console.log('Idle logout API call failed:', e)
+        // Even if API call fails, we still clear local storage
       }
+      // Always clear local storage, regardless of API call success
       localStorage.removeItem('gtm_token')
       localStorage.removeItem('gtm_user')
       window.dispatchEvent(new CustomEvent('gtm:session-timeout'))
