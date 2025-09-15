@@ -1117,7 +1117,7 @@ const isDeleting = ref(false)
 const softDeletedCards = ref([])
 const showRestoreModal = ref(false)
 const restoreSearchQuery = ref('')
-const cardToRestore = ref(null)
+
 const isRestoring = ref(false)
 
 const formatDate = (dateString) => {
@@ -1403,7 +1403,9 @@ async function logout() {
     await adminApi.logout()
   } catch (e) {
     console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
   }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')
   router.replace({ name: 'login' })

@@ -559,7 +559,7 @@ const chartOptions = computed(() => ({
       format: 'MMM dd, yyyy'
     },
     y: {
-      formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+      formatter: function(value, { seriesIndex, w }) {
         const seriesName = w.config.series[seriesIndex].name
         return `<strong>${value}</strong> ${seriesName.toLowerCase()}`
       }
@@ -605,28 +605,17 @@ const chartOptions = computed(() => ({
 }))
 
 function last(arr) { try { return Array.isArray(arr) && arr.length ? arr[arr.length - 1] : 0 } catch { return 0 } }
-function pct(n, d) { if (!d) return 0; return (n / d) * 100 }
-function formatPct(v) { return `${(v||0).toFixed(1)}%` }
-const rateAll = computed(() => pct(stats.value.totals.activated_cards, stats.value.totals.cards))
-const rateToday = computed(() => pct(last(stats.value.series.data.activations), last(stats.value.series.data.cards)))
-const rate7d = computed(() => {
-  const a = (stats.value.series.data.activations || []).slice(-7).reduce((s, v) => s + (+v||0), 0)
-  const c = (stats.value.series.data.cards || []).slice(-7).reduce((s, v) => s + (+v||0), 0)
-  return pct(a, c)
-})
 
 function formatDate(val) { try { return new Date(val).toLocaleString() } catch { return val } }
 
-function goDashboard() { showSidebar.value = false; try { router.replace({ name: 'admin-dashboard' }) } catch {} }
-function goUsers() { showSidebar.value = false; try { router.push({ name: 'admin-users' }) } catch {} }
-function goNfcWriting() { showSidebar.value = false; try { router.push({ name: 'admin-nfc-writing' }) } catch {} }
-function goAdministrators() { showSidebar.value = false; try { router.push({ name: 'admin-administrators' }) } catch {} }
 async function logout() { 
   try {
     await adminApi.logout()
   } catch (e) {
     console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
   }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')
   router.replace({ name: 'login' })

@@ -1563,10 +1563,7 @@ function changePage(page) {
   currentPage.value = page
 }
 
-function changeItemsPerPage(newSize) {
-  itemsPerPage.value = parseInt(newSize)
-  currentPage.value = 1 // Reset to first page when changing page size
-}
+
 
 function validateAndChangePage(page) {
   const validPage = Math.max(1, Math.min(page, totalPages.value))
@@ -1606,32 +1603,15 @@ function getVisiblePages() {
   return pages
 }
 
-function goDashboard() {
-  showSidebar.value = false
-  router.push({ name: 'admin-dashboard' })
-}
-
-function goUsers() {
-  showSidebar.value = false
-  router.push({ name: 'admin-users' })
-}
-
-function goNfcWriting() {
-  showSidebar.value = false
-  router.push({ name: 'admin-nfc-writing' })
-}
-
-function goAdministrators() {
-  showSidebar.value = false
-  router.push({ name: 'admin-administrators' })
-}
 
 async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
     console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
   }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')
   router.replace({ name: 'login' })
