@@ -303,11 +303,11 @@ import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({
   photo: '',
-  name: 'Suharto "Teng" Mangudadatu',
-  subtitle: 'Philippine Shooter & Match Officer Confederation',
-  company: '',
-  bio: '',
-  title: 'PSMOC PRESIDENT',
+  name: 'GoTapMode',
+  subtitle: 'Activate Connection Instantly',
+  company: 'Company',
+  bio: 'Bio',
+  title: 'Position',
 })
 
 const userId = ref(null)
