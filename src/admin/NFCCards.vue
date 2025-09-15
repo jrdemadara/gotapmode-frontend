@@ -1144,23 +1144,69 @@ const getTimeAgo = (dateString) => {
 }
 
 const fetchCards = async () => {
+  console.log('fetchCards: Starting...')
   loading.value = true
   error.value = ''
+  console.log('fetchCards: Loading set to true, error cleared')
 
   try {
     console.log('Fetching NFC cards from API...')
     
     const token = localStorage.getItem('gtm_admin_token')
+    console.log('fetchCards: Token exists:', !!token)
     if (!token) {
       throw new Error('No admin token found')
     }
 
     const data = await adminApi.getCards()
     
-    // Transform the data to ensure it has the expected structure
-    cards.value = data.cards || data.data || data || []
+    console.log('Raw API response:', data)
+    console.log('Response type:', typeof data)
+    console.log('Is array:', Array.isArray(data))
+    console.log('Has data property:', data && 'data' in data)
+    console.log('Data property is array:', data && Array.isArray(data.data))
+    console.log('Has cards property:', data && 'cards' in data)
+    console.log('Cards property type:', data && typeof data.cards)
+    console.log('Cards property is array:', data && Array.isArray(data.cards))
+    if (data && data.cards) {
+      console.log('Cards object keys:', Object.keys(data.cards))
+      console.log('Cards object values:', Object.values(data.cards))
+    }
     
-    console.log('Cards loaded from API:', cards.value)
+    // Transform the data to ensure it has the expected structure
+    // Handle both direct array response and paginated response
+    if (Array.isArray(data)) {
+      cards.value = data
+      console.log('Using data as direct array')
+    } else if (data && Array.isArray(data.data)) {
+      cards.value = data.data
+      console.log('Using data.data array')
+    } else if (data && Array.isArray(data.cards)) {
+      cards.value = data.cards
+      console.log('Using data.cards array')
+    } else if (data && data.cards && typeof data.cards === 'object') {
+      // Handle case where cards is an object (like paginated response)
+      // Check if it has a data property or if it's the actual cards object
+      if (Array.isArray(data.cards.data)) {
+        cards.value = data.cards.data
+        console.log('Using data.cards.data array')
+      } else if (Array.isArray(data.cards.cards)) {
+        cards.value = data.cards.cards
+        console.log('Using data.cards.cards array')
+      } else {
+        // If cards is an object but not the expected structure, try to convert it
+        cards.value = Object.values(data.cards).filter(item => 
+          item && typeof item === 'object' && item.id
+        )
+        console.log('Using Object.values(data.cards) as array')
+      }
+    } else {
+      cards.value = []
+      console.log('No valid array found, using empty array')
+    }
+    
+    console.log('Final cards.value:', cards.value)
+    console.log('Cards count:', cards.value.length)
   } catch (err) {
     console.error('Error fetching cards:', err)
     if (err.message && err.message.includes('401')) {
@@ -1173,26 +1219,52 @@ const fetchCards = async () => {
     error.value = err.message || 'Failed to load NFC cards. Please try again.'
     cards.value = []
   } finally {
+    console.log('fetchCards: Setting loading to false')
     loading.value = false
+    console.log('fetchCards: Final state - loading:', loading.value, 'error:', error.value, 'cards count:', cards.value.length)
   }
 }
 
 // Computed properties
 const filteredCards = computed(() => {
-  if (!searchQuery.value) return cards.value
+  console.log('filteredCards computed - cards.value:', cards.value)
+  console.log('filteredCards computed - isArray:', Array.isArray(cards.value))
+  console.log('filteredCards computed - searchQuery:', searchQuery.value)
+  
+  if (!Array.isArray(cards.value)) {
+    console.log('filteredCards: returning empty array - not an array')
+    return []
+  }
+  if (!searchQuery.value) {
+    console.log('filteredCards: returning all cards - no search query')
+    return cards.value
+  }
 
   const query = searchQuery.value.toLowerCase()
-  return cards.value.filter(card =>
+  const filtered = cards.value.filter(card =>
     card.id.toString().includes(query) ||
     card.user?.name?.toLowerCase().includes(query) ||
     card.user?.email?.toLowerCase().includes(query)
   )
+  console.log('filteredCards: filtered result:', filtered)
+  return filtered
 })
 
 const paginatedCards = computed(() => {
+  console.log('paginatedCards computed - filteredCards.value:', filteredCards.value)
+  console.log('paginatedCards computed - isArray:', Array.isArray(filteredCards.value))
+  console.log('paginatedCards computed - currentPage:', currentPage.value)
+  console.log('paginatedCards computed - itemsPerPage:', itemsPerPage.value)
+  
+  if (!Array.isArray(filteredCards.value)) {
+    console.log('paginatedCards: returning empty array - not an array')
+    return []
+  }
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return filteredCards.value.slice(start, end)
+  const paginated = filteredCards.value.slice(start, end)
+  console.log('paginatedCards: paginated result:', paginated)
+  return paginated
 })
 
 // Watch for search query changes to reset pagination
@@ -1201,16 +1273,19 @@ watch(searchQuery, () => {
 })
 
 const totalPages = computed(() => {
+  if (!Array.isArray(filteredCards.value)) return 0
   return Math.ceil(filteredCards.value.length / itemsPerPage.value)
 })
 
 const paginationInfo = computed(() => {
+  if (!Array.isArray(filteredCards.value)) return { start: 0, end: 0, total: 0 }
   const start = (currentPage.value - 1) * itemsPerPage.value + 1
   const end = Math.min(currentPage.value * itemsPerPage.value, filteredCards.value.length)
   return { start, end, total: filteredCards.value.length }
 })
 
 const filteredRestoreCards = computed(() => {
+  if (!Array.isArray(softDeletedCards.value)) return []
   if (!restoreSearchQuery.value) return softDeletedCards.value
   
   const query = restoreSearchQuery.value.toLowerCase()

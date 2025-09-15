@@ -147,20 +147,30 @@ async function onSave() {
     console.log('Saving complete profile...')
     
     // Use the new combined endpoint that saves both tables atomically
-    await userApi.updateCompleteProfile({
+    // Helper function to convert empty strings to null
+    const emptyToNull = (value) => {
+      const trimmed = value.trim()
+      return trimmed === '' ? null : trimmed
+    }
+
+    const profileData = {
       // Personal data (PersonalData table) - required fields
       first_name: first.value.trim(),
-      middle_name: middle.value.trim() || null,
+      middle_name: emptyToNull(middle.value),
       last_name: last.value.trim(),
       
       // Profile data (Profile table) - optional fields
-      bio: bio.value.trim() || null,
-      company: company.value.trim() || null,
-      position: position.value.trim() || null,
-      companynumber: companynumber.value.trim() || null,
-      companyemail: companyemail.value.trim() || null,
-      companyadress: companyadress.value.trim() || null,
-    })
+      bio: emptyToNull(bio.value),
+      company: emptyToNull(company.value),
+      position: emptyToNull(position.value),
+      companynumber: emptyToNull(companynumber.value),
+      companyemail: emptyToNull(companyemail.value),
+      companyadress: emptyToNull(companyadress.value),
+    }
+    
+    console.log('Sending profile data:', profileData)
+    
+    await userApi.updateCompleteProfile(profileData)
     
     console.log('Complete profile saved successfully')
     
@@ -169,10 +179,14 @@ async function onSave() {
     
   } catch (err) {
     console.error('Error saving profile:', err)
+    console.error('Error response:', err.response)
+    console.error('Error response data:', err.response?.data)
     
     // Enhanced error handling
     if (err.response?.data?.message) {
       alert('Failed to save profile: ' + err.response.data.message)
+    } else if (err.response?.data?.error) {
+      alert('Failed to save profile: ' + err.response.data.error)
     } else {
       alert('Failed to save profile: ' + (err.message || 'Unknown error'))
     }
