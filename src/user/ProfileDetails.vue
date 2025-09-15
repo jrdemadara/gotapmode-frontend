@@ -75,13 +75,19 @@ async function onSubmit() {
   loading.value = true
   try {
     // Save profile data using JSON API
+    // Helper function to convert empty strings to null
+    const emptyToNull = (value) => {
+      const trimmed = value.trim()
+      return trimmed === '' ? null : trimmed
+    }
+    
     const profileData = {
-      bio: bio.value || null,
-      company: company.value || null,
-      position: position.value || null,
-      companynumber: companynumber.value || null,
-      companyemail: companyemail.value || null,
-      companyadress: companyadress.value || null,
+      bio: emptyToNull(bio.value),
+      company: emptyToNull(company.value),
+      position: emptyToNull(position.value),
+      companynumber: emptyToNull(companynumber.value),
+      companyemail: emptyToNull(companyemail.value),
+      companyadress: emptyToNull(companyadress.value),
     }
     
     await api.post('/card-users/profile', profileData)
