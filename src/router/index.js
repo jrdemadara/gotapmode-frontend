@@ -43,7 +43,7 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => { // eslint-disable-line no-unused-vars
   if (to.meta?.requiresAdmin) {
     try {
       const token = localStorage.getItem('gtm_admin_token')

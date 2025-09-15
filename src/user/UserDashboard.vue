@@ -297,17 +297,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, userApi } from '../config/api'
+import { userApi } from '../config/api'
 import Modal from '../components/Modal.vue'
 import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({
   photo: '',
-  name: 'Suharto "Teng" Mangudadatu',
-  subtitle: 'Philippine Shooter & Match Officer Confederation',
-  company: '',
-  bio: '',
-  title: 'PSMOC PRESIDENT',
+  name: 'GoTapMode',
+  subtitle: 'Activate Connection Instantly',
+  company: 'Company',
+  bio: 'Bio',
+  title: 'Position',
 })
 
 const userId = ref(null)
@@ -715,26 +715,44 @@ onMounted(async () => {
       loadError.value = 'Not logged in.'
       return
     }
-    const data = await userApi.getContacts()
-    phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    try {
-      const pd = await userApi.getPersonalData()
-      if (pd?.full_name) profile.value.name = pd.full_name
-    } catch (_) {}
-    try {
-      const pr = await userApi.getProfile()
-             if (pr?.profile_pic) {
-               profile.value.photo = processProfileImage(pr.profile_pic)
-             } else {
-               profile.value.photo = ''
-             }
-       if (pr?.company) profile.value.company = pr.company
-       if (pr?.bio) profile.value.bio = pr.bio
-       if (pr?.position) profile.value.position = pr.position
-    } catch (_) {}
+
+    // OPTIMIZED: Load all data in parallel instead of sequential
+    const [contactsData, personalData, profileData] = await Promise.all([
+      userApi.getContacts(),
+      userApi.getPersonalData().catch(() => null),
+      userApi.getProfile().catch(() => null)
+    ])
+
+    // OPTIMIZED: Transform data with helper function
+    const transformContacts = (data, type) => {
+      return (data || []).map(r => {
+        const base = { id: r.id, isMain: !!r.is_main }
+        switch(type) {
+          case 'phones': return { ...base, number: r.phonenumber, type: r.type }
+          case 'emails': return { ...base, value: r.email, type: r.type }
+          case 'socials': return { ...base, platform: r.type || 'link', value: r.social }
+          case 'others': return { ...base, value: r.others }
+          default: return base
+        }
+      }).sort((a, b) => a.id - b.id)
+    }
+
+    phones.value = transformContacts(contactsData.phones, 'phones')
+    emails.value = transformContacts(contactsData.emails, 'emails')
+    socials.value = transformContacts(contactsData.socials, 'socials')
+    others.value = transformContacts(contactsData.others, 'others')
+
+    // Update profile data
+    if (personalData?.full_name) profile.value.name = personalData.full_name
+    if (profileData?.profile_pic) {
+      profile.value.photo = processProfileImage(profileData.profile_pic)
+    } else {
+      profile.value.photo = ''
+    }
+    if (profileData?.company) profile.value.company = profileData.company
+    if (profileData?.bio) profile.value.bio = profileData.bio
+    if (profileData?.position) profile.value.position = profileData.position
+
   } catch (e) {
     loadError.value = e?.message || 'Failed to load dashboard.'
   } finally {
@@ -764,7 +782,7 @@ async function addPhone(v, t) {
 async function onToggleMain(p) { 
   if (!p?.id) return; 
   try { 
-    const res = await userApi.setMainPhone(p.id); 
+    await userApi.setMainPhone(p.id); 
     // Update only the isMain status without reordering
     phones.value.forEach(phone => {
       phone.isMain = phone.id === p.id;
@@ -816,7 +834,7 @@ async function addOther(v) {
 async function onToggleMainEmail(e) { 
   if (!e?.id) return; 
   try { 
-    const res = await userApi.setMainEmail(e.id); 
+    await userApi.setMainEmail(e.id); 
     // Update only the isMain status without reordering
     emails.value.forEach(email => {
       email.isMain = email.id === e.id;
@@ -826,7 +844,7 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) { 
   if (!s?.id) return; 
   try { 
-    const res = await userApi.setMainSocial(s.id); 
+    await userApi.setMainSocial(s.id); 
     // Update only the isMain status without reordering
     socials.value.forEach(social => {
       social.isMain = social.id === s.id;
@@ -836,7 +854,7 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) { 
   if (!o?.id) return; 
   try { 
-    const res = await userApi.setMainOther(o.id); 
+    await userApi.setMainOther(o.id); 
     // Update only the isMain status without reordering
     others.value.forEach(other => {
       other.isMain = other.id === o.id;
@@ -886,14 +904,14 @@ async function doLogout() {
     await userApi.logout()
   } catch (e) {
     console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
   }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_token')
   localStorage.removeItem('gtm_user')
   window.location.replace('/')
 }
 
-const phoneActions = [ { icon: '/icons/phone-call.png', title: 'Call' } ]
-const emailActions = [ { icon: '/icons/send.png', title: 'Send' } ]
 
 function socialIcon(platform) {
   const map = {
@@ -984,38 +1002,6 @@ function getOtherLinkDisplayName(link) {
   }
 }
 
-// Create a vCard file on the fly so OS can prompt saving to contacts
-async function onSaveToContacts(p) {
-  try {
-    const number = (p?.number || '').toString().replace(/\s+/g, '')
-    if (!number) return
-
-    const fullName = profile.value.name || 'Contact'
-    const org = profile.value.company || ''
-    const vcard = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      `FN:${fullName}`,
-      (org ? `ORG:${org}` : ''),
-      `TEL;TYPE=CELL:${number}`,
-      'END:VCARD'
-    ].filter(Boolean).join('\n')
-
-    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${fullName.replace(/[^a-z0-9_-]+/gi,'_')}.vcf`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 2000)
-
-    try {
-      await navigator.clipboard?.writeText?.(p.number)
-    } catch {}
-  } catch {}
-}
 
 // Open phone app with number; copy as fallback
 async function onDial(p) {
@@ -1072,26 +1058,7 @@ function openOtherLink(other) {
   }
 }
 
-function forceImageReload() {
-  if (profile.value.photo) {
-    const separator = profile.value.photo.includes('?') ? '&' : '?'
-    profile.value.photo = `${profile.value.photo.split('?')[0]}${separator}v=${Date.now()}`
-  }
-}
 
-async function reloadProfileData() {
-  try {
-    const pr = await userApi.getProfile()
-    if (pr?.profile_pic) {
-      profile.value.photo = processProfileImage(pr.profile_pic)
-    } else {
-      profile.value.photo = ''
-    }
-    if (pr?.company) profile.value.company = pr.company
-    if (pr?.bio) profile.value.bio = pr.bio
-    if (pr?.position) profile.value.position = pr.position
-  } catch (_) {}
-}
 </script>
 
 <script>

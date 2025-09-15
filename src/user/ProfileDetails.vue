@@ -49,7 +49,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, http } from '../config/api'
+import { api} from '../config/api'
 
 const userId = ref(null)
 // Photo upload removed; handled separately in ProfilePhoto page
@@ -74,27 +74,27 @@ onMounted(() => {
 async function onSubmit() {
   loading.value = true
   try {
-    // Save text fields only; photo handled in ProfilePhoto page
-    const textForm = new FormData()
-    if (bio.value) textForm.append('bio', bio.value)
-    if (company.value) textForm.append('company', company.value)
-    if (position.value) textForm.append('position', position.value)
-    if (companynumber.value) textForm.append('companynumber', companynumber.value)
-    if (companyemail.value) textForm.append('companyemail', companyemail.value)
-    if (companyadress.value) textForm.append('companyadress', companyadress.value)
-    await http.post('/card-users/profile', textForm)
+    // Save profile data using JSON API
+    const profileData = {
+      bio: bio.value || null,
+      company: company.value || null,
+      position: position.value || null,
+      companynumber: companynumber.value || null,
+      companyemail: companyemail.value || null,
+      companyadress: companyadress.value || null,
+    }
+    
+    await api.post('/card-users/profile', profileData)
     // Continue onboarding to ProfilePhoto page
     router.push({ name: 'profile-photo' })
   } catch (err) {
     console.error('Error saving profile:', err)
     
     // Enhanced error handling
-    if (err.response?.status === 413) {
-      alert('File too large! Please choose a smaller image.')
-    } else if (err.response?.data?.message) {
+    if (err.response?.data?.message) {
       alert('Failed to save profile: ' + err.response.data.message)
     } else {
-      alert('Failed to save profile: ' + (err.message || err))
+      alert('Failed to save profile: ' + (err.message || 'Unknown error'))
     }
   } finally {
     loading.value = false

@@ -242,12 +242,17 @@ function cleanUrl(u) {
 // Helper function to convert image URL to base64
 async function imageUrlToBase64(url) {
   try {
+    console.log('Converting image to base64:', url)
+    
     // Add cache busting to ensure we get the latest image
     const urlWithCacheBust = url.includes('?') ? `${url}&cb=${Date.now()}` : `${url}?cb=${Date.now()}`
     
     const response = await fetch(urlWithCacheBust, {
       mode: 'cors',
-      credentials: 'omit'
+      credentials: 'omit',
+      headers: {
+        'Accept': 'image/*'
+      }
     })
     
     if (!response.ok) {
@@ -256,13 +261,25 @@ async function imageUrlToBase64(url) {
     
     const blob = await response.blob()
     
+    // Check if it's actually an image
+    if (!blob.type.startsWith('image/')) {
+      throw new Error('Response is not an image')
+    }
+    
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result)
-      reader.onerror = (error) => reject(error)
+      reader.onloadend = () => {
+        console.log('Successfully converted image to base64')
+        resolve(reader.result)
+      }
+      reader.onerror = (error) => {
+        console.error('FileReader error:', error)
+        reject(error)
+      }
       reader.readAsDataURL(blob)
     })
   } catch (error) {
+    console.error('Error converting image to base64:', error)
     return null
   }
 }
@@ -313,7 +330,6 @@ async function saveToContacts() {
   const fullName = profile.value.name || 'Contact'
   const org = profile.value.company || ''
   
-  
   // Clean and validate the full name for iOS compatibility
   const cleanName = fullName.trim().replace(/[^\w\s-]/g, '') || 'Contact'
 
@@ -350,56 +366,51 @@ async function saveToContacts() {
     return url ? `URL:${url}` : ''
   }).filter(Boolean)
 
-  // iOS-compatible photo format - use base64 encoding for better compatibility
+  // Enhanced photo handling for VCF
   let photoLine = ''
   if (profile.value.photo) {
-    // Handle different photo formats
-    if (profile.value.photo.startsWith('data:image/')) {
-      // It's already a base64 data URL
-      const base64Data = profile.value.photo.split(',')[1]
-      if (base64Data) {
-        photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64Data}`
-      }
-    } else if (profile.value.photo.startsWith('http')) {
-      // It's a URL - convert to API route first to avoid CORS issues
-      // Extract the relative path from the full URL
-      let relativePath = profile.value.photo
-      if (profile.value.photo.includes('/storage/')) {
-        relativePath = profile.value.photo.split('/storage/')[1]
-      } else if (profile.value.photo.includes('/api/image/')) {
-        relativePath = profile.value.photo.split('/api/image/')[1]
-      }
-      
-      // Remove cache busting parameters
-      relativePath = relativePath.split('?')[0]
-      
-      // Use API route which has CORS enabled on the API origin
-      try {
-        const { BACKEND_BASE } = await import('../config/api')
-        const apiOrigin = new URL(BACKEND_BASE).origin
-        var apiUrl = `${apiOrigin}/api/image/${relativePath}`
-      } catch (_) {
-        var apiUrl = `/api/image/${relativePath}`
-      }
-      
-      try {
-        const base64Data = await imageUrlToBase64(apiUrl)
+    console.log('Processing photo for VCF:', profile.value.photo)
+    
+    try {
+      // Handle different photo formats
+      if (profile.value.photo.startsWith('data:image/')) {
+        // It's already a base64 data URL
+        const base64Data = profile.value.photo.split(',')[1]
         if (base64Data) {
-          const base64String = base64Data.split(',')[1]
-          photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64String}`
-        } else {
-          // Fallback to URI format
-          photoLine = `PHOTO;VALUE=URI:${apiUrl}`
+          photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64Data}`
+          console.log('Using base64 data URL for VCF')
         }
-      } catch (err) {
-        // Try to use the API URL directly as URI
-        photoLine = `PHOTO;VALUE=URI:${apiUrl}`
+      } else if (profile.value.photo.startsWith('http')) {
+        // It's a URL - try to convert to base64
+        console.log('Converting HTTP URL to base64 for VCF')
+        
+        try {
+          const base64Data = await imageUrlToBase64(profile.value.photo)
+          if (base64Data && base64Data.includes(',')) {
+            const base64String = base64Data.split(',')[1]
+            photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64String}`
+            console.log('Successfully converted URL to base64 for VCF')
+          } else {
+            // Fallback to URI format
+            photoLine = `PHOTO;VALUE=URI:${profile.value.photo}`
+            console.log('Using URI format for VCF photo')
+          }
+        } catch (err) {
+          console.warn('Failed to convert photo to base64, using URI:', err)
+          photoLine = `PHOTO;VALUE=URI:${profile.value.photo}`
+        }
+      } else {
+        // Assume it's already base64 data
+        photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${profile.value.photo}`
+        console.log('Using raw base64 data for VCF')
       }
-    } else {
-      // Assume it's already base64 data
-      photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${profile.value.photo}`
+    } catch (err) {
+      console.error('Error processing photo for VCF:', err)
+      // Don't include photo if there's an error
     }
   }
+
+  console.log('Photo line for VCF:', photoLine ? 'Present' : 'Not included')
   
   const v = [
     'BEGIN:VCARD',
@@ -414,6 +425,8 @@ async function saveToContacts() {
     ...webLines,
     'END:VCARD',
   ].filter(Boolean).join('\n')
+
+  console.log('Generated VCF content preview:', v.substring(0, 200) + '...')
 
   const blob = new Blob([v], { type: 'text/vcard;charset=utf-8' })
   const url = URL.createObjectURL(blob)

@@ -98,7 +98,7 @@ async function onSubmit() {
     const guessedName = email.value?.split('@')[0] || 'New User'
     
     // Step 1: Register the user
-    const user = await userApi.register(guessedName, email.value, password.value)
+    await userApi.register(guessedName, email.value, password.value)
     
     // Step 2: Login the user to get authentication token
     const loginResponse = await userApi.login(email.value, password.value)
