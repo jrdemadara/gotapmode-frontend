@@ -7,7 +7,15 @@
     </div>
 
     <section class="w-full max-w-2xl bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-5 sm:p-7">
-      <!-- Avatar preview and photo change removed as requested -->
+      <!-- Profile photo at top -->
+      <div class="flex items-center justify-center mb-5">
+        <label for="profile-pic" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden hover:shadow-md transition-shadow">
+          <input id="profile-pic" name="profile-pic" type="file" accept="image/*" class="hidden" @change="onPick" />
+          <img v-if="profilePicPreview" :src="profilePicPreview" class="w-full h-full object-cover" />
+          <span v-else class="text-xs opacity-70">Click to upload</span>
+        </label>
+      </div>
+      <div class="flex items-center justify-center"></div>
 
       <!-- Full name -->
       <div class="grid sm:grid-cols-3 gap-3">
@@ -76,7 +84,7 @@ const middle = ref('')
 const last = ref('')
 
 // Profile
-//const profilePicFile = ref(null) // deprecated here; handled in ProfilePhoto page
+const profilePicFile = ref(null)
 const profilePicPreview = ref('')
 const bio = ref('')
 const company = ref('')
@@ -85,6 +93,7 @@ const companynumber = ref('')
 const companyemail = ref('')
 const companyadress = ref('')
 const saving = ref(false)
+const savingPhoto = ref(false)
 
 onMounted(async () => {
   try {
@@ -126,7 +135,51 @@ onMounted(async () => {
   }
 })
 
-// Photo upload moved to ProfilePhoto page
+function onPick(e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  if (!/^image\//.test(f.type)) {
+    alert('Please choose a valid image file.')
+    e.target.value = ''
+    return
+  }
+  // Backend limit is 2MB (max:2048 in validation)
+  if (f.size > 2 * 1024 * 1024) {
+    alert('Image is too large. Max 2MB allowed.')
+    e.target.value = ''
+    return
+  }
+  profilePicFile.value = f
+  profilePicPreview.value = URL.createObjectURL(f)
+}
+
+async function uploadPhoto() {
+  if (!profilePicFile.value) return
+  savingPhoto.value = true
+  try {
+    const fd = new FormData()
+    fd.append('profile_pic_file', profilePicFile.value)
+    const resp = await http.post('/card-users/profile/picture', fd)
+    const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
+    if (url) {
+      profilePicPreview.value = url
+    }
+    profilePicFile.value = null
+    alert('Profile photo updated.')
+  } catch (err) {
+    let errorMessage = 'Upload failed. Please try again.'
+    if (err?.response?.status === 422) {
+      errorMessage = 'Invalid image. Use JPG, PNG, GIF, or WebP up to 2MB.'
+    } else if (err?.response?.status === 413) {
+      errorMessage = 'Image too large. Max size is 2MB.'
+    } else if (err?.response?.status === 500) {
+      errorMessage = err?.response?.data?.message || 'Server error. Please try again later.'
+    }
+    alert(errorMessage)
+  } finally {
+    savingPhoto.value = false
+  }
+}
 
 async function onSave() {
   if (!userId.value) return
@@ -144,6 +197,17 @@ async function onSave() {
   saving.value = true
   
   try {
+    // If a new photo was selected, upload it first
+    if (profilePicFile.value) {
+      const fd = new FormData()
+      fd.append('profile_pic_file', profilePicFile.value)
+      const resp = await http.post('/card-users/profile/picture', fd)
+      const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
+      if (url) {
+        profilePicPreview.value = url
+      }
+      profilePicFile.value = null
+    }
     console.log('Saving complete profile...')
     
     // Use the new combined endpoint that saves both tables atomically
