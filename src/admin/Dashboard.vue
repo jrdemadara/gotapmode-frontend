@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
     <!-- Desktop Sidebar -->
-    <div class="hidden lg:flex flex-col bg-white border-r border-gray-200 shadow-sm" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+    <div class="hidden lg:flex flex-col bg-white/80 backdrop-blur-sm border-r border-gray-200/50 shadow-xl" :class="sidebarCollapsed ? 'w-16' : 'w-64'">
       <!-- Sidebar Header -->
       <div class="p-4 border-b border-gray-200">
         <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
@@ -97,126 +97,176 @@
         </div>
       </div>
 
-      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <main class="flex-1 p-6 sm:p-8">
+      <div class="max-w-7xl mx-auto w-full space-y-8 sm:space-y-10">
 
-      <div v-if="loading || error" class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-        <div v-if="loading">Loading admin dashboard…</div>
-        <div v-else class="text-red-600">{{ error }}</div>
+      <div v-if="loading || error" class="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg p-8 text-center">
+        <div v-if="loading" class="text-gray-600 text-lg">Loading admin dashboard…</div>
+        <div v-else class="text-red-600 text-lg">{{ error }}</div>
       </div> 
       
       <template v-else>
-        <!-- Main Metrics - Responsive Grid -->
+        <!-- Main Metrics Row - All 5 cards in one horizontal row -->
         <section>
-          <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
+          <div class="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 md:gap-6">
             <!-- Registered Users -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Registered Users</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.card_users }}</div>
-                <div class="text-[9px] sm:text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">
-                  Today: {{ last(stats.series?.data?.card_users) }}
+            <div class="group relative bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-blue-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">
+                    <span class="sm:hidden">Users</span>
+                    <span class="hidden sm:block">Registered Users</span>
+                  </div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-blue-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.card_users }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-blue-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-blue-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Today: {{ last(stats.series?.data?.card_users) }}</div>
                 </div>
               </div>
             </div>
 
             <!-- Cards -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Cards</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.cards }}</div>
-                <div class="text-[9px] sm:text-xs text-purple-600 font-medium bg-purple-50 px-2 py-0.5 rounded-full">
-                  Today: {{ last(stats.series?.data?.cards) }}
+            <div class="group relative bg-gradient-to-br from-white via-purple-50/30 to-purple-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-purple-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600 group-hover:text-purple-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 114 0 2 2 0 01-4 0zm8 0a2 2 0 114 0 2 2 0 01-4 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Cards</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-purple-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.cards }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-purple-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-purple-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Today: {{ last(stats.series?.data?.cards) }}</div>
                 </div>
               </div>
             </div>
 
             <!-- Activated -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Activated</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.activated_cards }}</div>
-                <div class="text-[9px] sm:text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">
-                  Today: {{ last(stats.series?.data?.activations) }}
+            <div class="group relative bg-gradient-to-br from-white via-green-50/30 to-green-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-green-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600 group-hover:text-green-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Activated</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-green-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.activated_cards }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-green-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-green-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Today: {{ last(stats.series?.data?.activations) }}</div>
                 </div>
               </div>
             </div>
 
             <!-- Expired Cards -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Expired Cards</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ stats.totals.expired_cards }}</div>
-                <div class="text-[9px] sm:text-xs text-orange-600 font-medium bg-orange-50 px-2 py-0.5 rounded-full">
-                  Expired
+            <div class="group relative bg-gradient-to-br from-white via-orange-50/30 to-orange-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-orange-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600 group-hover:text-orange-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
                 </div>
-              </div>
-            </div>
-
-            <!-- Unactivated -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Unactivated</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ unactivatedCards }}</div>
-                <div class="text-[9px] sm:text-xs text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded-full">
-                  Pending
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Expired Cards</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-orange-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.expired_cards }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-orange-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-orange-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Expired</div>
                 </div>
               </div>
             </div>
 
             <!-- Taps / Day -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Taps / Day</div>
-                <div class="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{{ last(stats.series?.data?.taps) }}</div>
-                <div class="text-[9px] sm:text-xs text-pink-600 font-medium bg-pink-50 px-2 py-0.5 rounded-full">
-                  vs. yesterday: {{ deltaSign(last(stats.series?.data?.taps) - secondLast(stats.series?.data?.taps)) }}
+            <div class="group relative bg-gradient-to-br from-white via-pink-50/30 to-pink-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-pink-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-pink-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-pink-600 group-hover:text-pink-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Taps / Day</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-pink-900 transition-colors duration-300 text-center sm:text-left">{{ last(stats.series?.data?.taps) }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-pink-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-pink-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">vs. yesterday: {{ deltaSign(last(stats.series?.data?.taps) - secondLast(stats.series?.data?.taps)) }}</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Contact Metrics - Responsive Grid -->
-        <section>
-          <div class="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-            <!-- Emails -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Emails</div>
-                <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.emails }}</div>
+        <!-- Contact Metrics Row -->
+        <section class="mt-4 sm:mt-6">
+          <div class="grid grid-cols-4 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+            <!-- Email Addresses -->
+            <div class="group relative bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-blue-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Email Addresses</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-blue-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.emails }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-blue-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-blue-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Contact Info</div>
+                </div>
               </div>
             </div>
 
-            <!-- Phones -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Phones</div>
-                <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.phones }}</div>
+            <!-- Contact Numbers -->
+            <div class="group relative bg-gradient-to-br from-white via-green-50/30 to-green-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-green-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600 group-hover:text-green-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Contact Numbers</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-green-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.phones }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-green-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-green-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Phone Numbers</div>
+                </div>
               </div>
             </div>
 
-            <!-- Socials -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Socials</div>
-                <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.socials }}</div>
+            <!-- Social Links -->
+            <div class="group relative bg-gradient-to-br from-white via-purple-50/30 to-purple-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-purple-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600 group-hover:text-purple-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Social Links</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-purple-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.socials }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-purple-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-purple-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Social Media</div>
+                </div>
               </div>
             </div>
 
-            <!-- Others -->
-            <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
-              <div class="flex flex-col items-center text-center">
-                <div class="text-xs sm:text-sm text-gray-600 font-medium mb-1">Others</div>
-                <div class="text-base sm:text-lg font-extrabold text-gray-900">{{ stats.totals.others }}</div>
+            <!-- Other Links -->
+            <div class="group relative bg-gradient-to-br from-white via-orange-50/30 to-orange-100/20 rounded-lg sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl border border-orange-200/50 transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 hover:scale-102 sm:hover:scale-105 overflow-hidden min-h-[80px] sm:min-h-[150px]">
+              <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:gap-4 h-full">
+                <div class="relative w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-md sm:rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-md sm:shadow-lg group-hover:shadow-lg sm:group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 sm:group-hover:scale-110">
+                  <div class="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-transparent rounded-md sm:rounded-xl"></div>
+                  <svg class="relative w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600 group-hover:text-orange-700 transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex-1 min-w-0 text-center sm:text-left flex flex-col justify-center h-full">
+                  <div class="text-[8px] sm:text-xs md:text-sm text-gray-700 font-semibold mb-0.5 sm:mb-1 group-hover:text-gray-800 transition-colors duration-300">Other Links</div>
+                  <div class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-orange-900 transition-colors duration-300 text-center sm:text-left">{{ stats.totals.others }}</div>
+                  <div class="text-[7px] sm:text-[10px] md:text-xs text-orange-600 font-medium mt-auto pt-1 sm:pt-0 sm:mt-1 bg-orange-100/50 px-1 sm:px-2 py-0.5 rounded-full inline-block">Web Links</div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         <!-- Chart and Sidebar Section -->
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <!-- Chart Section -->
-          <div class="bg-white rounded-lg p-4 sm:p-6 lg:p-8 lg:col-span-2 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 lg:col-span-2 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
             <!-- Header Section -->
             <div class="flex flex-col mb-4 sm:mb-6">
               <div class="mb-3 sm:mb-0">
@@ -289,7 +339,7 @@
             </div>
 
             <!-- System Health -->
-          <div class="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">System Health</h3>
               <div class="space-y-4">
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
@@ -312,12 +362,13 @@
           </div>
         </section>
       </template>
+      </div>
     </main>
     </div>
 
     <!-- Mobile Sidebar -->
     <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
-    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
+    <div v-if="showSidebar" class="fixed right-0 top-0 h-full w-80 bg-white/95 backdrop-blur-sm shadow-2xl z-50 transform transition-transform duration-300 lg:hidden">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-4">
           <img src="/logo/GoTapMode.png" alt="logo" class="w-12 h-12 object-contain" />
@@ -377,7 +428,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { adminApi, api } from '../config/api'
 
@@ -390,6 +441,48 @@ const adminName = ref('Admin')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
 const health = ref({ ok: false, time: '', rttMs: '-' })
+
+// Uniform stat card component for consistent layout/placement
+const StatCard = defineComponent({
+  props: {
+    label: { type: String, required: true },
+    value: { type: [String, Number], required: true },
+    color: { type: String, default: 'blue' },
+    chipText: { type: String, default: '' },
+  },
+  setup(props, { slots }) {
+    const styles = computed(() => {
+      const map = {
+        blue:   { from: 'from-blue-100',   to: 'to-blue-200',   text: 'text-blue-600',   chipText: 'text-blue-700',   chipBg: 'bg-blue-50' },
+        purple: { from: 'from-purple-100', to: 'to-purple-200', text: 'text-purple-600', chipText: 'text-purple-700', chipBg: 'bg-purple-50' },
+        green:  { from: 'from-green-100',  to: 'to-green-200',  text: 'text-green-600',  chipText: 'text-green-700',  chipBg: 'bg-green-50' },
+        orange: { from: 'from-orange-100', to: 'to-orange-200', text: 'text-orange-600', chipText: 'text-orange-700', chipBg: 'bg-orange-50' },
+        red:    { from: 'from-red-100',    to: 'to-red-200',    text: 'text-red-600',    chipText: 'text-red-700',    chipBg: 'bg-red-50' },
+        pink:   { from: 'from-pink-100',   to: 'to-pink-200',   text: 'text-pink-600',   chipText: 'text-pink-700',   chipBg: 'bg-pink-50' },
+      }
+      return map[props.color] || map.blue
+    })
+    return { styles, slots }
+  },
+  template: `
+    <div class="min-h-[160px] bg-white/95 rounded-2xl p-6 border border-gray-200/60 shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5">
+      <div class="h-full flex flex-col">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-md" :class="[styles.from, styles.to]">
+            <slot name="icon"></slot>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs sm:text-sm text-gray-700 font-bold leading-tight min-h-[1.5rem]">{{ label }}</div>
+            <div class="mt-1 text-3xl font-extrabold text-gray-900 leading-none truncate">{{ value }}</div>
+          </div>
+        </div>
+        <div v-if="chipText" class="mt-auto pt-3">
+          <span class="inline-block text-[10px] sm:text-xs font-medium px-2 py-0.5 rounded-full" :class="[styles.chipText, styles.chipBg]">{{ chipText }}</span>
+        </div>
+      </div>
+    </div>
+  `,
+})
 
 // derived
 const unactivatedCards = computed(() => Math.max(0, (stats.value.totals?.cards || 0) - (stats.value.totals?.activated_cards || 0)))
@@ -467,16 +560,23 @@ const chartOptions = computed(() => ({
     },
     background: 'transparent'
   },
-  colors: ['#1F2937', '#6B7280', '#3B82F6', '#EC4899'],
+  colors: ['#000000', '#374151', '#1D4ED8', '#DC2626'],
   stroke: {
-    curve: 'smooth',
-    width: [3, 3, 3, 4],
-    lineCap: 'round'
+    curve: 'straight',
+    width: [4, 4, 4, 5],
+    lineCap: 'round',
+    opacity: 1
+  },
+  fill: {
+    type: 'solid',
+    opacity: 1
   },
   markers: {
     size: [4, 4, 4, 5],
     strokeWidth: 2,
     strokeColors: '#fff',
+    fillOpacity: 1,
+    strokeOpacity: 1,
     hover: {
       size: [6, 6, 6, 7]
     }
