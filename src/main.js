@@ -48,7 +48,7 @@ let idleController = null
 function startIdle() {
   if (idleController) return
   idleController = initIdleLogout({
-    idleMs: 10 * 60 * 1000, // 3 minutes
+    idleMs: 5 * 60 * 1000, // 5 minutes
     onTimeout: async () => {
       try {
         // Try to logout via API if user is logged in
