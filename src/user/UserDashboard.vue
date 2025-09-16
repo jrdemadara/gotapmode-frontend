@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-10 relative">
     <!-- Hamburger button -->
-    <button @click="showSidebar = true" class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-300 bg-white/90 backdrop-blur flex flex-col items-center justify-center gap-1 shadow-sm">
+    <button @click="showSidebar = true" class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-200 bg-white flex flex-col items-center justify-center gap-1">
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
@@ -274,13 +274,6 @@
           </span>
           <span class="opacity-60">›</span>
         </button>
-        <button @click="goProfilePhoto" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
-          <span class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center text-xs shadow-sm">PP</span>
-            <span class="text-sm">Profile Photo</span>
-          </span>
-          <span class="opacity-60">›</span>
-        </button>
         <button @click="doLogout" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
           <span class="flex items-center gap-3">
             <span class="w-9 h-9 rounded-xl bg-red-600/90 text-white flex items-center justify-center text-xs shadow-sm">LO</span>
@@ -304,7 +297,7 @@ import { processProfileImage } from '../utils/imageUtils'
 const profile = ref({
   photo: '',
   name: 'GoTapMode',
-  subtitle: 'Activate Connection Instantly',
+  subtitle: 'Activate Connection Instantly',  
   company: 'Company',
   bio: 'Bio',
   title: 'Position',
@@ -894,10 +887,7 @@ function goEditProfile() {
   try { router.push({ name: 'edit-profile' }) } catch {}
 }
 
-function goProfilePhoto() {
-  showSidebar.value = false
-  try { router.push({ name: 'profile-photo' }) } catch {}
-}
+// Removed goProfilePhoto; profile photo handled in Edit Profile and Profile Details
 
 async function doLogout() {
   try {
