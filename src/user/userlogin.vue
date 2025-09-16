@@ -48,7 +48,7 @@
       </form>
 
       <div class="text-center text-sm mt-4 opacity-90">
-        <a href="#" @click.prevent="onRegister">I don't have GoTapMode</a>
+        <a href="#" @click.prevent="onRegister">GoTapMode</a>
       </div>
     </section>
     <Modal v-model="showError" title="Login failed" :message="errorMsg" />
