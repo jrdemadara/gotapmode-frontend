@@ -49,7 +49,19 @@ function startIdle() {
   if (idleController) return
   idleController = initIdleLogout({
     idleMs: 10 * 60 * 1000, // 3 minutes
-    onTimeout: () => {
+    onTimeout: async () => {
+      try {
+        // Try to logout via API if user is logged in
+        const token = localStorage.getItem('gtm_token')
+        if (token) {
+          const { userApi } = await import('./config/api')
+          await userApi.logout()
+        }
+      } catch (e) {
+        console.log('Idle logout API call failed:', e)
+        // Even if API call fails, we still clear local storage
+      }
+      // Always clear local storage, regardless of API call success
       localStorage.removeItem('gtm_token')
       localStorage.removeItem('gtm_user')
       window.dispatchEvent(new CustomEvent('gtm:session-timeout'))

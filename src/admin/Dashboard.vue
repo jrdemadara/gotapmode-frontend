@@ -41,6 +41,12 @@
           </svg>
           <span v-if="!sidebarCollapsed">NFC Writing</span>
         </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Card Clear</span>
+        </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
           <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -341,6 +347,12 @@
           </svg>
           NFC Writing
         </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Card Clear
+        </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -547,7 +559,7 @@ const chartOptions = computed(() => ({
       format: 'MMM dd, yyyy'
     },
     y: {
-      formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+      formatter: function(value, { seriesIndex, w }) {
         const seriesName = w.config.series[seriesIndex].name
         return `<strong>${value}</strong> ${seriesName.toLowerCase()}`
       }
@@ -593,23 +605,21 @@ const chartOptions = computed(() => ({
 }))
 
 function last(arr) { try { return Array.isArray(arr) && arr.length ? arr[arr.length - 1] : 0 } catch { return 0 } }
-function pct(n, d) { if (!d) return 0; return (n / d) * 100 }
-function formatPct(v) { return `${(v||0).toFixed(1)}%` }
-const rateAll = computed(() => pct(stats.value.totals.activated_cards, stats.value.totals.cards))
-const rateToday = computed(() => pct(last(stats.value.series.data.activations), last(stats.value.series.data.cards)))
-const rate7d = computed(() => {
-  const a = (stats.value.series.data.activations || []).slice(-7).reduce((s, v) => s + (+v||0), 0)
-  const c = (stats.value.series.data.cards || []).slice(-7).reduce((s, v) => s + (+v||0), 0)
-  return pct(a, c)
-})
 
 function formatDate(val) { try { return new Date(val).toLocaleString() } catch { return val } }
 
-function goDashboard() { showSidebar.value = false; try { router.replace({ name: 'admin-dashboard' }) } catch {} }
-function goUsers() { showSidebar.value = false; try { router.push({ name: 'admin-users' }) } catch {} }
-function goNfcWriting() { showSidebar.value = false; try { router.push({ name: 'admin-nfc-writing' }) } catch {} }
-function goAdministrators() { showSidebar.value = false; try { router.push({ name: 'admin-administrators' }) } catch {} }
-function logout() { localStorage.removeItem('gtm_admin_token'); localStorage.removeItem('gtm_admin_user'); router.replace({ name: 'login' }) }
+async function logout() { 
+  try {
+    await adminApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
+  }
+  // Always clear local storage and redirect, regardless of API call success
+  localStorage.removeItem('gtm_admin_token')
+  localStorage.removeItem('gtm_admin_user')
+  router.replace({ name: 'login' })
+}
 
 async function refreshHealth() {
   try { const t0 = performance.now(); const res = await api.get('/health'); const t1 = performance.now(); health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } }

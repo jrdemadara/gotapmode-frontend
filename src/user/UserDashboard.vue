@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-10 relative">
     <!-- Hamburger button -->
-    <button @click="showSidebar = true" class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-300 bg-white/90 backdrop-blur flex flex-col items-center justify-center gap-1 shadow-sm">
+    <button @click="showSidebar = true" class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-200 bg-white flex flex-col items-center justify-center gap-1">
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
@@ -21,7 +21,7 @@
 
     <!-- Profile header -->
     <div class="flex flex-col items-center mb-6">
-      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user-circle.svg'" alt="profile" />
+      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user.png'" alt="profile" />
              <h2 class="mt-4 text-xl font-extrabold">{{ formatPosition(profile.name) }}</h2>
        <p class="text-sm opacity-80 font-bold">{{formatPosition(profile.company) }}</p>
        <p class="text-sm opacity-70 font-bold text-blue-500" v-if="profile.position">{{ formatPosition(profile.position) }}</p>
@@ -155,12 +155,12 @@
     <Modal v-model="showAddPhone" title="Add Phone">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Phone number</label>
-          <input v-model="newPhone" type="tel" inputmode="tel" placeholder="e.g. 0977 301 6902" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-phone" class="block text-xs font-medium mb-1">Phone number</label>
+          <input id="new-phone" name="new-phone" v-model="newPhone" type="tel" inputmode="tel" placeholder="e.g. 0977 301 6902" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Type</label>
-          <select v-model="newPhoneType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <label for="new-phone-type" class="block text-xs font-medium mb-1">Type</label>
+          <select id="new-phone-type" name="new-phone-type" v-model="newPhoneType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
             <option value="telephone">Telephone</option>
@@ -179,12 +179,12 @@
     <Modal v-model="showAddEmail" title="Add Email">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Email</label>
-          <input v-model="newEmail" type="email" placeholder="name@company.com" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-email" class="block text-xs font-medium mb-1">Email</label>
+          <input id="new-email" name="new-email" v-model="newEmail" type="email" placeholder="name@company.com" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Type</label>
-          <select v-model="newEmailType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <label for="new-email-type" class="block text-xs font-medium mb-1">Type</label>
+          <select id="new-email-type" name="new-email-type" v-model="newEmailType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
           </select>
@@ -202,25 +202,27 @@
     <Modal v-model="showAddSocial" title="Add Social Link">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">URL / Username</label>
-          <input v-model="newSocial" placeholder="https://platform/username" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-social" class="block text-xs font-medium mb-1">URL / Username</label>
+          <input id="new-social" name="new-social" v-model="newSocial" placeholder="https://platform/username" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Platform</label>
+          <label for="social-platform-select" class="block text-xs font-medium mb-1">Platform</label>
           <div class="relative" ref="socialPlatformContainer">
-            <button type="button" @click="showSocialTypePicker = !showSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
+            <button id="social-platform-select" type="button" @click="toggleSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
               <span class="flex items-center gap-2">
                 <img :src="currentSocialPlatform.icon" class="w-5 h-5" />
                 <span>{{ currentSocialPlatform.label }}</span>
               </span>
               <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.063l3.71-3.832a.75.75 0 111.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
             </button>
-            <div v-if="showSocialTypePicker" class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 sm:max-h-48 max-h-40">
-              <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)" class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
-                <img :src="p.icon" class="w-5 h-5 flex-shrink-0" />
-                <span class="text-sm">{{ p.label }}</span>
-              </button>
-            </div>
+            <teleport to="body">
+              <div v-if="showSocialTypePicker" class="fixed z-[9999] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="background-color: white !important; opacity: 1 !important; backdrop-filter: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;" :style="dropdownStyle">
+                <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)" class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
+                  <img :src="p.icon" class="w-5 h-5 flex-shrink-0" />
+                  <span class="text-sm">{{ p.label }}</span>
+                </button>
+              </div>
+            </teleport>
           </div>
         </div>
       </div>
@@ -236,8 +238,8 @@
     <Modal v-model="showAddOther" title="Add Other Link">
       <div class="space-y-4">
         <div class="text-left">
-          <label class="block text-xs font-medium mb-1">Link</label>
-          <input v-model="newOther" placeholder="https://your-link" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <label for="new-other" class="block text-xs font-medium mb-1">Link</label>
+          <input id="new-other" name="new-other" v-model="newOther" placeholder="https://your-link" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
       </div>
       <template #footer>
@@ -254,7 +256,7 @@
       <!-- Header -->
       <div class="px-5 pt-6 pb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <img :src="profile.photo || '/icons/user-circle.svg'" alt="avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
+          <img :src="profile.photo || '/icons/user.png'" alt="avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
           <div>
             <div class="text-sm font-extrabold leading-tight">{{ profile.name || 'User' }}</div>
             <div class="text-xs opacity-70">GoTapMode</div>
@@ -286,18 +288,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../config/api'
+import { userApi } from '../config/api'
 import Modal from '../components/Modal.vue'
+import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({
   photo: '',
-  name: 'Suharto "Teng" Mangudadatu',
-  subtitle: 'Philippine Shooter & Match Officer Confederation',
-  company: '',
-  bio: '',
-  title: 'PSMOC PRESIDENT',
+  name: 'GoTapMode',
+  subtitle: 'Activate Connection Instantly',  
+  company: 'Company',
+  bio: 'Bio',
+  title: 'Position',
 })
 
 const userId = ref(null)
@@ -319,12 +322,13 @@ const newEmail = ref('')
 const newEmailType = ref('personal')
 const showAddSocial = ref(false)
 const newSocial = ref('')
-const newSocialType = ref('link')
+const newSocialType = ref('facebook')
 const showAddOther = ref(false)
 const newOther = ref('')
 
 // Refs for click-outside handling
 const socialPlatformContainer = ref(null)
+const dropdownStyle = ref({})
 
 // Social platforms list with icons
 const socialPlatforms = [
@@ -350,12 +354,63 @@ const socialPlatforms = [
 
 ]
 const showSocialTypePicker = ref(false)
-const currentSocialPlatform = ref(socialPlatforms.find(p => p.key === newSocialType.value) || socialPlatforms[socialPlatforms.length - 1])
+const currentSocialPlatform = ref(socialPlatforms.find(p => p.key === newSocialType.value) || socialPlatforms[0])
 function selectSocialPlatform(key) {
   newSocialType.value = key
   currentSocialPlatform.value = socialPlatforms.find(p => p.key === key) || socialPlatforms[0]
   showSocialTypePicker.value = false
+  
+  // Auto-fill the textbox with platform-specific URL template
+  const platformTemplates = {
+    facebook: 'https://facebook.com/',
+    instagram: 'https://instagram.com/',
+    twitter: 'https://twitter.com/',
+    linkedin: 'https://linkedin.com/in/',
+    youtube: 'https://youtube.com/@',
+    tiktok: 'https://tiktok.com/@',
+    snapchat: 'https://snapchat.com/add/',
+    whatsapp: 'https://wa.me/',
+    telegram: 'https://t.me/',
+    discord: 'https://discord.gg/',
+    github: 'https://github.com/',
+    behance: 'https://behance.net/',
+    dribbble: 'https://dribbble.com/',
+    pinterest: 'https://pinterest.com/',
+    reddit: 'https://reddit.com/user/',
+    twitch: 'https://twitch.tv/',
+    spotify: 'https://open.spotify.com/user/',
+    soundcloud: 'https://soundcloud.com/',
+    vimeo: 'https://vimeo.com/',
+    medium: 'https://medium.com/@',
+    patreon: 'https://patreon.com/',
+    onlyfans: 'https://onlyfans.com/',
+    link: 'https://'
+  }
+  
+  newSocial.value = platformTemplates[key] || 'https://'
 }
+
+function updateDropdownPosition() {
+  if (socialPlatformContainer.value && showSocialTypePicker.value) {
+    const rect = socialPlatformContainer.value.getBoundingClientRect()
+    dropdownStyle.value = {
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`
+    }
+  }
+}
+
+function toggleSocialTypePicker() {
+  showSocialTypePicker.value = !showSocialTypePicker.value
+  if (showSocialTypePicker.value) {
+    // Use nextTick to ensure DOM is updated before calculating position
+    nextTick(() => {
+      updateDropdownPosition()
+    })
+  }
+}
+
 
 // Click outside handler for dropdowns
 function handleClickOutside(event) {
@@ -365,27 +420,284 @@ function handleClickOutside(event) {
 }
 function openAddPhone() { showAddPhone.value = true; newPhone.value = '' }
 function openAddEmail() { showAddEmail.value = true; newEmail.value = '' }
-function openAddSocial() { showAddSocial.value = true; newSocial.value = '' }
+function openAddSocial() { 
+  showAddSocial.value = true
+  // Initialize with Facebook as default
+  newSocialType.value = 'facebook'
+  currentSocialPlatform.value = socialPlatforms.find(p => p.key === 'facebook') || socialPlatforms[0]
+  newSocial.value = 'https://facebook.com/'
+}
 function openAddOther() { showAddOther.value = true; newOther.value = '' }
+
+// Platform-specific URL validation
+function validateSocialUrlForPlatform(url, platform) {
+  const lowerUrl = url.toLowerCase()
+  
+  switch (platform) {
+    case 'facebook':
+      return lowerUrl.includes('facebook.com/') || lowerUrl.includes('fb.com/')
+    case 'instagram':
+      return lowerUrl.includes('instagram.com/')
+    case 'twitter':
+      return lowerUrl.includes('twitter.com/') || lowerUrl.includes('x.com/')
+    case 'linkedin':
+      return lowerUrl.includes('linkedin.com/in/') || lowerUrl.includes('linkedin.com/company/')
+    case 'youtube':
+      return lowerUrl.includes('youtube.com/') || lowerUrl.includes('youtu.be/')
+    case 'tiktok':
+      return lowerUrl.includes('tiktok.com/@')
+    case 'snapchat':
+      return lowerUrl.includes('snapchat.com/add/')
+    case 'whatsapp':
+      return lowerUrl.includes('wa.me/') || lowerUrl.includes('whatsapp.com/')
+    case 'telegram':
+      return lowerUrl.includes('t.me/')
+    case 'discord':
+      return lowerUrl.includes('discord.gg/') || lowerUrl.includes('discord.com/')
+    case 'github':
+      return lowerUrl.includes('github.com/')
+    case 'behance':
+      return lowerUrl.includes('behance.net/')
+    case 'dribbble':
+      return lowerUrl.includes('dribbble.com/')
+    case 'pinterest':
+      return lowerUrl.includes('pinterest.com/')
+    case 'reddit':
+      return lowerUrl.includes('reddit.com/')
+    case 'twitch':
+      return lowerUrl.includes('twitch.tv/')
+    case 'spotify':
+      return lowerUrl.includes('open.spotify.com/')
+    case 'soundcloud':
+      return lowerUrl.includes('soundcloud.com/')
+    case 'vimeo':
+      return lowerUrl.includes('vimeo.com/')
+    case 'medium':
+      return lowerUrl.includes('medium.com/')
+    case 'patreon':
+      return lowerUrl.includes('patreon.com/')
+    case 'onlyfans':
+      return lowerUrl.includes('onlyfans.com/')
+    case 'link':
+      return true // Generic link, any valid URL is acceptable
+    default:
+      return true
+  }
+}
+
+// Check if URL contains only template content (no actual username/profile)
+function hasOnlyTemplateContent(url, platform) {
+  const lowerUrl = url.toLowerCase()
+  
+  // Define template patterns for each platform (full URLs)
+  const templatePatterns = {
+    facebook: ['https://facebook.com/', 'https://fb.com/', 'http://facebook.com/', 'http://fb.com/'],
+    instagram: ['https://instagram.com/', 'http://instagram.com/'],
+    twitter: ['https://twitter.com/', 'https://x.com/', 'http://twitter.com/', 'http://x.com/'],
+    linkedin: ['https://linkedin.com/in/', 'https://linkedin.com/company/', 'http://linkedin.com/in/', 'http://linkedin.com/company/'],
+    youtube: ['https://youtube.com/', 'https://youtu.be/', 'http://youtube.com/', 'http://youtu.be/'],
+    tiktok: ['https://tiktok.com/@', 'http://tiktok.com/@'],
+    snapchat: ['https://snapchat.com/add/', 'http://snapchat.com/add/'],
+    whatsapp: ['https://wa.me/', 'https://whatsapp.com/', 'http://wa.me/', 'http://whatsapp.com/'],
+    telegram: ['https://t.me/', 'http://t.me/'],
+    discord: ['https://discord.gg/', 'https://discord.com/', 'http://discord.gg/', 'http://discord.com/'],
+    github: ['https://github.com/', 'http://github.com/'],
+    behance: ['https://behance.net/', 'http://behance.net/'],
+    dribbble: ['https://dribbble.com/', 'http://dribbble.com/'],
+    pinterest: ['https://pinterest.com/', 'http://pinterest.com/'],
+    reddit: ['https://reddit.com/', 'http://reddit.com/'],
+    twitch: ['https://twitch.tv/', 'http://twitch.tv/'],
+    spotify: ['https://open.spotify.com/', 'http://open.spotify.com/'],
+    soundcloud: ['https://soundcloud.com/', 'http://soundcloud.com/'],
+    vimeo: ['https://vimeo.com/', 'http://vimeo.com/'],
+    medium: ['https://medium.com/', 'http://medium.com/'],
+    patreon: ['https://patreon.com/', 'http://patreon.com/'],
+    onlyfans: ['https://onlyfans.com/', 'http://onlyfans.com/'],
+    link: ['https://', 'http://']
+  }
+  
+  const patterns = templatePatterns[platform] || ['https://', 'http://']
+  console.log('Platform:', platform, 'Patterns:', patterns, 'URL:', lowerUrl)
+  
+  // Check if URL exactly matches any of the template patterns
+  const result = patterns.some(pattern => {
+    const matches = lowerUrl === pattern
+    console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
+    return matches 
+  })
+  
+  console.log('Final result:', result)
+  return result
+}
 async function saveAddPhone() {
-  if (!newPhone.value || !userId.value) return
-  await addPhone(newPhone.value, newPhoneType.value)
-  showAddPhone.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const phone = newPhone.value?.trim()
+  if (!phone) {
+    alert('Please enter a phone number')
+    return
+  }
+  
+  // Remove all non-digit characters for validation
+  const cleanPhone = phone.replace(/\D/g, '')
+  if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+    alert('Please enter a valid phone number (7-15 digits)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingPhone = phones.value.find(p => p.number.replace(/\D/g, '') === cleanPhone)
+  if (existingPhone) {
+    alert('This phone number already exists')
+    return
+  }
+  
+  try {
+    await addPhone(phone, newPhoneType.value)
+    showAddPhone.value = false
+    newPhone.value = ''
+  } catch (error) {
+    alert('Failed to add phone number. Please try again.')
+    console.error('Phone save error:', error)
+  }
 }
 async function saveAddEmail() {
-  if (!newEmail.value || !userId.value) return
-  await addEmail(newEmail.value)
-  showAddEmail.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const email = newEmail.value?.trim()
+  if (!email) {
+    alert('Please enter an email address')
+    return
+  }
+  
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address')
+    return
+  }
+  
+  // Check for duplicates (case insensitive)
+  const existingEmail = emails.value.find(e => e.value.toLowerCase() === email.toLowerCase())
+  if (existingEmail) {
+    alert('This email address already exists')
+    return
+  }
+  
+  try {
+    await addEmail(email)
+    showAddEmail.value = false
+    newEmail.value = ''
+  } catch (error) {
+    alert('Failed to add email address. Please try again.')
+    console.error('Email save error:', error)
+  }
 }
 async function saveAddSocial() {
-  if (!newSocial.value || !userId.value) return
-  await addSocial(newSocial.value)
-  showAddSocial.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const socialUrl = newSocial.value?.trim()
+  if (!socialUrl) {
+    alert('Please enter a social media URL')
+    return
+  }
+  
+  // URL validation
+  try {
+    new URL(socialUrl)
+  } catch (error) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check if URL starts with http/https
+  if (!socialUrl.startsWith('http://') && !socialUrl.startsWith('https://')) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingSocial = socials.value.find(s => s.value.toLowerCase() === socialUrl.toLowerCase())
+  if (existingSocial) {
+    alert('This social media URL already exists')
+    return
+  }
+  
+  // Platform-specific validation
+  const platform = newSocialType.value
+  const isValidForPlatform = validateSocialUrlForPlatform(socialUrl, platform)
+  if (!isValidForPlatform) {
+    alert(`Please enter a valid ${platform} URL`)
+    return
+  }
+  
+  // Check if URL has actual content (not just template)
+  console.log('Checking template content for:', socialUrl, 'platform:', platform)
+  const isTemplateOnly = hasOnlyTemplateContent(socialUrl, platform)
+  console.log('Is template only:', isTemplateOnly)
+  
+  if (isTemplateOnly) {
+    alert(`Please enter a complete ${platform} URL with your username or profile`)
+    return
+  }
+  
+  try {
+    await addSocial(socialUrl)
+    showAddSocial.value = false
+    newSocial.value = ''
+  } catch (error) {
+    alert('Failed to add social media link. Please try again.')
+    console.error('Social save error:', error)
+  }
 }
 async function saveAddOther() {
-  if (!newOther.value || !userId.value) return
-  await addOther(newOther.value)
-  showAddOther.value = false
+  if (!userId.value) return
+  
+  // Validation
+  const otherUrl = newOther.value?.trim()
+  if (!otherUrl) {
+    alert('Please enter a URL')
+    return
+  }
+  
+  // URL validation
+  try {
+    new URL(otherUrl)
+  } catch (error) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check if URL starts with http/https
+  if (!otherUrl.startsWith('http://') && !otherUrl.startsWith('https://')) {
+    alert('Please enter a valid URL (must start with http:// or https://)')
+    return
+  }
+  
+  // Check for duplicates
+  const existingOther = others.value.find(o => o.value.toLowerCase() === otherUrl.toLowerCase())
+  if (existingOther) {
+    alert('This URL already exists')
+    return
+  }
+  
+  // Check if URL has actual content (not just template)
+  if (hasOnlyTemplateContent(otherUrl, 'link')) {
+    alert('Please enter a complete URL with actual content')
+    return
+  }
+  
+  try {
+    await addOther(otherUrl)
+    showAddOther.value = false
+    newOther.value = ''
+  } catch (error) {
+    alert('Failed to add link. Please try again.')
+    console.error('Other save error:', error)
+  }
 }
 
 onMounted(async () => {
@@ -396,22 +708,44 @@ onMounted(async () => {
       loadError.value = 'Not logged in.'
       return
     }
-    const data = await api.get(`/contacts/${userId.value}`)
-    phones.value = (data.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
-    emails.value = (data.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
-    socials.value = (data.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main }))
-    others.value = (data.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main }))
-    try {
-      const pd = await api.get(`/card-users/personal-data/${userId.value}`)
-      if (pd?.full_name) profile.value.name = pd.full_name
-    } catch (_) {}
-    try {
-      const pr = await api.get(`/card-users/profile/${userId.value}`)
-             if (pr?.profile_pic) profile.value.photo = pr.profile_pic
-       if (pr?.company) profile.value.company = pr.company
-       if (pr?.bio) profile.value.bio = pr.bio
-       if (pr?.position) profile.value.position = pr.position
-    } catch (_) {}
+
+    // OPTIMIZED: Load all data in parallel instead of sequential
+    const [contactsData, personalData, profileData] = await Promise.all([
+      userApi.getContacts(),
+      userApi.getPersonalData().catch(() => null),
+      userApi.getProfile().catch(() => null)
+    ])
+
+    // OPTIMIZED: Transform data with helper function
+    const transformContacts = (data, type) => {
+      return (data || []).map(r => {
+        const base = { id: r.id, isMain: !!r.is_main }
+        switch(type) {
+          case 'phones': return { ...base, number: r.phonenumber, type: r.type }
+          case 'emails': return { ...base, value: r.email, type: r.type }
+          case 'socials': return { ...base, platform: r.type || 'link', value: r.social }
+          case 'others': return { ...base, value: r.others }
+          default: return base
+        }
+      }).sort((a, b) => a.id - b.id)
+    }
+
+    phones.value = transformContacts(contactsData.phones, 'phones')
+    emails.value = transformContacts(contactsData.emails, 'emails')
+    socials.value = transformContacts(contactsData.socials, 'socials')
+    others.value = transformContacts(contactsData.others, 'others')
+
+    // Update profile data
+    if (personalData?.full_name) profile.value.name = personalData.full_name
+    if (profileData?.profile_pic) {
+      profile.value.photo = processProfileImage(profileData.profile_pic)
+    } else {
+      profile.value.photo = ''
+    }
+    if (profileData?.company) profile.value.company = profileData.company
+    if (profileData?.bio) profile.value.bio = profileData.bio
+    if (profileData?.position) profile.value.position = profileData.position
+
   } catch (e) {
     loadError.value = e?.message || 'Failed to load dashboard.'
   } finally {
@@ -428,8 +762,8 @@ onUnmounted(() => {
 })
 
 async function addPhone(v, t) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/phones', { user_id: userId.value, phonenumber: v, type: t || null }); 
+  if (!v) return; 
+  const row = await userApi.addPhone({ phonenumber: v, type: t || null }); 
   const newPhone = { id: row.id, number: row.phonenumber, type: row.type, isMain: !!row.is_main };
   phones.value.push(newPhone);
   
@@ -441,7 +775,7 @@ async function addPhone(v, t) {
 async function onToggleMain(p) { 
   if (!p?.id) return; 
   try { 
-    const res = await api.post(`/contacts/phones/${p.id}/set-main`); 
+    await userApi.setMainPhone(p.id); 
     // Update only the isMain status without reordering
     phones.value.forEach(phone => {
       phone.isMain = phone.id === p.id;
@@ -451,15 +785,15 @@ async function onToggleMain(p) {
 async function deletePhone(phone) {
   if (!phone?.id) return;
   try {
-    await api.delete(`/contacts/phones/${phone.id}`);
+    await userApi.deleteContact('phones', phone.id);
     phones.value = phones.value.filter(p => p.id !== phone.id);
   } catch (error) {
     console.error("Error deleting phone:", error);
   }
 }
 async function addEmail(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/emails', { user_id: userId.value, email: v }); 
+  if (!v) return; 
+  const row = await userApi.addEmail({ email: v }); 
   const newEmail = { id: row.id, value: row.email, isMain: !!row.is_main };
   emails.value.push(newEmail);
   
@@ -469,8 +803,8 @@ async function addEmail(v) {
   }
 }
 async function addSocial(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/socials', { user_id: userId.value, social: v, type: newSocialType.value || 'link' }); 
+  if (!v) return; 
+  const row = await userApi.addSocial({ social: v, type: newSocialType.value || 'link' }); 
   const newSocial = { id: row.id, platform: row.type || 'link', value: row.social, isMain: !!row.is_main };
   socials.value.push(newSocial);
   
@@ -480,8 +814,8 @@ async function addSocial(v) {
   }
 }
 async function addOther(v) { 
-  if (!v || !userId.value) return; 
-  const row = await api.post('/contacts/others', { user_id: userId.value, others: v }); 
+  if (!v) return; 
+  const row = await userApi.addOther({ others: v }); 
   const newOther = { id: row.id, value: row.others, isMain: !!row.is_main };
   others.value.push(newOther);
   
@@ -493,7 +827,7 @@ async function addOther(v) {
 async function onToggleMainEmail(e) { 
   if (!e?.id) return; 
   try { 
-    const res = await api.post(`/contacts/emails/${e.id}/set-main`); 
+    await userApi.setMainEmail(e.id); 
     // Update only the isMain status without reordering
     emails.value.forEach(email => {
       email.isMain = email.id === e.id;
@@ -503,7 +837,7 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) { 
   if (!s?.id) return; 
   try { 
-    const res = await api.post(`/contacts/socials/${s.id}/set-main`); 
+    await userApi.setMainSocial(s.id); 
     // Update only the isMain status without reordering
     socials.value.forEach(social => {
       social.isMain = social.id === s.id;
@@ -513,7 +847,7 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) { 
   if (!o?.id) return; 
   try { 
-    const res = await api.post(`/contacts/others/${o.id}/set-main`); 
+    await userApi.setMainOther(o.id); 
     // Update only the isMain status without reordering
     others.value.forEach(other => {
       other.isMain = other.id === o.id;
@@ -523,7 +857,7 @@ async function onToggleMainOther(o) {
 async function deleteEmail(email) {
   if (!email?.id) return;
   try {
-    await api.delete(`/contacts/emails/${email.id}`);
+    await userApi.deleteContact('emails', email.id);
     emails.value = emails.value.filter(e => e.id !== email.id);
   } catch (error) {
     console.error("Error deleting email:", error);
@@ -532,7 +866,7 @@ async function deleteEmail(email) {
 async function deleteSocial(social) {
   if (!social?.id) return;
   try {
-    await api.delete(`/contacts/socials/${social.id}`);
+    await userApi.deleteContact('socials', social.id);
     socials.value = socials.value.filter(s => s.id !== social.id);
   } catch (error) {
     console.error("Error deleting social:", error);
@@ -541,7 +875,7 @@ async function deleteSocial(social) {
 async function deleteOther(other) {
   if (!other?.id) return;
   try {
-    await api.delete(`/contacts/others/${other.id}`);
+    await userApi.deleteContact('others', other.id);
     others.value = others.value.filter(o => o.id !== other.id);
   } catch (error) {
     console.error("Error deleting other:", error);
@@ -553,14 +887,21 @@ function goEditProfile() {
   try { router.push({ name: 'edit-profile' }) } catch {}
 }
 
-function doLogout() {
+// Removed goProfilePhoto; profile photo handled in Edit Profile and Profile Details
+
+async function doLogout() {
+  try {
+    await userApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
+  }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_token')
   localStorage.removeItem('gtm_user')
   window.location.replace('/')
 }
 
-const phoneActions = [ { icon: '/icons/call.svg', title: 'Call' } ]
-const emailActions = [ { icon: '/icons/send.svg', title: 'Send' } ]
 
 function socialIcon(platform) {
   const map = {
@@ -591,79 +932,27 @@ function formatPosition(position) {
 
 // Get smart display name for social media links
 function getSocialDisplayName(social) {
-  const url = social.value;
   const platform = social.platform;
   
-  // Extract username from common social media URLs
-  if (platform === 'facebook' && url.includes('facebook.com/')) {
-    const username = url.split('facebook.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'instagram' && url.includes('instagram.com/')) {
-    const username = url.split('instagram.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'linkedin' && url.includes('linkedin.com/in/')) {
-    const username = url.split('linkedin.com/in/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'twitter' && url.includes('twitter.com/')) {
-    const username = url.split('twitter.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'youtube' && url.includes('youtube.com/')) {
-    if (url.includes('/channel/')) {
-      return 'Channel';
-    } else if (url.includes('/user/') || url.includes('/c/')) {
-      const username = url.split('/').pop()?.split('?')[0];
-      return username || 'Profile';
-    }
-    return 'Video';
-  }
-  if (platform === 'tiktok' && url.includes('tiktok.com/')) {
-    const username = url.split('tiktok.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'discord' && url.includes('discord.gg/')) {
-    const invite = url.split('discord.gg/')[1]?.split('?')[0];
-    return invite || 'Server';
-  }
-  if (platform === 'telegram' && url.includes('t.me/')) {
-    const username = url.split('t.me/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Channel';
-  }
-  if (platform === 'skype' && url.includes('skype:')) {
-    const username = url.split('skype:')[1]?.split('?')[0];
-    return username || 'Contact';
-  }
-  if (platform === 'snapchat' && url.includes('snapchat.com/')) {
-    const username = url.split('snapchat.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Profile';
-  }
-  if (platform === 'viber' && url.includes('viber.com/')) {
-    const username = url.split('viber.com/')[1]?.split('?')[0]?.split('/')[0];
-    return username || 'Contact';
-  }
-  if (platform === 'whatsapp' && url.includes('wa.me/')) {
-    const phone = url.split('wa.me/')[1]?.split('?')[0];
-    return phone || 'Contact';
-  }
-  if (platform === 'reddit' && url.includes('reddit.com/')) {
-    if (url.includes('/r/')) {
-      const subreddit = url.split('/r/')[1]?.split('/')[0];
-      return subreddit ? `r/${subreddit}` : 'Community';
-    } else if (url.includes('/u/')) {
-      const username = url.split('/u/')[1]?.split('/')[0];
-      return username ? `u/${username}` : 'User';
-    }
-    return 'Profile';
-  }
+  // Return only the platform name with proper formatting
+  const platformNames = {
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    linkedin: 'LinkedIn',
+    twitter: 'X (Twitter)',
+    youtube: 'YouTube',
+    tiktok: 'TikTok',
+    discord: 'Discord',
+    telegram: 'Telegram',
+    skype: 'Skype',
+    snapchat: 'Snapchat',
+    viber: 'Viber',
+    whatsapp: 'WhatsApp',
+    reddit: 'Reddit',
+    link: 'Link'
+  };
   
-  // Fallback: show truncated URL
-  if (url.length > 30) {
-    return url.substring(0, 30) + '...';
-  }
-  return url;
+  return platformNames[platform] || 'Social Media';
 }
 
 // Get smart display name for other links (similar to social media)
@@ -673,10 +962,9 @@ function getOtherLinkDisplayName(link) {
   if (!url) return 'Link';
   
   try {
-    // Parse the URL to extract meaningful parts
+    // Parse the URL to extract the domain name
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
-    const pathname = urlObj.pathname;
     
     // Remove www. prefix
     const cleanHostname = hostname.replace(/^www\./, '');
@@ -685,96 +973,25 @@ function getOtherLinkDisplayName(link) {
     const domainParts = cleanHostname.split('.');
     let domain = cleanHostname;
     
-    // Handle common domains
+    // Handle common domains - show main domain for known services
     if (domainParts.length > 2) {
       const mainDomain = domainParts.slice(-2).join('.');
-      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to'].includes(mainDomain)) {
+      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to', 'codepen.io', 'jsfiddle.net', 'repl.it', 'codesandbox.io'].includes(mainDomain)) {
         domain = mainDomain;
       }
     }
     
-    // Extract meaningful path segments
-    const pathSegments = pathname.split('/').filter(segment => segment && segment !== '');
-    
-    if (pathSegments.length > 0) {
-      // For GitHub, GitLab, etc. - show username/repo
-      if (domain.includes('github.com') || domain.includes('gitlab.com') || domain.includes('bitbucket.org')) {
-        if (pathSegments.length >= 2) {
-          return `${pathSegments[0]}/${pathSegments[1]}`;
-        } else if (pathSegments.length === 1) {
-          return pathSegments[0];
-        }
-      }
-      
-      // For Stack Overflow - show question title or user
-      if (domain.includes('stackoverflow.com')) {
-        if (pathSegments[0] === 'users' && pathSegments[1]) {
-          return `User: ${pathSegments[1]}`;
-        } else if (pathSegments[0] === 'questions' && pathSegments[1]) {
-          return `Question #${pathSegments[1]}`;
-        }
-      }
-      
-      // For Medium, Dev.to - show article title or author
-      if (domain.includes('medium.com') || domain.includes('dev.to')) {
-        if (pathSegments.length >= 2) {
-          return pathSegments[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        } else if (pathSegments.length === 1) {
-          return pathSegments[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        }
-      }
-      
-      // For other sites, show the first meaningful path segment
-      const firstSegment = pathSegments[0];
-      if (firstSegment && firstSegment.length > 3) {
-        return firstSegment.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      }
-    }
-    
-    // Fallback: show domain name
-    return domain;
+    // Capitalize the first letter of each word in the domain
+    return domain.split('.').map(part => 
+      part.charAt(0).toUpperCase() + part.slice(1)
+    ).join('.');
     
   } catch (error) {
-    // If URL parsing fails, show truncated version
-    if (url.length > 30) {
-      return url.substring(0, 30) + '...';
-    }
-    return url;
+    // If URL parsing fails, show "Website" as fallback
+    return 'Website';
   }
 }
 
-// Create a vCard file on the fly so OS can prompt saving to contacts
-async function onSaveToContacts(p) {
-  try {
-    const number = (p?.number || '').toString().replace(/\s+/g, '')
-    if (!number) return
-
-    const fullName = profile.value.name || 'Contact'
-    const org = profile.value.company || ''
-    const vcard = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      `FN:${fullName}`,
-      (org ? `ORG:${org}` : ''),
-      `TEL;TYPE=CELL:${number}`,
-      'END:VCARD'
-    ].filter(Boolean).join('\n')
-
-    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${fullName.replace(/[^a-z0-9_-]+/gi,'_')}.vcf`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 2000)
-
-    try {
-      await navigator.clipboard?.writeText?.(p.number)
-    } catch {}
-  } catch {}
-}
 
 // Open phone app with number; copy as fallback
 async function onDial(p) {
@@ -830,6 +1047,8 @@ function openOtherLink(other) {
     } catch {}
   }
 }
+
+
 </script>
 
 <script>
@@ -868,7 +1087,7 @@ export default {
             <span>{{ label }}</span>
           </div>
           <div class="flex gap-2 px-3 pb-2">
-            <input :placeholder="placeholder" v-model="input" class="flex-1 h-10 rounded-lg border border-gray-300 px-3" />
+            <input id="add-input" name="add-input" :placeholder="placeholder" v-model="input" class="flex-1 h-10 rounded-lg border border-gray-300 px-3" />
             <button @click="onAdd" class="px-3 h-10 rounded-lg bg-black text-white">Add</button>
           </div>
         </div>

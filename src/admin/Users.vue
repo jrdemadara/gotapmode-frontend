@@ -41,6 +41,12 @@
           </svg>
           <span v-if="!sidebarCollapsed">NFC Writing</span>
         </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Card Clear</span>
+        </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
           <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -116,61 +122,37 @@
          <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
            <div class="flex flex-col gap-4">
              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                <div class="flex items-center gap-3">
-                   <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-                     <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
-                   </div>
-                 <div>
-                   <h2 class="text-xl font-bold text-gray-900">User Accounts</h2>
-                   <p class="text-sm text-gray-600">Manage and view all registered users</p>
-                 </div>
-               </div>
+              <div class="flex items-center gap-3">
+                <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-10 h-10" />
+                <div>
+                  <h2 class="text-xl font-bold text-gray-900">User Accounts</h2>
+                  <p class="text-sm text-gray-600">Manage and view all registered users</p>
+                </div>
+              </div>
                
-               <!-- Desktop Stats -->
-               <div class="hidden lg:flex items-center gap-6">
-                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                   <div class="text-center">
-                     <div class="text-xs text-gray-500 uppercase tracking-wider">Total Users</div>
-                     <div class="text-2xl font-bold text-blue-600">{{ users.length }}</div>
-                   </div>
-                 </div>
-                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                   <div class="text-center">
-                     <div class="text-xs text-gray-500 uppercase tracking-wider">Filtered</div>
-                     <div class="text-2xl font-bold text-green-600">{{ filteredUsers.length }}</div>
-                   </div>
-                 </div>
-                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                   <div class="text-center">
-                     <div class="text-xs text-gray-500 uppercase tracking-wider">Pages</div>
-                     <div class="text-2xl font-bold text-purple-600">{{ totalPages }}</div>
-                   </div>
-                 </div>
-               </div>
              </div>
              
                            <!-- Search Section -->
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="relative w-full sm:w-80 lg:w-96">
-                  <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search by name, email, company, or contacts..."
-                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm hover:shadow-md transition-all duration-200"
-                  />
+              <div class="relative w-full sm:w-80 lg:w-96">
+                <input
+                  id="users-search"
+                  name="users-search"
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="Search by name, email, company, or contacts..."
+                  class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
                   <div class="absolute left-4 top-3.5 text-gray-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                   </div>
-                  <div class="absolute right-4 top-3.5 text-gray-400">
-                    <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">{{ filteredUsers.length }} results</span>
-                  </div>
                 </div>
                 
                 <!-- Quick Actions (Desktop & Mobile) -->
                 <div class="flex flex-wrap items-center gap-2 sm:gap-3 justify-end">
-                  <button @click="showRestoreModal = true" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all duration-200">
+                  <button @click="openRestoreModal" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all duration-200">
                     <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                     </svg>
@@ -276,20 +258,19 @@
               <tbody class="bg-white divide-y divide-gray-100/80">
                 <tr v-for="(user, index) in paginatedUsers" :key="user.id"
                     :class="[
-                      'hover:bg-gradient-to-br hover:from-blue-50/80 hover:via-indigo-50/60 hover:to-purple-50/40 transition-all duration-300 group border-l-4 border-l-transparent hover:border-l-blue-500 hover:shadow-md hover:scale-[1.002] transform-gpu',
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
                     ]"
                     role="row">
                                     <td class="px-4 py-5 border-r border-gray-100/60 w-[18%]" role="gridcell">
                     <div class="flex items-center gap-3">
                       <div class="relative">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 flex-shrink-0 ring-2 ring-blue-100 group-hover:ring-blue-200 user-avatar">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg flex-shrink-0 ring-2 ring-blue-100 user-avatar">
                           {{ getUserInitials(user.name) }}
                         </div>
                         <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm"></div>
                       </div>
                       <div class="min-w-0 flex-1">
-                        <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition-colors truncate leading-tight">{{ user.name }}</div>
+                        <div class="text-sm font-semibold text-gray-900 truncate leading-tight">{{ user.name }}</div>
                         <div class="text-xs text-gray-500 mt-0.5">ID: {{ user.id }}</div>
                       </div>
                     </div>
@@ -448,23 +429,22 @@
 
                    
          
-         <!-- Enhanced Pagination -->
-           <div v-if="filteredUsers.length > 0" class="px-4 sm:px-6 py-6 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+        <!-- Pagination -->
+        <div v-if="filteredUsers.length > 0" class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50 w-full">
              <!-- Desktop Pagination Layout -->
              <div class="hidden lg:flex items-center justify-between">
                <!-- Left Section: Page Size & Info -->
-               <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
                  <!-- Page Size Selector -->
-                 <div class="flex items-center gap-3 bg-white px-6 py-3 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
-                   <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                   </svg>
-                   <span class="text-sm font-semibold text-gray-700">Show:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Show:</span>
                    <select 
+                     id="users-items-per-page"
+                     name="users-items-per-page"
                      v-model="itemsPerPage" 
-                     @change="changeItemsPerPage(itemsPerPage)"
-                     class="border-0 bg-transparent px-6 py-1 text-sm font-bold text-blue-600 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-700 transition-colors"
+                  class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                    >
+                  <option value="5">5</option>
                      <option value="10">10</option>
                      <option value="25">25</option>
                      <option value="50">50</option>
@@ -473,58 +453,43 @@
                  </div>
                  
                  <!-- Pagination Info -->
-                 <div class="bg-white px-6 py-3 rounded-xl border border-gray-200 shadow-lg">
                    <div class="text-sm text-gray-700">
-                     <span class="font-bold text-blue-600 text-lg">{{ paginationInfo.start }}-{{ paginationInfo.end }}</span>
+                <span class="font-medium">{{ paginationInfo.start }}-{{ paginationInfo.end }}</span>
                      <span class="text-gray-500"> of </span>
-                     <span class="font-bold text-gray-900 text-lg">{{ paginationInfo.total }}</span>
+                <span class="font-medium">{{ paginationInfo.total }}</span>
                      <span class="text-gray-500"> results</span>
-                   </div>
                  </div>
                </div>
                
-               <!-- Right Section: Page Jump & Navigation -->
-               <div class="flex items-center gap-6">
+            <!-- Right Section: Navigation -->
+            <div class="flex items-center gap-2">
                  <!-- Page Jump Input -->
-                 <div class="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
-                   <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                   </svg>
-                   <span class="text-sm font-semibold text-gray-700">Go to:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Go to:</span>
                    <input 
+                     id="users-page-jump"
+                     name="users-page-jump"
                      type="number" 
                      :min="1" 
                      :max="totalPages"
                      v-model.number="currentPage"
                      @keyup.enter="validateAndChangePage(currentPage)"
                      @blur="validateAndChangePage(currentPage)"
-                     class="w-20 px-3 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold"
+                  class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                    />
                    <span class="text-sm text-gray-600">of {{ totalPages }}</span>
                  </div>
                  
                  <!-- Pagination Navigation -->
-                 <div class="flex items-center gap-1 bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-                   <!-- First Page Button -->
-                   <button 
-                     @click="changePage(1)"
-                     :disabled="currentPage === 1"
-                     class="p-3 text-gray-500 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
-                     title="First Page"
-                   >
-                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
-                     </svg>
-                   </button>
-                   
+              <div class="flex items-center gap-1 bg-white rounded-lg border border-gray-200 overflow-hidden">
                    <!-- Previous Button -->
                    <button 
                      @click="changePage(currentPage - 1)"
                      :disabled="currentPage === 1"
-                     class="p-3 text-gray-500 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-r border-gray-200"
                      title="Previous Page"
                    >
-                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                      </svg>
                    </button>
@@ -536,10 +501,10 @@
                        :key="page"
                        @click="changePage(page)"
                        :class="[
-                         'px-4 py-3 text-sm font-semibold border-r border-gray-200 transition-all duration-200 hover:bg-blue-50',
+                      'px-3 py-2 text-sm font-medium border-r border-gray-200 transition-colors',
                          page === currentPage 
-                           ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg' 
-                           : 'text-gray-700 bg-white hover:text-blue-600'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'text-gray-700 bg-white hover:bg-gray-50'
                        ]"
                      >
                        {{ page }}
@@ -550,53 +515,42 @@
                    <button 
                      @click="changePage(currentPage + 1)"
                      :disabled="currentPage === totalPages"
-                     class="p-3 text-gray-500 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border-r border-gray-200"
+                  class="p-2 text-gray-500 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                      title="Next Page"
                    >
-                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                     </svg>
-                   </button>
-                   
-                   <!-- Last Page Button -->
-                   <button 
-                     @click="changePage(totalPages)"
-                     :disabled="currentPage === totalPages"
-                     class="p-3 text-gray-500 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                     title="Last Page"
-                   >
-                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7"></path>
                      </svg>
                    </button>
                  </div>
                </div>
              </div>
              
-             <!-- Mobile Pagination Layout - Single Line -->
+          <!-- Mobile Pagination Layout -->
              <div class="lg:hidden">
-               <!-- Compact Single Line Pagination -->
-               <div class="flex items-center justify-between gap-2 bg-white px-3 py-3 rounded-xl border border-gray-200 shadow-lg">
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
                  <!-- Left: Page Size -->
-                 <div class="flex items-center gap-2 flex-shrink-0">
+              <div class="flex items-center gap-2">
                    <select
+                     id="users-items-per-page-mobile"
+                     name="users-items-per-page-mobile"
                      v-model="itemsPerPage"
-                     @change="changeItemsPerPage(itemsPerPage)"
-                     class="text-xs bg-transparent border-0 px-6 py-1 text-blue-600 focus:ring-0 focus:outline-none cursor-pointer font-semibold"
+                  class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                    >
+                  <option value="5">5</option>
                      <option value="10">10</option>
                      <option value="25">25</option>
                      <option value="50">50</option>
                    </select>
-                   <span class="text-xs text-gray-500 hidden xs:inline">items</span>
+                <span class="text-xs text-gray-500">items</span>
                  </div>
 
                  <!-- Center: Navigation Controls -->
-                 <div class="flex items-center gap-1 flex-shrink-0">
+              <div class="flex items-center gap-1">
                    <button
                      @click="changePage(currentPage - 1)"
                      :disabled="currentPage === 1"
-                     class="p-2 text-gray-500 bg-gray-50 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
                      title="Previous"
                    >
                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -613,7 +567,7 @@
                    <button
                      @click="changePage(currentPage + 1)"
                      :disabled="currentPage === totalPages"
-                     class="p-2 text-gray-500 bg-gray-50 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg"
+                  class="p-1.5 text-gray-500 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded"
                      title="Next"
                    >
                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -622,19 +576,20 @@
                    </button>
                  </div>
 
-                 <!-- Right: Page Jump & Info -->
-                 <div class="flex items-center gap-2 flex-shrink-0">
+              <!-- Right: Page Jump -->
+              <div class="flex items-center gap-1">
                    <input
+                     id="users-page-jump-mobile"
+                     name="users-page-jump-mobile"
                      type="number"
                      :min="1"
                      :max="totalPages"
                      v-model.number="currentPage"
                      @keyup.enter="validateAndChangePage(currentPage)"
                      @blur="validateAndChangePage(currentPage)"
-                     class="w-12 px-2 py-1 text-xs text-center border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                  class="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                      placeholder="Page"
                    />
-                   <span class="text-xs text-gray-500 hidden sm:inline">{{ paginationInfo.total }} total</span>
                  </div>
                </div>
              </div>
@@ -674,6 +629,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
           </svg>
           NFC Writing
+        </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Card Clear
         </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -939,32 +900,33 @@
         </div>
       </div>
 
-             <!-- Restore Users Modal -->
+    <!-- Restore Users Modal - Enhanced Design -->
        <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
-           <!-- Backdrop with blur effect -->
+        <!-- Backdrop -->
            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-           <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-6xl border border-gray-200/50">
-             
-             <!-- Header Section with Gradient -->
-             <div class="relative bg-gradient-to-r from-red-600 via-red-700 to-orange-800 px-4 sm:px-6 py-4 sm:py-6">
-               <div class="absolute inset-0 bg-black/10 rounded-t-2xl"></div>
-               <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                 <div class="flex items-center gap-3 sm:gap-4">
-                   <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-lg sm:text-2xl text-white font-bold shadow-lg overflow-hidden">
-                     <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100">
+          
+          <!-- Header Section - Flat Design -->
+          <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-gray-100 flex items-center justify-center">
+                  <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
                    </div>
                    <div>
-                     <h3 class="text-xl sm:text-2xl font-bold text-white">GoTapMode - Deleted Users</h3>
-                     <p class="text-sm sm:text-base text-red-100">Manage and restore deleted user accounts</p>
+                  <h3 class="text-xl font-semibold text-gray-900">Deleted Users</h3>
+                  <p class="text-sm text-gray-500">Manage and restore deleted user accounts</p>
                    </div>
                  </div>
-                 <button @click="showRestoreModal = false" class="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white hover:text-gray-200 transition-all duration-200">
-                   <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button @click="showRestoreModal = false" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                    </svg>
                  </button>
@@ -972,106 +934,169 @@
              </div>
              
              <!-- Content Section -->
-             <div class="bg-white px-4 sm:px-6 py-6 sm:py-8">
+          <div class="bg-white px-6 py-6">
                
-                               <!-- Search and Filter Section -->
+            <!-- Search Section -->
                 <div class="mb-6">
-                  <div class="relative">
+              <div class="flex items-center gap-4">
+                <div class="relative w-80">
                     <input
+                      id="users-restore-search"
+                      name="users-restore-search"
                       v-model="restoreSearchQuery"
                       type="text"
-                      placeholder="Search deleted users by name, email, or company..."
-                      class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-sm hover:shadow-md transition-all duration-200"
+                    placeholder="Search deleted users..."
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <div class="absolute left-4 top-3.5 text-gray-400">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="absolute left-3 top-2.5 text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                       </svg>
                     </div>
-                    <div class="absolute right-4 top-3.5 text-gray-400">
-                      <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">{{ filteredRestoreUsers.length }} results</span>
                     </div>
                   </div>
                 </div>
 
                <!-- Users Table - Desktop -->
-               <div v-if="filteredRestoreUsers.length > 0" class="hidden sm:block bg-white rounded-lg border border-red-200 shadow-sm overflow-hidden">
+            <div v-if="filteredRestoreUsers.length > 0" class="hidden sm:block">
                  <div class="overflow-x-auto">
-                   <table class="min-w-full divide-y divide-red-200">
-                     <thead class="bg-red-50">
-                       <tr>
-                         <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                <table class="w-full enhanced-table" role="table" aria-label="Deleted users table">
+                  <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
+                    <tr class="backdrop-blur-sm">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[18%]" role="columnheader" aria-sort="none">
                            <div class="flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                              </svg>
-                             Full Name
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Full Name</span>
+                          </div>
                            </div>
                          </th>
-                         <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[22%]" role="columnheader" aria-sort="none">
                            <div class="flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div class="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                              </svg>
-                             Email
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Contact Info</span>
+                          </div>
                            </div>
                          </th>
-                         <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
                            <div class="flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                              </svg>
-                             Company
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Company</span>
+                          </div>
                            </div>
                          </th>
-                         <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
                            <div class="flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                          <div class="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                              </svg>
-                             Deleted At
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Timeline</span>
+                          </div>
                            </div>
                          </th>
-                         <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider w-[20%]" role="columnheader" aria-sort="none">
                            <div class="flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                          <div class="w-6 h-6 rounded-lg bg-red-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                              </svg>
-                             Actions
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Actions</span>
+                          </div>
                            </div>
                          </th>
                        </tr>
                      </thead>
-                     <tbody class="bg-white divide-y divide-red-100">
-                       <tr v-for="user in filteredRestoreUsers" :key="user.id" class="hover:bg-red-50 transition-colors">
-                         <td class="px-6 py-4 whitespace-nowrap">
-                           <div class="flex items-center gap-3">
-                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-sm font-bold">
-                               {{ getUserInitials(user.name) }}
-                             </div>
-                             <div>
-                               <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-                               <div class="text-xs text-gray-500">ID: {{ user.id }}</div>
-                             </div>
-                           </div>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ user.email }}</td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                           <span v-if="user.profile?.company" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                  <tbody class="bg-white divide-y divide-gray-100/80">
+                    <tr v-for="(user, index) in filteredRestoreUsers" :key="user.id"
+                        :class="[
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                        ]"
+                        role="row">
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[18%]" role="gridcell">
+                        <div class="flex items-center gap-3">
+                          <div class="relative">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-sm font-bold shadow-lg flex-shrink-0 ring-2 ring-red-100 user-avatar">
+                              {{ getUserInitials(user.name) }}
+                            </div>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-400 rounded-full border-2 border-white shadow-sm"></div>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-semibold text-gray-900 truncate leading-tight">{{ user.name }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">ID: {{ user.id }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[22%]" role="gridcell">
+                        <div class="space-y-1">
+                          <div class="text-sm text-gray-900 truncate">{{ user.email }}</div>
+                          <div v-if="user.phone" class="text-xs text-gray-500 truncate">{{ user.phone }}</div>
+                          <div v-else class="text-xs text-gray-400">No phone</div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                        <div v-if="user.profile?.company" class="space-y-1">
+                          <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800">
                              {{ user.profile.company }}
                            </span>
-                           <span v-else class="text-gray-400 italic">No company</span>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(user.deleted_at) }}</td>
-                         <td class="px-6 py-4 whitespace-nowrap">
+                          <div v-if="user.profile?.companyemail" class="text-xs text-gray-500 truncate">{{ user.profile.companyemail }}</div>
+                        </div>
+                        <span v-else class="text-gray-400 text-sm">No company</span>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                        <div class="flex items-center gap-3">
+                          <div class="flex-1">
+                            <div class="text-xs text-gray-500">Created:</div>
+                            <div class="text-sm text-gray-900">{{ formatDate(user.created_at) }}</div>
+                          </div>
+                          <div class="flex-1">
+                            <div class="text-xs text-red-600 font-medium">Deleted:</div>
+                            <div class="text-sm text-red-600 font-medium">{{ formatDate(user.deleted_at) }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 w-[20%]" role="gridcell">
+                        <div class="flex items-center gap-1.5 justify-start">
                            <button @click="restoreUser(user)" 
-                                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all duration-200 hover:scale-105">
-                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-green-700 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-md hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                                  role="button"
+                                  aria-label="Restore user">
+                             <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                              </svg>
-                             Restore
+                             <span>Restore</span>
                            </button>
-                         </td>
+                          <button @click="viewUserDetails(user)" 
+                                  class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-md hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                                  role="button"
+                                  aria-label="View user details">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>View Only</span>
+                          </button>
+                        </div>
+                      </td>
                        </tr>
                      </tbody>
                    </table>
@@ -1079,83 +1104,93 @@
                </div>
 
                <!-- Mobile Cards for Deleted Users -->
-               <div v-if="filteredRestoreUsers.length > 0" class="sm:hidden space-y-4">
-                 <div v-for="user in filteredRestoreUsers" :key="user.id" 
-                      class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
-                   <div class="space-y-3">
-                     <!-- User Header -->
-                     <div class="flex items-center justify-between">
-                       <div class="flex items-center gap-3">
-                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-sm font-bold">
-                           {{ getUserInitials(user.name) }}
+               <div v-if="filteredRestoreUsers.length > 0" class="sm:hidden">
+                 <div class="p-2 space-y-3">
+                   <div v-for="user in filteredRestoreUsers" :key="user.id" 
+                        class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200">
+                     <div class="space-y-3">
+                       <!-- User Header -->
+                       <div class="flex items-center justify-between">
+                         <div class="flex items-center gap-3">
+                           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-sm font-bold">
+                             {{ getUserInitials(user.name) }}
+                           </div>
+                           <div>
+                             <div class="font-medium text-gray-900">{{ user.name }}</div>
+                             <div class="text-sm text-gray-500">{{ user.email }}</div>
+                           </div>
                          </div>
-                         <div>
-                           <div class="font-medium text-gray-900">{{ user.name }}</div>
-                           <div class="text-sm text-gray-500">{{ user.email }}</div>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     <!-- Company Info -->
-                     <div class="border-t border-gray-100 pt-3">
-                       <div class="text-sm">
-                         <span class="text-gray-500">Company:</span>
-                         <span class="ml-2 font-medium text-gray-900">
-                           {{ user.profile?.company || 'No company' }}
+                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                           Deleted
                          </span>
                        </div>
-                     </div>
-                     
-                     <!-- Deleted Date -->
-                     <div class="border-t border-gray-100 pt-3">
-                       <div class="text-sm">
-                         <span class="text-gray-500">Deleted:</span>
-                         <span class="ml-2 font-medium text-gray-900">{{ formatDate(user.deleted_at) }}</span>
+                       
+                       <!-- Contact Info -->
+                       <div class="border-t border-gray-100 pt-3">
+                         <div class="text-sm">
+                           <span class="text-gray-500">Phone:</span>
+                           <span class="ml-2 font-medium text-gray-900">{{ user.phone || 'No phone' }}</span>
+                         </div>
                        </div>
-                     </div>
-                     
-                     <!-- Actions -->
-                     <div class="border-t border-gray-100 pt-3">
-                       <button @click="restoreUser(user)" 
-                               class="w-full bg-green-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
-                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                         </svg>
-                         Restore User
-                       </button>
+                       
+                       <!-- Company Info -->
+                       <div class="border-t border-gray-100 pt-3">
+                         <div class="text-sm">
+                           <span class="text-gray-500">Company:</span>
+                           <span class="ml-2 font-medium text-gray-900">{{ user.profile?.company || 'No company' }}</span>
+                         </div>
+                       </div>
+                       
+                       <!-- Timeline -->
+                       <div class="border-t border-gray-100 pt-3">
+                         <div class="text-sm">
+                           <span class="text-gray-500">Created:</span>
+                           <span class="ml-2 font-medium text-gray-900">{{ formatDate(user.created_at) }}</span>
+                         </div>
+                         <div class="text-sm mt-1">
+                           <span class="text-gray-500">Deleted:</span>
+                           <span class="ml-2 font-medium text-red-600">{{ formatDate(user.deleted_at) }}</span>
+                         </div>
+                       </div>
+                       
+                       <!-- Actions -->
+                       <div class="border-t border-gray-100 pt-3 flex gap-2">
+                         <button @click="restoreUser(user)"
+                                 class="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                           Restore
+                         </button>
+                         <button @click="viewUserDetails(user)"
+                                 class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                           View Only
+                         </button>
+                       </div>
                      </div>
                    </div>
                  </div>
                </div>
 
                <!-- Empty State -->
-               <div v-else class="text-center py-12">
-                 <div class="text-red-400 text-6xl mb-4">🗑️</div>
-                 <div class="text-lg font-medium text-gray-900 mb-2">No deleted users found</div>
-                 <div class="text-gray-500">{{ restoreSearchQuery ? 'Try adjusting your search terms' : 'All users are currently active' }}</div>
+            <div v-else class="text-center py-16">
+              <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 mx-auto mb-6 flex items-center justify-center rounded-2xl">
+                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </div>
+              <div class="text-xl font-semibold text-gray-900 mb-2">No deleted users found</div>
+              <div class="text-gray-500 max-w-md mx-auto">{{ restoreSearchQuery ? 'Try adjusting your search terms to find what you\'re looking for' : 'All users are currently active and no accounts have been deleted' }}</div>
                </div>
              </div>
              
              <!-- Footer Section -->
-             <div class="bg-gradient-to-r from-red-50 to-orange-50 px-4 sm:px-6 py-4 border-t border-red-200/50">
-               <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center sm:justify-end">
+          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-end">
                  <button @click="showRestoreModal = false" 
-                         class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md">
-                   <div class="flex items-center justify-center gap-2">
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                     </svg>
+                      class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors">
                      Close
-                   </div>
                  </button>
                  <button @click="loadSoftDeletedUsers" 
-                         class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border border-transparent rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                   <div class="flex items-center justify-center gap-2">
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                     </svg>
+                      class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 transition-colors">
                      Refresh List
-                   </div>
                  </button>
                </div>
              </div>
@@ -1163,55 +1198,56 @@
          </div>
        </div>
 
-       <!-- Delete User Confirmation Modal -->
+    <!-- Delete User Confirmation Modal - Enhanced Design -->
        <div v-if="showDeleteConfirmModal" class="fixed inset-0 z-50 overflow-y-auto">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
-           <!-- Backdrop with blur effect -->
+        <!-- Backdrop -->
            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-           <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md border border-gray-200/50">
-             
-             <!-- Header Section with Gradient -->
-             <div class="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 px-6 py-6">
-               <div class="absolute inset-0 bg-black/10 rounded-t-2xl"></div>
-               <div class="relative flex items-center gap-4">
-                 <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl text-white font-bold shadow-lg overflow-hidden">
-                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-8 h-8 object-contain" />
+        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100">
+          
+          <!-- Header Section - Enhanced Design -->
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-100 px-6 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
                  </div>
                  <div>
-                   <h3 class="text-xl font-bold text-white">GoTapMode - Confirm Deletion</h3>
-                   <p class="text-sm text-red-100">This action cannot be undone</p>
+                <h3 class="text-2xl font-bold text-gray-900">Confirm Deletion</h3>
+                <p class="text-sm text-gray-600">This action cannot be undone</p>
                  </div>
                </div>
              </div>
              
              <!-- Content Section -->
-             <div class="bg-white px-6 py-6">
+          <div class="bg-white px-6 py-8">
                <div class="text-center">
-                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                   <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mx-auto flex items-center justify-center h-16 w-16 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl mb-6 shadow-sm">
+                <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                    </svg>
                  </div>
-                 <h3 class="text-lg font-medium text-gray-900 mb-2">Delete User Account</h3>
-                 <p class="text-sm text-gray-500 mb-6">
-                   Are you sure you want to delete <span class="font-semibold text-gray-900">{{ userToDelete?.name }}</span>? 
+              <h3 class="text-xl font-bold text-gray-900 mb-3">Delete User Account</h3>
+              <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                Are you sure you want to delete <span class="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-md">{{ userToDelete?.name }}</span>? 
                    This will move their account to the deleted users list where it can be restored later.
                  </p>
                </div>
              </div>
              
              <!-- Footer Section -->
-             <div class="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row gap-3 justify-end">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-5 flex flex-col sm:flex-row gap-3 justify-end">
                <button @click="cancelDeleteUser" 
-                       class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                    class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md">
                  Cancel
                </button>
                <button @click="confirmDeleteUser" 
-                       class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border border-transparent rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md">
                  Delete User
                </button>
              </div>
@@ -1219,55 +1255,56 @@
          </div>
        </div>
 
-       <!-- Restore User Confirmation Modal -->
+    <!-- Restore User Confirmation Modal - Enhanced Design -->
        <div v-if="showRestoreConfirmModal" class="fixed inset-0 z-50 overflow-y-auto">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
-           <!-- Backdrop with blur effect -->
+        <!-- Backdrop -->
            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-           <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md border border-gray-200/50">
-             
-             <!-- Header Section with Gradient -->
-             <div class="relative bg-gradient-to-r from-green-600 via-green-700 to-green-800 px-6 py-6">
-               <div class="absolute inset-0 bg-black/10 rounded-t-2xl"></div>
-               <div class="relative flex items-center gap-4">
-                 <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl text-white font-bold shadow-lg overflow-hidden">
-                   <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-8 h-8 object-contain" />
+        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100">
+          
+          <!-- Header Section - Enhanced Design -->
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100 px-6 py-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
                  </div>
                  <div>
-                   <h3 class="text-xl font-bold text-white">GoTapMode - Confirm Restoration</h3>
-                   <p class="text-sm text-green-100">Restore user account</p>
+                <h3 class="text-2xl font-bold text-gray-900">Confirm Restoration</h3>
+                <p class="text-sm text-gray-600">Restore user account</p>
                  </div>
                </div>
              </div>
              
              <!-- Content Section -->
-             <div class="bg-white px-6 py-6">
+          <div class="bg-white px-6 py-8">
                <div class="text-center">
-                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                   <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="mx-auto flex items-center justify-center h-16 w-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-6 shadow-sm">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                    </svg>
                  </div>
-                 <h3 class="text-lg font-medium text-gray-900 mb-2">Restore User Account</h3>
-                 <p class="text-sm text-gray-500 mb-6">
-                   Are you sure you want to restore <span class="font-semibold text-gray-900">{{ userToRestore?.name }}</span>? 
+              <h3 class="text-xl font-bold text-gray-900 mb-3">Restore User Account</h3>
+              <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                Are you sure you want to restore <span class="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-md">{{ userToRestore?.name }}</span>? 
                    This will reactivate their account and move them back to the active users list.
                  </p>
                </div>
              </div>
              
              <!-- Footer Section -->
-             <div class="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row gap-3 justify-end">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-5 flex flex-col sm:flex-row gap-3 justify-end">
                <button @click="cancelRestoreUser" 
-                       class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                    class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md">
                  Cancel
                </button>
                <button @click="confirmRestoreUser" 
-                       class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border border-transparent rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md">
                  Restore User
                </button>
              </div>
@@ -1392,7 +1429,25 @@ function formatDate(date) {
 }
 
 function viewUserDetails(user) {
+  // Check if this is a deleted user (has deleted_at property)
+  if (user.deleted_at) {
+    // For deleted users, show detailed information in an alert
+    const details = `
+Deleted User Details:
+Name: ${user.name}
+Email: ${user.email}
+Phone: ${user.phone || 'No phone'}
+Company: ${user.profile?.company || 'No company'}
+Company Email: ${user.profile?.companyemail || 'No company email'}
+Created: ${formatDate(user.created_at)}
+Deleted: ${formatDate(user.deleted_at)}
+    `.trim()
+    
+    alert(details)
+  } else {
+    // For regular users, set as selected user (existing behavior)
   selectedUser.value = user
+  }
 }
 
 function editUser(user) {
@@ -1482,15 +1537,21 @@ function cancelRestoreUser() {
 
 
 
+async function openRestoreModal() {
+  showRestoreModal.value = true
+  await loadSoftDeletedUsers()
+}
+
 async function loadSoftDeletedUsers() {
   try {
-    const data = await adminApi.getSoftDeletedUsers()
-    softDeletedUsers.value = data.users || []
+    const response = await adminApi.getSoftDeletedUsers()
+    softDeletedUsers.value = response.users || []
   } catch (e) {
     console.error('Failed to load soft deleted users:', e)
     softDeletedUsers.value = []
   }
 }
+
 
 function exportUsers() {
   // TODO: Implement export functionality
@@ -1502,10 +1563,7 @@ function changePage(page) {
   currentPage.value = page
 }
 
-function changeItemsPerPage(newSize) {
-  itemsPerPage.value = parseInt(newSize)
-  currentPage.value = 1 // Reset to first page when changing page size
-}
+
 
 function validateAndChangePage(page) {
   const validPage = Math.max(1, Math.min(page, totalPages.value))
@@ -1545,27 +1603,15 @@ function getVisiblePages() {
   return pages
 }
 
-function goDashboard() {
-  showSidebar.value = false
-  router.push({ name: 'admin-dashboard' })
-}
 
-function goUsers() {
-  showSidebar.value = false
-  router.push({ name: 'admin-users' })
-}
-
-function goNfcWriting() {
-  showSidebar.value = false
-  router.push({ name: 'admin-nfc-writing' })
-}
-
-function goAdministrators() {
-  showSidebar.value = false
-  router.push({ name: 'admin-administrators' })
-}
-
-function logout() {
+async function logout() {
+  try {
+    await adminApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
+  }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')
   router.replace({ name: 'login' })
@@ -1634,20 +1680,8 @@ watch(showRestoreModal, (newVal) => {
   backdrop-filter: blur(10px);
 }
 
-.enhanced-table tbody tr {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .enhanced-table tbody tr:nth-child(even) {
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.3), rgba(241, 245, 249, 0.2));
-}
-
-.enhanced-table tbody tr:hover {
-  transform: translateY(-1px) scale(1.002);
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(59, 130, 246, 0.1);
 }
 
 /* Ensure table fits within container */
@@ -1708,35 +1742,11 @@ watch(showRestoreModal, (newVal) => {
 /* Avatar enhancement */
 .user-avatar {
   position: relative;
-  transition: all 0.3s ease;
-}
-
-.user-avatar::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.user-avatar:hover::after {
-  opacity: 1;
 }
 
 /* Column header icons */
 .column-icon {
-  transition: all 0.3s ease;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-.column-icon:hover {
-  transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 /* Responsive enhancements */
@@ -1775,14 +1785,9 @@ watch(showRestoreModal, (newVal) => {
 
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
-  .enhanced-table tbody tr,
-  .enhanced-table tbody tr:hover,
   .action-button,
   .action-button::before,
-  .status-badge::after,
-  .user-avatar,
-  .user-avatar::after,
-  .column-icon {
+  .status-badge::after {
     animation: none;
     transition: none;
     transform: none;
@@ -1813,3 +1818,4 @@ watch(showRestoreModal, (newVal) => {
   }
 }
 </style>
+

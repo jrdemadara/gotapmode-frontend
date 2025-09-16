@@ -100,8 +100,10 @@
             <!-- Personal Data Section -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                <label for="edit-first-name" class="block text-sm font-medium text-gray-700">First Name</label>
                 <input
+                  id="edit-first-name"
+                  name="edit-first-name"
                   v-model="formData.personal_data.first_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -109,8 +111,10 @@
                 />
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                <label for="edit-middle-name" class="block text-sm font-medium text-gray-700">Middle Name</label>
                 <input
+                  id="edit-middle-name"
+                  name="edit-middle-name"
                   v-model="formData.personal_data.middle_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -118,8 +122,10 @@
                 />
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                <label for="edit-last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
                 <input
+                  id="edit-last-name"
+                  name="edit-last-name"
                   v-model="formData.personal_data.last_name"
                   type="text"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -159,34 +165,48 @@
             </div>
           </div>
           <div class="p-6">
-            <!-- Profile Picture Upload -->
-            <div class="flex items-center justify-center mb-6">
-              <label class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer overflow-hidden hover:border-emerald-400 hover:shadow-lg transition-all duration-300 group">
-                <input type="file" accept="image/*" class="hidden" @change="onProfilePicFile" />
-                <img v-if="profilePicPreview" :src="profilePicPreview" class="w-24 h-24 object-cover" alt="Company Profile" />
+            <!-- Profile Picture -->
+            <div class="flex flex-col items-center justify-center mb-6">
+              <div class="w-24 h-24 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                <img v-if="profilePicPreview" :src="profilePicPreview" class="w-24 h-24 object-cover" alt="Profile" />
                 <div v-else class="text-center p-2">
-                  <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                   </svg>
-                  <span class="text-xs text-gray-600 font-medium">Upload logo</span>
-                  <p class="text-xs text-gray-400">PNG, JPG up to 5MB</p>
+                  <span class="text-xs text-gray-600 font-medium">No photo</span>
                 </div>
-              </label>
+              </div>
+              <button @click="openPhotoModal" type="button" class="mt-3 px-3 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-black transition-colors">Change Photo</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                <label for="edit-company" class="block text-sm font-medium text-gray-700">Company Name</label>
                 <input
+                  id="edit-company"
+                  name="edit-company"
                   v-model="formData.profile.company"
                   type="text"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
                   placeholder="Enter company name"
                 />
               </div>
-              <div class="space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Phone</label>
+              <div class="md:col-span-2 space-y-3">
+                <label for="edit-position" class="block text-sm font-medium text-gray-700">Position</label>
                 <input
+                  id="edit-position"
+                  name="edit-position"
+                  v-model="formData.profile.position"
+                  type="text"
+                  class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
+                  placeholder="Enter your position/title"
+                />
+              </div>
+              <div class="space-y-3">
+                <label for="edit-companynumber" class="block text-sm font-medium text-gray-700">Company Phone</label>
+                <input
+                  id="edit-companynumber"
+                  name="edit-companynumber"
                   v-model="formData.profile.companynumber"
                   type="tel"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -194,8 +214,10 @@
                 />
               </div>
               <div class="space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Email</label>
+                <label for="edit-companyemail" class="block text-sm font-medium text-gray-700">Company Email</label>
                 <input
+                  id="edit-companyemail"
+                  name="edit-companyemail"
                   v-model="formData.profile.companyemail"
                   type="email"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 placeholder-gray-400"
@@ -203,8 +225,10 @@
                 />
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Company Address</label>
+                <label for="edit-companyadress" class="block text-sm font-medium text-gray-700">Company Address</label>
                 <textarea
+                  id="edit-companyadress"
+                  name="edit-companyadress"
                   v-model="formData.profile.companyadress"
                   rows="4"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none placeholder-gray-400"
@@ -212,8 +236,10 @@
                 ></textarea>
               </div>
               <div class="md:col-span-2 space-y-3">
-                <label class="block text-sm font-medium text-gray-700">Bio</label>
+                <label for="edit-bio" class="block text-sm font-medium text-gray-700">Bio</label>
                 <textarea
+                  id="edit-bio"
+                  name="edit-bio"
                   v-model="formData.profile.bio"
                   rows="4"
                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none placeholder-gray-400"
@@ -434,8 +460,10 @@
         </div>
         <div class="p-6 space-y-4">
                   <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+            <label for="edit-new-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
                     <input
+              id="edit-new-phone"
+              name="edit-new-phone"
               v-model="newPhone"
               type="tel"
               placeholder="e.g. +1 234 567 8900"
@@ -443,8 +471,10 @@
                     />
                   </div>
                   <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            <label for="edit-new-phone-type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
             <select
+              id="edit-new-phone-type"
+              name="edit-new-phone-type"
               v-model="newPhoneType"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
@@ -465,6 +495,29 @@
       </div>
     </div>
 
+    <!-- Change Photo Modal -->
+    <div v-if="showPhotoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full mx-4">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 rounded-t-2xl">
+          <h3 class="text-lg font-semibold text-gray-900">Change Profile Photo</h3>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-center mb-4">
+            <label for="admin-photo" class="w-28 h-28 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden">
+              <input id="admin-photo" type="file" accept="image/*" class="hidden" @change="onPickAdminPhoto" />
+              <img v-if="newPhotoPreview" :src="newPhotoPreview" class="w-28 h-28 object-cover" />
+              <span v-else class="text-xs text-gray-500">Click to choose</span>
+            </label>
+          </div>
+          <p class="text-xs text-center text-gray-500">PNG/JPG up to 5MB</p>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+          <button @click="showPhotoModal=false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+          <button @click="saveAdminPhoto" :disabled="!newPhotoFile" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-black disabled:opacity-50">Save</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Email Modal -->
     <div v-if="showAddEmail" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full mx-4">
@@ -473,8 +526,10 @@
         </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <label for="edit-new-email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                     <input
+              id="edit-new-email"
+              name="edit-new-email"
               v-model="newEmail"
               type="email"
               placeholder="name@company.com"
@@ -482,8 +537,10 @@
                     />
                   </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            <label for="edit-new-email-type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
             <select
+              id="edit-new-email-type"
+              name="edit-new-email-type"
               v-model="newEmailType"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
@@ -511,8 +568,10 @@
         </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">URL / Username</label>
+            <label for="edit-new-social" class="block text-sm font-medium text-gray-700 mb-2">URL / Username</label>
                       <input
+              id="edit-new-social"
+              name="edit-new-social"
               v-model="newSocial"
               type="url"
               placeholder="https://platform.com/username"
@@ -520,7 +579,7 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+            <label for="edit-new-social-platform" class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
             <div class="relative">
               <button
                 type="button"
@@ -569,8 +628,10 @@
               </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Link</label>
+            <label for="edit-new-other" class="block text-sm font-medium text-gray-700 mb-2">Link</label>
             <input
+              id="edit-new-other"
+              name="edit-new-other"
               v-model="newOther"
               type="url"
               placeholder="https://your-website.com"
@@ -620,11 +681,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { adminApi, api } from '../config/api'
+import { addCacheBusting, processProfileImage } from '../utils/imageUtils'
 
 const route = useRoute()
-const router = useRouter()
 
 const loading = ref(true)
 
@@ -633,8 +694,11 @@ const savingProfile = ref(false)
 const savingContacts = ref(false)
 
 // Profile picture upload variables
-const profilePic = ref('')
+const profilePicFile = ref(null) // Store actual file for multipart
 const profilePicPreview = ref('')
+const showPhotoModal = ref(false)
+const newPhotoFile = ref(null)
+const newPhotoPreview = ref('')
 
 const error = ref('')
 const user = ref(null)
@@ -686,6 +750,7 @@ const formData = ref({
     profile_pic: '',
     bio: '',
     company: '',
+    position: '',
     companynumber: '',
     companyemail: '',
     companyadress: ''
@@ -697,28 +762,6 @@ const formData = ref({
         others: []
 })
 
-// Functions
-function addContactInfo() {
-  formData.value.contact_info.push({
-    type: 'phone',
-    value: '',
-    is_main: false
-  })
-}
-
-function removeContactInfo(index) {
-  formData.value.contact_info.splice(index, 1)
-}
-
-function addCard() {
-  formData.value.cards.push({
-    unique_code: '',
-    activation_code: '',
-    is_activated: false
-  })
-}
-
-
 
 // Individual save functions
 async function saveBasicInfo() {
@@ -726,19 +769,14 @@ async function saveBasicInfo() {
   savingBasic.value = true
 
   try {
-    // Update personal data separately
+    // Update personal data using admin endpoint
     const personalDataPayload = {
-      user_id: user.value.id,
       first_name: formData.value.personal_data.first_name,
       middle_name: formData.value.personal_data.middle_name || null,
       last_name: formData.value.personal_data.last_name
     }
 
-    if (formData.value.personal_data.id) {
-      personalDataPayload.id = formData.value.personal_data.id
-    }
-
-    await api.post('/card-users/personal-data', personalDataPayload)
+    await adminApi.updateUserPersonalData(user.value.id, personalDataPayload)
 
     showSuccessNotification.value = true
     successMessage.value = 'Personal information updated successfully'
@@ -762,24 +800,30 @@ async function saveProfileInfo() {
   savingProfile.value = true
 
   try {
-    const profilePayload = {
-      user_id: user.value.id,
-      bio: formData.value.profile.bio || null,
-      company: formData.value.profile.company || null,
-      companynumber: formData.value.profile.companynumber || null,
-      companyemail: formData.value.profile.companyemail || null,
-      companyadress: formData.value.profile.companyadress || null,
-    }
+    // First update textual profile fields (no photo here)
+    await adminApi.updateUserProfile(user.value.id, {
+      bio: formData.value.profile.bio || '',
+      company: formData.value.profile.company || '',
+      position: formData.value.profile.position || '',
+      companynumber: formData.value.profile.companynumber || '',
+      companyemail: formData.value.profile.companyemail || '',
+      companyadress: formData.value.profile.companyadress || ''
+    })
 
-    // Include profile picture if a new one was uploaded
-    if (profilePic.value && profilePic.value.startsWith('data:')) {
-      profilePayload.profile_pic = profilePic.value
+    // Then upload profile photo if present using dedicated endpoint
+    if (profilePicFile.value) {
+      const photoForm = new FormData()
+      photoForm.append('profile_pic_file', profilePicFile.value)
+      const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      try { console.log('Admin photo upload logs (profile save):', photoResp?.logs) } catch {}
     }
-
-    await api.post('/card-users/profile', profilePayload)
 
     // Clear the uploaded image after successful save
-    profilePic.value = ''
+    profilePicFile.value = null
 
     showSuccessNotification.value = true
     successMessage.value = 'Profile information updated successfully'
@@ -792,37 +836,21 @@ async function saveProfileInfo() {
 
   } catch (e) {
     console.error('Failed to update profile:', e)
-    alert('Failed to update profile: ' + (e.message || e))
+    
+    // Enhanced error handling
+    if (e.response?.status === 413) {
+      alert('File too large! Please choose a smaller image.')
+    } else if (e.response?.data?.message) {
+      alert('Failed to update profile: ' + e.response.data.message)
+    } else {
+      alert('Failed to update profile: ' + (e.message || e))
+    }
+    try { console.log('Admin photo upload error logs (profile save):', e?.response?.data?.logs) } catch {}
   }
 
   savingProfile.value = false
 }
 
-async function saveContactsInfo() {
-  if (!user.value) return
-  savingContacts.value = true
-
-  try {
-    await adminApi.updateUser(user.value.id, {
-      contact_info: formData.value.contact_info
-    })
-
-    showSuccessNotification.value = true
-    successMessage.value = 'Contact information updated successfully'
-
-    if (notificationTimer.value) clearTimeout(notificationTimer.value)
-    notificationTimer.value = setTimeout(() => {
-      showSuccessNotification.value = false
-      successMessage.value = ''
-    }, 3000)
-
-  } catch (e) {
-    console.error('Failed to update contacts:', e)
-    alert('Failed to update contacts: ' + e.message)
-  }
-
-  savingContacts.value = false
-}
 
 
 
@@ -841,16 +869,23 @@ function selectSocialPlatform(key) {
 async function saveAddPhone() {
   if (!newPhone.value || !user.value) return
   try {
-    const row = await adminApi.addUserPhone(user.value.id, {
+    const response = await adminApi.addUserPhone(user.value.id, {
       phonenumber: newPhone.value,
       type: newPhoneType.value
     })
-    formData.value.phones.unshift({
+    console.log('Add phone response:', response)
+    const row = response.data || response
+    formData.value.phones.push({
       id: row.id,
       number: row.phonenumber || newPhone.value,
       type: row.type || newPhoneType.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first phone, ensure it's set as main in the UI
+    if (formData.value.phones.length === 1) {
+      formData.value.phones[0].isMain = true
+    }
     showAddPhone.value = false
     newPhone.value = ''
     showSuccessNotification.value = true
@@ -869,16 +904,23 @@ async function saveAddPhone() {
 async function saveAddEmail() {
   if (!newEmail.value || !user.value) return
   try {
-    const row = await adminApi.addUserEmail(user.value.id, {
+    const response = await adminApi.addUserEmail(user.value.id, {
       email: newEmail.value,
       type: newEmailType.value
     })
-    formData.value.emails.unshift({
+    console.log('Add email response:', response)
+    const row = response.data || response
+    formData.value.emails.push({
       id: row.id,
       value: row.email || newEmail.value,
       type: row.type || newEmailType.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first email, ensure it's set as main in the UI
+    if (formData.value.emails.length === 1) {
+      formData.value.emails[0].isMain = true
+    }
     showAddEmail.value = false
     newEmail.value = ''
     showSuccessNotification.value = true
@@ -897,16 +939,23 @@ async function saveAddEmail() {
 async function saveAddSocial() {
   if (!newSocial.value || !user.value) return
   try {
-    const row = await adminApi.addUserSocial(user.value.id, {
+    const response = await adminApi.addUserSocial(user.value.id, {
       social: newSocial.value,
       type: newSocialType.value
     })
-    formData.value.socials.unshift({
+    console.log('Add social response:', response)
+    const row = response.data || response
+    formData.value.socials.push({
       id: row.id,
       platform: row.type || newSocialType.value,
       value: row.social || newSocial.value,
       isMain: !!row.is_main
     })
+    
+    // If this is the first social, ensure it's set as main in the UI
+    if (formData.value.socials.length === 1) {
+      formData.value.socials[0].isMain = true
+    }
     showAddSocial.value = false
     newSocial.value = ''
     showSuccessNotification.value = true
@@ -925,16 +974,23 @@ async function saveAddSocial() {
 async function saveAddOther() {
   if (!newOther.value || !user.value) return
   try {
-    const row = await adminApi.addUserOther(user.value.id, {
+    const response = await adminApi.addUserOther(user.value.id, {
       others: newOther.value,
       type: 'link'
     })
-    formData.value.others.unshift({
+    console.log('Add other response:', response)
+    const row = response.data || response
+    formData.value.others.push({
       id: row.id,
       value: row.others || newOther.value,
       type: row.type || 'link',
       isMain: !!row.is_main
     })
+    
+    // If this is the first other link, ensure it's set as main in the UI
+    if (formData.value.others.length === 1) {
+      formData.value.others[0].isMain = true
+    }
     showAddOther.value = false
     newOther.value = ''
     showSuccessNotification.value = true
@@ -954,7 +1010,10 @@ async function saveAddOther() {
 async function onToggleMainPhone(p) {
   if (!p?.id || !user.value) return
   try {
+    console.log('Setting main phone:', { userId: user.value.id, phoneId: p.id })
     const response = await adminApi.setMainPhone(user.value.id, p.id)
+    console.log('Set main phone response:', response)
+    
     // Update local state with the response
     if (response.phones) {
       formData.value.phones = response.phones.map(phone => ({
@@ -963,6 +1022,9 @@ async function onToggleMainPhone(p) {
         type: phone.type || 'personal',
         isMain: !!phone.is_main
       }))
+      console.log('Updated phones:', formData.value.phones)
+    } else {
+      console.warn('No phones in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary phone updated'
@@ -980,7 +1042,10 @@ async function onToggleMainPhone(p) {
 async function onToggleMainEmail(e) {
   if (!e?.id || !user.value) return
   try {
+    console.log('Setting main email:', { userId: user.value.id, emailId: e.id })
     const response = await adminApi.setMainEmail(user.value.id, e.id)
+    console.log('Set main email response:', response)
+    
     if (response.emails) {
       formData.value.emails = response.emails.map(email => ({
         id: email.id,
@@ -988,6 +1053,9 @@ async function onToggleMainEmail(e) {
         type: email.type || 'personal',
         isMain: !!email.is_main
       }))
+      console.log('Updated emails:', formData.value.emails)
+    } else {
+      console.warn('No emails in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary email updated'
@@ -1005,7 +1073,10 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) {
   if (!s?.id || !user.value) return
   try {
+    console.log('Setting main social:', { userId: user.value.id, socialId: s.id })
     const response = await adminApi.setMainSocial(user.value.id, s.id)
+    console.log('Set main social response:', response)
+    
     if (response.socials) {
       formData.value.socials = response.socials.map(social => ({
         id: social.id,
@@ -1013,6 +1084,9 @@ async function onToggleMainSocial(s) {
         value: social.social || social.value || '',
         isMain: !!social.is_main
       }))
+      console.log('Updated socials:', formData.value.socials)
+    } else {
+      console.warn('No socials in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary social link updated'
@@ -1030,7 +1104,10 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) {
   if (!o?.id || !user.value) return
   try {
+    console.log('Setting main other:', { userId: user.value.id, otherId: o.id })
     const response = await adminApi.setMainOther(user.value.id, o.id)
+    console.log('Set main other response:', response)
+    
     if (response.others) {
       formData.value.others = response.others.map(other => ({
         id: other.id,
@@ -1038,6 +1115,9 @@ async function onToggleMainOther(o) {
         type: other.type || 'link',
         isMain: !!other.is_main
       }))
+      console.log('Updated others:', formData.value.others)
+    } else {
+      console.warn('No others in response:', response)
     }
     showSuccessNotification.value = true
     successMessage.value = 'Primary link updated'
@@ -1156,16 +1236,41 @@ function socialIcon(platform) {
   return map[platform] || '/icons/web.png'
 }
 
-// Profile picture upload function
-function onProfilePicFile(e) {
-  const file = e.target.files?.[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => {
-    profilePic.value = reader.result
-    profilePicPreview.value = reader.result
+
+function openPhotoModal() {
+  showPhotoModal.value = true
+  newPhotoFile.value = null
+  newPhotoPreview.value = ''
+}
+
+function onPickAdminPhoto(e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  if (!/^image\//.test(f.type) || f.size > 5 * 1024 * 1024) {
+    alert('Please select an image up to 5MB.')
+    e.target.value = ''
+    return
   }
-  reader.readAsDataURL(file)
+  newPhotoFile.value = f
+  const reader = new FileReader()
+  reader.onload = () => { newPhotoPreview.value = reader.result }
+  reader.readAsDataURL(f)
+}
+
+async function saveAdminPhoto() {
+  if (!user.value || !newPhotoFile.value) return
+  try {
+    const fd = new FormData()
+    fd.append('profile_pic_file', newPhotoFile.value)
+    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    try { console.log('Admin photo upload logs (modal):', resp?.logs) } catch {}
+    // Reflect new preview immediately (data URL doesn't need cache busting)
+    profilePicPreview.value = newPhotoPreview.value
+    showPhotoModal.value = false
+  } catch (e) {
+    try { console.log('Admin photo upload error logs (modal):', e?.response?.data?.logs) } catch {}
+    alert(e?.response?.data?.message || e.message || 'Upload failed')
+  }
 }
 
 async function loadUser() {
@@ -1198,15 +1303,15 @@ async function loadUser() {
     const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ') || userData.name || 'Unknown User'
 
     console.log('Personal data extracted:', { firstName, middleName, lastName, fullName })
-
-    // Load contact data separately to ensure we get all contacts
-    let contactData = { phones: [], emails: [], socials: [], others: [] }
-    try {
-      contactData = await api.get(`/contacts/${userId}`)
-    } catch (contactError) {
-      console.warn('Could not load contact data:', contactError)
-      // Continue with empty contact data if contacts endpoint fails
-    }
+    console.log('User data from API:', userData)
+    console.log('Contact data from API:', {
+      phones: userData.phones,
+      emails: userData.emails,
+      socials: userData.socials,
+      others: userData.others
+    })
+    console.log('Socials count:', userData.socials?.length || 0)
+    console.log('Others count:', userData.others?.length || 0)
 
     // Populate form with user data
     formData.value = {
@@ -1222,43 +1327,71 @@ async function loadUser() {
         profile_pic: userData.profile?.profile_pic || '',
         bio: userData.profile?.bio || '',
         company: userData.profile?.company || '',
+        position: userData.profile?.position || '',
         companynumber: userData.profile?.companynumber || '',
         companyemail: userData.profile?.companyemail || '',
         companyadress: userData.profile?.companyadress || ''
       },
       contact_info: userData.contact_info || [],
-      phones: (contactData.phones || userData.phones || []).map(p => ({
+      phones: (userData.phones || []).map(p => ({
         id: p.id,
         number: p.phonenumber || p.number || '',
         type: p.type || 'personal',
         isMain: !!p.is_main
       })),
-      emails: (contactData.emails || userData.emails || []).map(e => ({
+      emails: (userData.emails || []).map(e => ({
         id: e.id,
         value: e.email || e.value || '',
         type: e.type || 'personal',
         isMain: !!e.is_main
       })),
-      socials: (contactData.socials || userData.socials || []).map(s => ({
-        id: s.id,
-        platform: s.type || s.platform || 'link',
-        value: s.social || s.value || '',
-        isMain: !!s.is_main
-      })),
-      others: (contactData.others || userData.others || []).map(o => ({
-        id: o.id,
-        value: o.others || o.value || '',
-        type: o.type || 'link',
-        isMain: !!o.is_main
-      }))
+      socials: (userData.socials || []).map(s => {
+        console.log('Mapping social:', s)
+        return {
+          id: s.id,
+          platform: s.type || s.platform || 'link',
+          value: s.social || s.value || '',
+          isMain: !!s.is_main
+        }
+      }),
+      others: (userData.others || []).map(o => {
+        console.log('Mapping other:', o)
+        return {
+          id: o.id,
+          value: o.others || o.value || '',
+          type: o.type || 'link',
+          isMain: !!o.is_main
+        }
+      })
     }
 
     // Set profile picture preview from loaded data
-    profilePicPreview.value = formData.value.profile.profile_pic || ''
+    const profileData = formData.value.profile || {}
+    const profilePicUrl = profileData.profile_pic_url || profileData.profile_pic
+    console.log('Profile data:', profileData)
+    console.log('Profile picture URL from API:', profilePicUrl)
+    
+    if (profilePicUrl) {
+      // If it's already a full URL, add cache busting; otherwise process it with cache busting
+      if (profilePicUrl.startsWith('http') || profilePicUrl.startsWith('data:')) {
+        profilePicPreview.value = addCacheBusting(profilePicUrl)
+      } else {
+        const processedUrl = processProfileImage(profilePicUrl)
+        console.log('Processed URL with cache busting:', processedUrl)
+        profilePicPreview.value = processedUrl
+      }
+      console.log('Profile picture preview set to:', profilePicPreview.value)
+    } else {
+      profilePicPreview.value = ''
+      console.log('No profile picture found, clearing preview')
+    }
 
     console.log('Loaded user data:', formData.value)
-    console.log('Contact data loaded:', contactData)
-    console.log('Profile picture preview set to:', profilePicPreview.value)
+    console.log('Profile data specifically:', formData.value.profile)
+    console.log('Profile picture fields:', {
+      profile_pic: formData.value.profile.profile_pic,
+      profile_pic_url: formData.value.profile.profile_pic_url
+    })
   } catch (e) {
     console.error('Failed to load user:', e)
     error.value = e?.message || 'Failed to load user'

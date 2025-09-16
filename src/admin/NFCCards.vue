@@ -41,6 +41,12 @@
           </svg>
           <span v-if="!sidebarCollapsed">NFC Writing</span>
         </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span v-if="!sidebarCollapsed">Card Clear</span>
+        </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-3 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg transition-colors duration-200" :class="sidebarCollapsed ? 'justify-center' : ''">
           <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -111,76 +117,57 @@
       </div>
 
       <!-- Cards Table -->
-      <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+      <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <!-- Table Header -->
-        <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div class="flex flex-col gap-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-                  <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-7 h-7 object-contain" />
-                </div>
+                <img src="/logo/GoTapMode.png" alt="GoTapMode Logo" class="w-10 h-10" />
                 <div>
                   <h2 class="text-xl font-bold text-gray-900">NFC Cards</h2>
                   <p class="text-sm text-gray-600">Manage and view all NFC cards</p>
                 </div>
               </div>
-              
-              <!-- Desktop Stats -->
-              <div class="hidden lg:flex items-center gap-4">
-                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
-                  <div class="text-center">
-                    <div class="text-xs text-gray-500">Total</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ cards.length }}</div>
-                  </div>
-                </div>
-                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
-                  <div class="text-center">
-                    <div class="text-xs text-gray-500">Activated</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ cards.filter(c => c.is_activated).length }}</div>
-                  </div>
-                </div>
-                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
-                  <div class="text-center">
-                    <div class="text-xs text-gray-500">Unactivated</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ cards.filter(c => !c.is_activated).length }}</div>
-                  </div>
-                </div>
-                <div class="bg-white px-3 py-2 rounded-lg border border-gray-200">
-                  <div class="text-center">
-                    <div class="text-xs text-gray-500">Filtered</div>
-                    <div class="text-lg font-semibold text-gray-900">{{ filteredCards.length }}</div>
-                  </div>
-                </div>
-              </div>
             </div>
             
             <!-- Search Section -->
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div class="relative w-full lg:w-96">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div class="relative w-full sm:w-80 lg:w-96">
                 <input
+                  id="nfc-search"
+                  name="nfc-search"
                   v-model="searchQuery"
                   type="text"
                   placeholder="Search by card ID, user name, or email..."
-                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div class="absolute left-3 top-2.5 text-gray-400">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="absolute left-4 top-3.5 text-gray-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                   </svg>
                 </div>
-                <div class="absolute right-3 top-2.5 text-gray-400">
-                  <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ filteredCards.length }}</span>
-                </div>
               </div>
               
-              <!-- Quick Actions -->
-              <div class="flex items-center gap-2 justify-end">
-                <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <!-- Quick Actions (Desktop & Mobile) -->
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 justify-end">
+                <button @click="openRestoreModal" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all duration-200">
+                  <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                  </svg>
+                  <span class="hidden xs:inline">Restore</span>
+                </button>
+                <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                  <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
-                  Refresh
+                  <span class="hidden xs:inline">Refresh</span>
+                </button>
+                <button @click="exportCards" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition-all duration-200">
+                  <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <span class="hidden xs:inline">Export</span>
                 </button>
               </div>
             </div>
@@ -189,85 +176,148 @@
 
         <!-- Desktop Table -->
         <div class="hidden lg:block w-full overflow-hidden">
-          <div class="bg-white border border-gray-200 overflow-hidden">
-            <table class="w-full" role="table" aria-label="NFC Cards table">
-              <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Card Details
-                  </th>
-                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User Information
-                  </th>
-                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Activation Status
-                  </th>
-                  <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Expiry Date
-                  </th>
-                  <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="(card, index) in paginatedCards" :key="card.id"
-                    class="hover:bg-gray-50 transition-colors duration-200"
-                    role="row">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+            <table class="w-full enhanced-table" role="table" aria-label="NFC Cards table">
+              <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
+                <tr class="backdrop-blur-sm">
+                  <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center column-icon">
+                        <svg class="w-3 h-3 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                         </svg>
                       </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px]">Card Details</span>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[25%]" role="columnheader" aria-sort="none">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center column-icon">
+                        <svg class="w-3 h-3 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px]">User Information</span>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[15%]" role="columnheader" aria-sort="none">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center column-icon">
+                        <svg class="w-3 h-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px]">Status</span>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-yellow-100 flex items-center justify-center column-icon">
+                        <svg class="w-3 h-3 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px]">Expiration Date</span>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider w-[20%]" role="columnheader" aria-sort="none">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-red-100 flex items-center justify-center column-icon">
+                        <svg class="w-3 h-3 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px]">Actions</span>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-100/80">
+                <tr v-for="(card, index) in paginatedCards" :key="card.id"
+                    :class="[
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    ]"
+                    role="row">
+                  <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                    <div class="flex items-center gap-3">
+                      <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg flex-shrink-0 ring-2 ring-blue-100">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                          </svg>
+                        </div>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm"></div>
+                      </div>
                       <div class="min-w-0 flex-1">
-                        <div class="text-sm font-medium text-gray-900">{{ card.unique_code }}</div>
-                        <div class="text-xs text-gray-500">{{ card.activation_code }}</div>
+                        <div class="text-sm font-semibold text-gray-900 truncate leading-tight">{{ card.unique_code }}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">ID: {{ card.id }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4">
-                    <div class="text-sm text-gray-900">{{ card.user?.name || 'Unknown User' }}</div>
-                    <div class="text-xs text-gray-500">{{ card.user?.email || 'No email' }}</div>
+                  <td class="px-4 py-5 border-r border-gray-100/60 w-[25%]" role="gridcell">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="text-sm font-medium text-gray-900 group-hover:text-purple-700 transition-colors truncate leading-tight">{{ card.user?.name || 'Unknown User' }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ card.user?.email || 'No email' }}</div>
+                      </div>
+                    </div>
                   </td>
-                  <td class="px-6 py-4">
-                    <span :class="[
-                      'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
-                      card.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    ]">
-                      <div :class="[
-                        'w-2 h-2 rounded-full mr-1',
-                        card.is_activated ? 'bg-green-500' : 'bg-yellow-500'
-                      ]"></div>
-                      {{ card.is_activated ? 'Activated' : 'Unactivated' }}
-                    </span>
+                  <td class="px-4 py-5 border-r border-gray-100/60 w-[15%]" role="gridcell">
+                    <div class="flex items-center">
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border border-emerald-200 group-hover:shadow-md group-hover:scale-105 transition-all duration-200 status-badge">
+                        <div class="w-2 h-2 rounded-full mr-1.5 bg-emerald-500"></div>
+                        {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                      </span>
+                    </div>
                   </td>
-                  <td class="px-6 py-4">
-                    <div v-if="card.expiry_date" class="text-sm text-gray-900">{{ formatDate(card.expiry_date) }}</div>
-                    <div v-else class="text-sm text-gray-500 italic">Not set</div>
-                    <div v-if="card.expiry_date" class="text-xs text-gray-500">{{ getTimeAgo(card.expiry_date) }}</div>
+                  <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <div class="w-6 h-6 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-200 transition-colors duration-200">
+                        <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div v-if="card.expiry_date" class="text-sm font-medium text-gray-900 group-hover:text-yellow-700 transition-colors truncate leading-tight">{{ formatDate(card.expiry_date) }}</div>
+                        <div v-else class="text-sm text-gray-500 italic">Not set</div>
+                      </div>
+                    </div>
                   </td>
-                  <td class="px-6 py-4 text-center">
-                    <div class="flex items-center justify-center gap-2">
-                      <button
-                        @click="viewCard(card)"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <td class="px-4 py-5 w-[20%]" role="gridcell">
+                    <div class="flex items-center gap-1.5 justify-start">
+                      <button @click="viewCard(card)" 
+                              class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-md hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                              role="button"
+                              aria-label="View card">
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
-                        View
+                        <span>View</span>
                       </button>
-                      <button
-                        @click="deleteCard(card)"
-                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <button @click="deleteCard(card)" 
+                              class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-red-700 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-md hover:from-red-100 hover:to-red-200 hover:border-red-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                              role="button"
+                              aria-label="Delete card">
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
-                        Delete
+                        <span>Delete</span>
                       </button>
                     </div>
                   </td>
@@ -350,6 +400,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Show:</span>
                 <select
+                  id="nfc-items-per-page"
+                  name="nfc-items-per-page"
                   v-model="itemsPerPage"
                   class="border border-gray-300 rounded px-7 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -376,6 +428,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm text-gray-700">Go to:</span>
                 <input
+                  id="nfc-page-jump"
+                  name="nfc-page-jump"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -439,6 +493,8 @@
               <!-- Left: Page Size -->
               <div class="flex items-center gap-2">
                 <select
+                  id="nfc-items-per-page-mobile"
+                  name="nfc-items-per-page-mobile"
                   v-model="itemsPerPage"
                   class="text-xs border border-gray-300 rounded px-7 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -484,6 +540,8 @@
               <!-- Right: Page Jump -->
               <div class="flex items-center gap-1">
                 <input
+                  id="nfc-page-jump-mobile"
+                  name="nfc-page-jump-mobile"
                   type="number"
                   :min="1"
                   :max="totalPages"
@@ -540,6 +598,12 @@
           </svg>
           NFC Writing
         </router-link>
+        <router-link to="/admin/card-clear" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 text-base font-medium">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Card Clear
+        </router-link>
         <router-link to="/admin/nfc-cards" class="flex items-center gap-4 px-6 py-4 bg-blue-100 text-blue-700 rounded-xl text-base font-medium">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -563,7 +627,7 @@
 
     <!-- Card Details Modal -->
     <div v-if="showCardModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col mx-auto">
         <!-- Modal Header -->
         <div class="bg-gray-50 px-4 sm:px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -588,104 +652,105 @@
         </div>
 
         <!-- Modal Content -->
-        <div v-if="selectedCard" class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
-          <!-- Card Header -->
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h3 class="text-xl font-semibold text-gray-900">{{ selectedCard.unique_code }}</h3>
-              <p class="text-sm text-gray-600">{{ selectedCard.activation_code }}</p>
-              <div class="flex items-center gap-2 mt-2">
-                <span :class="[
-                  'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
-                  selectedCard.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                ]">
-                  <div :class="[
-                    'w-2 h-2 rounded-full mr-1',
-                    selectedCard.is_activated ? 'bg-green-500' : 'bg-yellow-500'
-                  ]"></div>
-                  {{ selectedCard.is_activated ? 'Activated' : 'Unactivated' }}
-                </span>
-              </div>
-            </div>
-          </div>
-
+        <div v-if="selectedCard" class="p-4 space-y-4 overflow-y-auto flex-1 min-h-0">
           <!-- Information Cards -->
           <div class="space-y-3">
             <!-- User Information -->
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h4 class="text-sm font-semibold text-gray-900 mb-2">User Information</h4>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-6 h-6 rounded bg-purple-100 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
+                <h4 class="text-sm font-semibold text-gray-900">User Information</h4>
+              </div>
               <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <p class="text-xs text-gray-600">Name</p>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Name</p>
                   <p class="text-sm font-medium text-gray-900">{{ selectedCard.user?.name || 'Unknown User' }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-gray-600">Email</p>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Email</p>
                   <p class="text-sm font-medium text-gray-900">{{ selectedCard.user?.email || 'No email' }}</p>
                 </div>
               </div>
             </div>
 
             <!-- Card Information -->
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h4 class="text-sm font-semibold text-gray-900 mb-3">Card Information</h4>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </div>
+                <h4 class="text-sm font-semibold text-gray-900">Card Information</h4>
+              </div>
               <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <p class="text-xs text-gray-600">Unique Code</p>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Unique Code</p>
                   <p class="text-sm font-medium text-gray-900">{{ selectedCard.unique_code }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-gray-600">Activation Code</p>
-                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.activation_code }}</p>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Card ID</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.id }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-gray-600">Activation Status</p>
-                  <div class="flex items-center gap-1">
-                    <span :class="[
-                      'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
-                      selectedCard.is_activated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    ]">
-                      <div :class="[
-                        'w-1.5 h-1.5 rounded-full mr-1',
-                        selectedCard.is_activated ? 'bg-green-500' : 'bg-yellow-500'
-                      ]"></div>
-                      {{ selectedCard.is_activated ? 'Activated' : 'Unactivated' }}
-                    </span>
-                  </div>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Activation Code</p>
+                  <p class="text-sm font-medium text-gray-900">{{ selectedCard.activation_code || 'Not set' }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-gray-600">Expiry Date</p>
+                <div class="p-2 bg-gray-50 rounded">
+                  <p class="text-xs text-gray-500">Expiry Date</p>
                   <p class="text-sm font-medium text-gray-900">
                     {{ selectedCard.expiry_date ? formatDate(selectedCard.expiry_date) : 'Not set' }}
                   </p>
                 </div>
-                <div>
-                  <p class="text-xs text-gray-600">Created Date</p>
-                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.created_at) }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-600">Last Updated</p>
-                  <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.updated_at) }}</p>
-                </div>
               </div>
             </div>
+          </div>
 
-            <!-- URL Information -->
-            <div v-if="selectedCard.url" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h4 class="text-sm font-semibold text-gray-900 mb-3">Card URL</h4>
-              <div class="flex items-center gap-2">
-                <a :href="selectedCard.url" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 underline truncate flex-1">
+          <!-- Timeline Information -->
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-6 h-6 rounded bg-yellow-100 flex items-center justify-center">
+                <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h4 class="text-sm font-semibold text-gray-900">Timeline</h4>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-2 bg-gray-50 rounded">
+                <p class="text-xs text-gray-500">Created Date</p>
+                <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.created_at) }}</p>
+              </div>
+              <div class="p-2 bg-gray-50 rounded">
+                <p class="text-xs text-gray-500">Last Updated</p>
+                <p class="text-sm font-medium text-gray-900">{{ formatDate(selectedCard.updated_at) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- URL Information -->
+          <div v-if="selectedCard.url" class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-6 h-6 rounded bg-green-100 flex items-center justify-center">
+                <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                </svg>
+              </div>
+              <h4 class="text-sm font-semibold text-gray-900">Card URL</h4>
+            </div>
+            <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+              <div class="flex-1 min-w-0">
+                <a :href="selectedCard.url" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 underline truncate block">
                   {{ selectedCard.url }}
                 </a>
-                <button @click="copyToClipboard(selectedCard.url)" class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
-                  Copy
-                </button>
               </div>
+              <button @click="copyToClipboard(selectedCard.url)" class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+                Copy
+              </button>
             </div>
           </div>
         </div>
@@ -756,6 +821,271 @@
         </div>
       </div>
     </div>
+
+    <!-- Restore Cards Modal - Enhanced Design -->
+    <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        </div>
+        
+        <!-- Modal Container -->
+        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100">
+          
+          <!-- Header Section - Flat Design -->
+          <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-gray-100 flex items-center justify-center">
+                  <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-900">Deleted NFC Cards</h3>
+                  <p class="text-sm text-gray-500">Manage and restore deleted NFC cards</p>
+                </div>
+              </div>
+              <button @click="showRestoreModal = false" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content Section -->
+          <div class="bg-white px-6 py-6">
+            
+            <!-- Search Section -->
+            <div class="mb-6">
+              <div class="flex items-center gap-4">
+                <div class="relative w-80">
+                  <input
+                    id="nfc-restore-search"
+                    name="nfc-restore-search"
+                    v-model="restoreSearchQuery"
+                    type="text"
+                    placeholder="Search deleted cards..."
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <div class="absolute left-3 top-2.5 text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cards Table - Desktop -->
+            <div v-if="filteredRestoreCards.length > 0" class="hidden sm:block">
+              <div class="overflow-x-auto">
+                <table class="w-full enhanced-table" role="table" aria-label="Deleted cards table">
+                  <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
+                    <tr class="backdrop-blur-sm">
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[18%]" role="columnheader" aria-sort="none">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Card Details</span>
+                          </div>
+                        </div>
+                      </th>
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[22%]" role="columnheader" aria-sort="none">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">User Info</span>
+                          </div>
+                        </div>
+                      </th>
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Status</span>
+                          </div>
+                        </div>
+                      </th>
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-r border-gray-200/60 w-[20%]" role="columnheader" aria-sort="none">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Timeline</span>
+                          </div>
+                        </div>
+                      </th>
+                      <th class="px-4 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider w-[20%]" role="columnheader" aria-sort="none">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-lg bg-red-100 flex items-center justify-center column-icon">
+                            <svg class="w-3 h-3 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="flex flex-col">
+                            <span class="text-[10px]">Actions</span>
+                          </div>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-100/80">
+                    <tr v-for="(card, index) in filteredRestoreCards" :key="card.id"
+                        :class="[
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                        ]"
+                        role="row">
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[18%]" role="gridcell">
+                        <div class="flex items-center gap-3">
+                          <div class="relative">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center text-sm font-bold shadow-lg flex-shrink-0 ring-2 ring-red-100 user-avatar">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                              </svg>
+                            </div>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-400 rounded-full border-2 border-white shadow-sm"></div>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-semibold text-gray-900 truncate leading-tight">#{{ card.id }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">{{ card.unique_code }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[22%]" role="gridcell">
+                        <div class="space-y-1">
+                          <div class="text-sm text-gray-900 truncate">{{ card.user?.name || 'No user assigned' }}</div>
+                          <div v-if="card.user?.email" class="text-xs text-gray-500 truncate">{{ card.user.email }}</div>
+                          <div v-else class="text-xs text-gray-400">No email</div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                        <div v-if="card.is_activated" class="space-y-1">
+                          <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800">
+                            Activated
+                          </span>
+                        </div>
+                        <span v-else class="text-gray-400 text-sm">Unactivated</span>
+                      </td>
+                      <td class="px-4 py-5 border-r border-gray-100/60 w-[20%]" role="gridcell">
+                        <div class="flex items-center gap-3">
+                          <div class="flex-1">
+                            <div class="text-xs text-gray-500">Created:</div>
+                            <div class="text-sm text-gray-900">{{ formatDate(card.created_at) }}</div>
+                          </div>
+                          <div class="flex-1">
+                            <div class="text-xs text-red-600 font-medium">Deleted:</div>
+                            <div class="text-sm text-red-600 font-medium">{{ formatDate(card.deleted_at) }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-5 w-[20%]" role="gridcell">
+                        <div class="flex items-center gap-1.5 justify-start">
+                          <button @click="restoreCard(card)" 
+                                  class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-green-700 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-md hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                                  role="button"
+                                  aria-label="Restore card">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Restore</span>
+                          </button>
+                          <button @click="viewCardDetails(card)" 
+                                  class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-md hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md hover:scale-105 transition-all duration-200 group-hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 action-button whitespace-nowrap"
+                                  role="button"
+                                  aria-label="View card details">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>View Only</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Mobile Cards for Deleted Cards -->
+            <div v-if="filteredRestoreCards.length > 0" class="sm:hidden space-y-4">
+              <div v-for="card in filteredRestoreCards" :key="card.id" 
+                   class="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-gray-900">Card #{{ card.id }}</div>
+                      <div class="text-sm text-gray-600">{{ card.user?.name || 'No user assigned' }}</div>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="card.is_activated ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                    {{ card.is_activated ? 'Activated' : 'Unactivated' }}
+                  </span>
+                </div>
+                
+                <!-- Deleted Date -->
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-gray-500">Deleted:</span>
+                    <span class="ml-2 font-medium text-gray-900">{{ formatDate(card.deleted_at) }}</span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                  <button @click="restoreCard(card)" 
+                          class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                    Restore Card
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-8">
+              <div class="text-lg font-medium text-gray-900 mb-2">No deleted cards found</div>
+              <div class="text-gray-500">{{ restoreSearchQuery ? 'Try adjusting your search terms' : 'All cards are currently active' }}</div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="bg-gray-50 px-6 py-3 flex justify-end gap-2">
+            <button @click="showRestoreModal = false" 
+                    class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              Close
+            </button>
+            <button @click="loadSoftDeletedCards" 
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -783,6 +1113,13 @@ const showCardModal = ref(false)
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
 
+// Soft delete states
+const softDeletedCards = ref([])
+const showRestoreModal = ref(false)
+const restoreSearchQuery = ref('')
+
+const isRestoring = ref(false)
+
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
@@ -807,68 +1144,127 @@ const getTimeAgo = (dateString) => {
 }
 
 const fetchCards = async () => {
+  console.log('fetchCards: Starting...')
   loading.value = true
   error.value = ''
+  console.log('fetchCards: Loading set to true, error cleared')
 
   try {
     console.log('Fetching NFC cards from API...')
     
     const token = localStorage.getItem('gtm_admin_token')
+    console.log('fetchCards: Token exists:', !!token)
     if (!token) {
       throw new Error('No admin token found')
     }
 
-    const response = await fetch('/api/admin/cards', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('gtm_admin_token')
-        localStorage.removeItem('gtm_admin_user')
-        router.replace({ name: 'login' })
-        return
-      }
-      throw new Error(`HTTP error! status: ${response.status}`)
+    const data = await adminApi.getCards()
+    
+    console.log('Raw API response:', data)
+    console.log('Response type:', typeof data)
+    console.log('Is array:', Array.isArray(data))
+    console.log('Has data property:', data && 'data' in data)
+    console.log('Data property is array:', data && Array.isArray(data.data))
+    console.log('Has cards property:', data && 'cards' in data)
+    console.log('Cards property type:', data && typeof data.cards)
+    console.log('Cards property is array:', data && Array.isArray(data.cards))
+    if (data && data.cards) {
+      console.log('Cards object keys:', Object.keys(data.cards))
+      console.log('Cards object values:', Object.values(data.cards))
     }
-
-    const data = await response.json()
     
     // Transform the data to ensure it has the expected structure
-    cards.value = data.cards || data.data || data || []
+    // Handle both direct array response and paginated response
+    if (Array.isArray(data)) {
+      cards.value = data
+      console.log('Using data as direct array')
+    } else if (data && Array.isArray(data.data)) {
+      cards.value = data.data
+      console.log('Using data.data array')
+    } else if (data && Array.isArray(data.cards)) {
+      cards.value = data.cards
+      console.log('Using data.cards array')
+    } else if (data && data.cards && typeof data.cards === 'object') {
+      // Handle case where cards is an object (like paginated response)
+      // Check if it has a data property or if it's the actual cards object
+      if (Array.isArray(data.cards.data)) {
+        cards.value = data.cards.data
+        console.log('Using data.cards.data array')
+      } else if (Array.isArray(data.cards.cards)) {
+        cards.value = data.cards.cards
+        console.log('Using data.cards.cards array')
+      } else {
+        // If cards is an object but not the expected structure, try to convert it
+        cards.value = Object.values(data.cards).filter(item => 
+          item && typeof item === 'object' && item.id
+        )
+        console.log('Using Object.values(data.cards) as array')
+      }
+    } else {
+      cards.value = []
+      console.log('No valid array found, using empty array')
+    }
     
-    console.log('Cards loaded from API:', cards.value)
+    console.log('Final cards.value:', cards.value)
+    console.log('Cards count:', cards.value.length)
   } catch (err) {
     console.error('Error fetching cards:', err)
+    if (err.message && err.message.includes('401')) {
+      // Token expired or invalid
+      localStorage.removeItem('gtm_admin_token')
+      localStorage.removeItem('gtm_admin_user')
+      router.replace({ name: 'login' })
+      return
+    }
     error.value = err.message || 'Failed to load NFC cards. Please try again.'
     cards.value = []
   } finally {
+    console.log('fetchCards: Setting loading to false')
     loading.value = false
+    console.log('fetchCards: Final state - loading:', loading.value, 'error:', error.value, 'cards count:', cards.value.length)
   }
 }
 
 // Computed properties
 const filteredCards = computed(() => {
-  if (!searchQuery.value) return cards.value
+  console.log('filteredCards computed - cards.value:', cards.value)
+  console.log('filteredCards computed - isArray:', Array.isArray(cards.value))
+  console.log('filteredCards computed - searchQuery:', searchQuery.value)
+  
+  if (!Array.isArray(cards.value)) {
+    console.log('filteredCards: returning empty array - not an array')
+    return []
+  }
+  if (!searchQuery.value) {
+    console.log('filteredCards: returning all cards - no search query')
+    return cards.value
+  }
 
   const query = searchQuery.value.toLowerCase()
-  return cards.value.filter(card =>
+  const filtered = cards.value.filter(card =>
     card.id.toString().includes(query) ||
     card.user?.name?.toLowerCase().includes(query) ||
     card.user?.email?.toLowerCase().includes(query)
   )
+  console.log('filteredCards: filtered result:', filtered)
+  return filtered
 })
 
 const paginatedCards = computed(() => {
+  console.log('paginatedCards computed - filteredCards.value:', filteredCards.value)
+  console.log('paginatedCards computed - isArray:', Array.isArray(filteredCards.value))
+  console.log('paginatedCards computed - currentPage:', currentPage.value)
+  console.log('paginatedCards computed - itemsPerPage:', itemsPerPage.value)
+  
+  if (!Array.isArray(filteredCards.value)) {
+    console.log('paginatedCards: returning empty array - not an array')
+    return []
+  }
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return filteredCards.value.slice(start, end)
+  const paginated = filteredCards.value.slice(start, end)
+  console.log('paginatedCards: paginated result:', paginated)
+  return paginated
 })
 
 // Watch for search query changes to reset pagination
@@ -877,13 +1273,27 @@ watch(searchQuery, () => {
 })
 
 const totalPages = computed(() => {
+  if (!Array.isArray(filteredCards.value)) return 0
   return Math.ceil(filteredCards.value.length / itemsPerPage.value)
 })
 
 const paginationInfo = computed(() => {
+  if (!Array.isArray(filteredCards.value)) return { start: 0, end: 0, total: 0 }
   const start = (currentPage.value - 1) * itemsPerPage.value + 1
   const end = Math.min(currentPage.value * itemsPerPage.value, filteredCards.value.length)
   return { start, end, total: filteredCards.value.length }
+})
+
+const filteredRestoreCards = computed(() => {
+  if (!Array.isArray(softDeletedCards.value)) return []
+  if (!restoreSearchQuery.value) return softDeletedCards.value
+  
+  const query = restoreSearchQuery.value.toLowerCase()
+  return softDeletedCards.value.filter(card => 
+    card.id.toString().includes(query) ||
+    card.user?.name?.toLowerCase().includes(query) ||
+    card.user?.email?.toLowerCase().includes(query)
+  )
 })
 
 // Functions
@@ -919,25 +1329,7 @@ async function confirmDelete() {
       throw new Error('No admin token found')
     }
 
-    const response = await fetch(`/api/admin/cards/${cardToDelete.value.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('gtm_admin_token')
-        localStorage.removeItem('gtm_admin_user')
-        router.replace({ name: 'login' })
-        return
-      }
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
+    await adminApi.deleteCard(cardToDelete.value.id)
 
     // Remove card from list
     cards.value = cards.value.filter(card => card.id !== cardToDelete.value.id)
@@ -946,6 +1338,13 @@ async function confirmDelete() {
     closeDeleteModal()
   } catch (err) {
     console.error('Error deleting card:', err)
+    if (err.message && err.message.includes('401')) {
+      // Token expired or invalid
+      localStorage.removeItem('gtm_admin_token')
+      localStorage.removeItem('gtm_admin_user')
+      router.replace({ name: 'login' })
+      return
+    }
     error.value = err.message || 'Failed to delete card'
   } finally {
     isDeleting.value = false
@@ -954,6 +1353,66 @@ async function confirmDelete() {
 
 function resetPagination() {
   currentPage.value = 1
+}
+
+// Soft delete functions
+async function loadSoftDeletedCards() {
+  try {
+    const data = await adminApi.getSoftDeletedCards()
+    softDeletedCards.value = data.cards || []
+  } catch (e) {
+    console.error('Failed to load soft deleted cards:', e)
+    softDeletedCards.value = []
+  }
+}
+
+async function openRestoreModal() {
+  showRestoreModal.value = true
+  await loadSoftDeletedCards()
+}
+
+async function restoreCard(card) {
+  if (!card || isRestoring.value) return
+
+  try {
+    isRestoring.value = true
+    await adminApi.restoreCard(card.id)
+    
+    // Remove from soft deleted list
+    softDeletedCards.value = softDeletedCards.value.filter(c => c.id !== card.id)
+    
+    // Refresh main cards list
+    await fetchCards()
+    
+    console.log('Card restored successfully')
+  } catch (e) {
+    console.error('Failed to restore card:', e)
+    alert('Failed to restore card: ' + e.message)
+  } finally {
+    isRestoring.value = false
+  }
+}
+
+function viewCardDetails(card) {
+  // Show card details in an alert for deleted cards
+  const details = `
+Deleted Card Details:
+Card ID: ${card.id}
+Unique Code: ${card.unique_code}
+User: ${card.user?.name || 'No user assigned'}
+Email: ${card.user?.email || 'No email'}
+Status: ${card.is_activated ? 'Activated' : 'Unactivated'}
+Created: ${formatDate(card.created_at)}
+Deleted: ${formatDate(card.deleted_at)}
+  `.trim()
+  
+  alert(details)
+}
+
+function exportCards() {
+  // TODO: Implement export functionality
+  console.log('Export cards:', filteredCards.value)
+  alert('Export functionality coming soon!')
 }
 
 const changePage = (page) => {
@@ -998,6 +1457,8 @@ const handleKeyDown = (event) => {
       closeDeleteModal()
     } else if (showCardModal.value) {
       closeCardModal()
+    } else if (showRestoreModal.value) {
+      showRestoreModal.value = false
     }
   }
 }
@@ -1012,7 +1473,14 @@ const copyToClipboard = async (text) => {
   }
 }
 
-function logout() {
+async function logout() {
+  try {
+    await adminApi.logout()
+  } catch (e) {
+    console.log('Logout API call failed:', e)
+    // Even if API call fails, we still clear local storage and redirect
+  }
+  // Always clear local storage and redirect, regardless of API call success
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')
   router.replace({ name: 'login' })
@@ -1020,10 +1488,18 @@ function logout() {
 
 onMounted(() => {
   fetchCards()
+  loadSoftDeletedCards()
   document.addEventListener('keydown', handleKeyDown)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
+})
+
+// Watch for restore modal to reset search
+watch(showRestoreModal, (newVal) => {
+  if (newVal) {
+    restoreSearchQuery.value = ''
+  }
 })
 </script>

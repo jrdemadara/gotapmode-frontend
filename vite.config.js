@@ -17,7 +17,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://192.168.50.56:8000',
+        target: 'https://api.gotapmode.info/api',
         changeOrigin: true,
         secure: false,
       },
