@@ -9,9 +9,9 @@
     </button>
     <!-- Brand -->
     <div class="text-center mb-6">
-      <img class="w-16 h-16 mx-auto mb-2" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
 
     <!-- Loading / Error -->
