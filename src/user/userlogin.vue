@@ -24,8 +24,8 @@
         <div>
           <label class="block text-xs font-medium mb-1 opacity-80" for="password">Password</label>
           <div class="relative">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-70 text-gray-500">
-              <path d="M12 1.75a3.75 3.75 0 00-3.75 3.75V8H6.5A2.5 2.5 0 004 10.5v7A2.5 2.5 0 006.5 20h11a2.5 2.5 0 002.5-2.5v-7A2.5 2.5 0 0017.5 8H15.75V5.5A3.75 3.75 0 0012 1.75zm-2.25 6.25V5.5a2.25 2.25 0 114.5 0V8h-4.5z"/>
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-70 text-gray-500">
+              <path d="M17 8V7a5 5 0 10-10 0v1M5 8h14v11a2 2 0 01-2 2H7a2 2 0 01-2-2V8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <input id="password" name="password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••" class="block w-full h-11 rounded-lg border border-gray-300 bg-white pl-9 pr-12 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
             <button type="button" @click="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 opacity-70 hover:opacity-100 transition-opacity">
@@ -52,19 +52,6 @@
       </div>
     </section>
     <Modal v-model="showError" title="Login failed" :message="errorMsg" />
-    <Modal v-model="showSuccess" title="">
-      <div class="space-y-2 text-center">
-        <p class="text-green-600 text-lg font-extrabold">Success</p>
-        <p class="text-sm opacity-80">{{ successMsg }}</p>
-        <div class="mt-1 flex items-center justify-center gap-2 text-sm text-gray-600">
-          <svg class="animate-spin h-4 w-4 text-green-600" viewBox="0 0 24 24" fill="none">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-          </svg>
-          <span>Redirecting...</span>
-        </div>
-      </div>
-    </Modal>
   </div>
 </template>
 
@@ -79,81 +66,51 @@ const password = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 const showError = ref(false)
-const showSuccess = ref(false)
-const successMsg = ref('')
 const router = useRouter()
 const showPassword = ref(false)
 
- async function onSubmit() {
-   errorMsg.value = ''
-   loading.value = true
-   
-   try {
-     // First, try to authenticate as admin (check users table with is_admin = true)
-     try {
-       const adminResponse = await adminApi.login(email.value, password.value)
-       
-       // If successful, store admin data and redirect to admin dashboard
-       localStorage.setItem('gtm_admin_token', adminResponse.token)
-       localStorage.setItem('gtm_admin_user', JSON.stringify(adminResponse.user))
-       
-       successMsg.value = 'Welcome back admin'
-       showSuccess.value = true
-       
-       setTimeout(() => {
-         router.push({ name: 'admin-dashboard' })
-       }, 1200)
-       
-       return
-     } catch (adminError) {
-       // Admin login failed, continue to try card user login
-       console.log('Admin login failed, trying card user login...')
-     }
-     
-     // Try to authenticate as card user (check card_users table)
-     try {
-       const cardUserResponse = await api.post('/card-users/login', { 
-         email: email.value, 
-         password: password.value 
-       })
-       
-       // If successful, store card user data and redirect to user dashboard
-       localStorage.setItem('gtm_token', cardUserResponse.token)
-       localStorage.setItem('gtm_user', JSON.stringify(cardUserResponse.user))
-       
-       successMsg.value = 'Welcome back ' + (cardUserResponse.user?.name || cardUserResponse.user?.email || 'User')
-       showSuccess.value = true
-       
-       setTimeout(() => {
-         router.push({ name: 'dashboard' })
-       }, 1200)
-       
-     } catch (cardUserError) {
-       // Both login attempts failed
-       throw new Error('Invalid email or password. Please check your credentials and try again.')
-     }
-     
-   } catch (e) {
-     errorMsg.value = String(e.message || e)
-     showError.value = true
-   } finally {
-     loading.value = false
-   }
- }
+function togglePassword() { showPassword.value = !showPassword.value }
+
+async function onSubmit() {
+  errorMsg.value = ''
+  loading.value = true
+  
+  try {
+    // Try admin first
+    try {
+      const adminResponse = await adminApi.login(email.value, password.value)
+      localStorage.setItem('gtm_admin_token', adminResponse.token)
+      localStorage.setItem('gtm_admin_user', JSON.stringify(adminResponse.user))
+      router.replace({ name: 'admin-dashboard' })
+      return
+    } catch {
+      // fall through to user login
+    }
+
+    // Try card user
+    const cardUserResponse = await api.post('/card-users/login', { 
+      email: email.value, 
+      password: password.value 
+    })
+    localStorage.setItem('gtm_token', cardUserResponse.token)
+    localStorage.setItem('gtm_user', JSON.stringify(cardUserResponse.user))
+    router.replace({ name: 'dashboard' })
+
+  } catch (e) {
+    errorMsg.value = String(e.message || e)
+    showError.value = true
+  } finally {
+    loading.value = false
+  }
+}
 
 function onForgot() {
   console.log('Forgot password clicked')
 }
 
 function onRegister() {
-  console.log("Register (I don't have GoTapMode) clicked")
+  router.push({ name: 'signup' })
 }
-
-function togglePassword() {
-  showPassword.value = !showPassword.value
-}
-
-// removed sample page usage
 </script>
 
 <style scoped></style>
