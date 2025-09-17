@@ -56,7 +56,7 @@
       <div class="space-y-2">
         <button v-for="(o, i) in others" :key="i" @click="openUrl(o.value)" class="w-full h-11 rounded-lg border border-gray-200 flex items-center gap-3 px-3 text-sm bg-gray-100">
           <img src="/icons/web.png" class="w-4 h-4" alt="web" />
-          <span>{{ cleanUrl(o.value) }}</span>
+          <span>{{ getOtherLinkDisplayName(o) }}</span>
         </button>
       </div>
     </section>
@@ -143,8 +143,8 @@ onMounted(async () => {
     // Update all data simultaneously
     phones.value = (c.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
     emails.value = (c.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
-    socials.value = (c.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main }))
-    others.value = (c.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main }))
+    socials.value = (c.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+    others.value = (c.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
 
     // Update profile data
     if (pd?.full_name) profile.value.name = pd.full_name
@@ -237,6 +237,41 @@ function cleanUrl(u) {
     const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u)
     return url.host.replace(/^www\./, '')
   } catch { return u }
+}
+
+// Get smart display name for other links (same as dashboard)
+function getOtherLinkDisplayName(link) {
+  const url = link.value;
+  
+  if (!url) return 'Link';
+  
+  try {
+    // Parse the URL to extract the domain name
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname;
+    
+    // Remove www. prefix
+    const cleanHostname = hostname.replace(/^www\./, '');
+    
+    // Extract domain name (remove subdomains for common services)
+    const domainParts = cleanHostname.split('.');
+    let domain = cleanHostname;
+    
+    // Handle common domains - show main domain for known services
+    if (domainParts.length > 2) {
+      const mainDomain = domainParts.slice(-2).join('.');
+      if (['github.com', 'bitbucket.org', 'gitlab.com', 'stackoverflow.com', 'medium.com', 'dev.to', 'codepen.io', 'jsfiddle.net', 'repl.it', 'codesandbox.io'].includes(mainDomain)) {
+        domain = mainDomain;
+      }
+    }
+    
+    // Return domain in original case
+    return domain;
+    
+  } catch (error) {
+    // If URL parsing fails, show "Website" as fallback
+    return 'Website';
+  }
 }
 
 // Helper function to convert image URL to base64

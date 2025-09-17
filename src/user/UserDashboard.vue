@@ -1,7 +1,8 @@
 <template>
   <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-10 relative">
     <!-- Hamburger button -->
-    <button @click="showSidebar = true" class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-200 bg-white flex flex-col items-center justify-center gap-1">
+    <button @click="showSidebar = true"
+      class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-200 bg-white flex flex-col items-center justify-center gap-1">
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
@@ -21,11 +22,13 @@
 
     <!-- Profile header -->
     <div class="flex flex-col items-center mb-6">
-      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user.png'" alt="profile" />
-             <h2 class="mt-4 text-xl font-extrabold">{{ formatPosition(profile.name) }}</h2>
-       <p class="text-sm opacity-80 font-bold">{{formatPosition(profile.company) }}</p>
-       <p class="text-sm opacity-70 font-bold text-blue-500" v-if="profile.position">{{ formatPosition(profile.position) }}</p>
-        <p class="text-sm font-bold" v-if="profile.bio">{{ profile.bio }}</p> 
+      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user.png'"
+        alt="profile" />
+      <h2 class="mt-4 text-xl font-extrabold">{{ formatPosition(profile.name) }}</h2>
+      <p class="text-sm opacity-80 font-bold">{{ formatPosition(profile.company) }}</p>
+      <p class="text-sm opacity-70 font-bold text-blue-500" v-if="profile.position">{{ formatPosition(profile.position)
+        }}</p>
+      <p class="text-sm font-bold" v-if="profile.bio">{{ profile.bio }}</p>
     </div>
 
     <div class="w-full max-w-2xl space-y-px" v-if="!loading && !loadError">
@@ -33,27 +36,32 @@
       <section>
         <h3 class="px-3 py-2 rounded-md bg-black/90 text-white text-sm font-bold">Contact Links</h3>
         <div class="mt-2 space-y-2">
-          <div v-for="p in phones" :key="p.id" class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
-            <img :src="p.type === 'telephone' ? '/icons/phone-call.png' : '/icons/smartphone.png'" class="w-5 h-5" alt="type" />
+          <div v-for="p in phones" :key="p.id"
+            class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
+            <img :src="p.type === 'telephone' ? '/icons/phone-call.png' : '/icons/smartphone.png'" class="w-5 h-5"
+              alt="type" />
             <div class="flex-1 text-sm">{{ p.number }}</div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMain(p)" type="button" aria-label="Set main phone"
-                      class="relative w-10 h-6 rounded-full transition-colors duration-200"
-                      :class="p.isMain ? 'bg-black' : 'bg-gray-300'">
+                class="relative w-10 h-6 rounded-full transition-colors duration-200"
+                :class="p.isMain ? 'bg-black' : 'bg-gray-300'">
                 <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-all duration-200"
-                      :class="p.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
+                  :class="p.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
               </button>
-              <button @click="onDial(p)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Call or copy number">
+              <button @click="onDial(p)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Call or copy number">
                 <img src="/icons/phone.png" class="w-5 h-5" alt="phone" />
               </button>
-              <button @click="deletePhone(p)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Delete phone">
+              <button @click="deletePhone(p)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Delete phone">
                 <img src="/icons/delete.png" class="w-5 h-5" alt="delete" />
               </button>
             </div>
           </div>
         </div>
         <!-- Add new contact button that opens a modal -->
-        <button @click="openAddPhone" class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
+        <button @click="openAddPhone"
+          class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
           <img src="/icons/add.png" class="w-5 h-5" />
           <span class="text-center">Add Phone</span>
         </button>
@@ -63,26 +71,30 @@
       <section>
         <h3 class="px-3 py-2 rounded-md bg-black/90 text-white text-sm font-bold">Email Links</h3>
         <div class="mt-2 space-y-2">
-          <div v-for="(e, idx) in emails" :key="e.id || ('e-' + idx)" class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
+          <div v-for="(e, idx) in emails" :key="e.id || ('e-' + idx)"
+            class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
             <img src="/icons/email.png" class="w-5 h-5" alt="email" />
             <div class="flex-1 text-sm">{{ e.value }}</div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMainEmail(e)" type="button" aria-label="Set main email"
-                      class="relative w-10 h-6 rounded-full transition-colors duration-200"
-                      :class="e.isMain ? 'bg-black' : 'bg-gray-300'">
+                class="relative w-10 h-6 rounded-full transition-colors duration-200"
+                :class="e.isMain ? 'bg-black' : 'bg-gray-300'">
                 <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-all duration-200"
-                      :class="e.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
+                  :class="e.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
               </button>
-              <button @click="sendEmail(e)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Send email">
+              <button @click="sendEmail(e)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Send email">
                 <img src="/icons/send.png" class="w-5 h-5" alt="send" />
               </button>
-              <button @click="deleteEmail(e)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Delete email">
+              <button @click="deleteEmail(e)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Delete email">
                 <img src="/icons/delete.png" class="w-5 h-5" alt="delete" />
               </button>
             </div>
           </div>
         </div>
-        <button @click="openAddEmail" class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
+        <button @click="openAddEmail"
+          class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
           <img src="/icons/add.png" class="w-5 h-5" />
           <span class="text-center">Add Email</span>
         </button>
@@ -92,28 +104,32 @@
       <section>
         <h3 class="px-3 py-2 rounded-md bg-black/90 text-white text-sm font-bold">Social Media Links</h3>
         <div class="mt-2 space-y-2">
-          <div v-for="(s, idx) in socials" :key="s.id || ('s-' + idx)" class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
+          <div v-for="(s, idx) in socials" :key="s.id || ('s-' + idx)"
+            class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
             <img :src="socialIcon(s.platform)" class="w-5 h-5" alt="social" />
             <div class="flex-1">
               <div class="text-sm font-medium">{{ getSocialDisplayName(s) }}</div>
             </div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMainSocial(s)" type="button" aria-label="Set main social"
-                      class="relative w-10 h-6 rounded-full transition-colors duration-200"
-                      :class="s.isMain ? 'bg-black' : 'bg-gray-300'">
+                class="relative w-10 h-6 rounded-full transition-colors duration-200"
+                :class="s.isMain ? 'bg-black' : 'bg-gray-300'">
                 <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-all duration-200"
-                      :class="s.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
+                  :class="s.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
               </button>
-              <button @click="openSocialLink(s)" type="button" class="w-4 h-4 cursor-pointer active:scale-95" title="Open social link">
+              <button @click="openSocialLink(s)" type="button" class="w-4 h-4 cursor-pointer active:scale-95"
+                title="Open social link">
                 <img src="/icons/expand-arrows.png" class="w-4 h-4" alt="open" />
               </button>
-              <button @click="deleteSocial(s)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Delete social">
+              <button @click="deleteSocial(s)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Delete social">
                 <img src="/icons/delete.png" class="w-5 h-5" alt="delete" />
               </button>
             </div>
           </div>
         </div>
-        <button @click="openAddSocial" class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
+        <button @click="openAddSocial"
+          class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
           <img src="/icons/add.png" class="w-5 h-5" />
           <span class="text-center">Add Social</span>
         </button>
@@ -123,28 +139,32 @@
       <section>
         <h3 class="px-3 py-2 rounded-md bg-black/90 text-white text-sm font-bold">Other Links</h3>
         <div class="mt-2 space-y-2">
-          <div v-for="(o, idx) in others" :key="o.id || ('o-' + idx)" class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
+          <div v-for="(o, idx) in others" :key="o.id || ('o-' + idx)"
+            class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
             <img src="/icons/web.png" class="w-5 h-5" alt="web" />
             <div class="flex-1">
               <div class="text-sm font-medium">{{ getOtherLinkDisplayName(o) }}</div>
             </div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMainOther(o)" type="button" aria-label="Set main link"
-                      class="relative w-10 h-6 rounded-full transition-colors duration-200"
-                      :class="o.isMain ? 'bg-black' : 'bg-gray-300'">
+                class="relative w-10 h-6 rounded-full transition-colors duration-200"
+                :class="o.isMain ? 'bg-black' : 'bg-gray-300'">
                 <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-all duration-200"
-                      :class="o.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
+                  :class="o.isMain ? 'translate-x-4' : 'translate-x-0'"></span>
               </button>
-              <button @click="openOtherLink(o)" type="button" class="w-4 h-4 cursor-pointer active:scale-95" title="Open link">
+              <button @click="openOtherLink(o)" type="button" class="w-4 h-4 cursor-pointer active:scale-95"
+                title="Open link">
                 <img src="/icons/expand-arrows.png" class="w-4 h-4" alt="open" />
               </button>
-              <button @click="deleteOther(o)" type="button" class="w-5 h-5 cursor-pointer active:scale-95" title="Delete link">
+              <button @click="deleteOther(o)" type="button" class="w-5 h-5 cursor-pointer active:scale-95"
+                title="Delete link">
                 <img src="/icons/delete.png" class="w-5 h-5" alt="delete" />
               </button>
             </div>
           </div>
         </div>
-        <button @click="openAddOther" class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
+        <button @click="openAddOther"
+          class="mt-2 mb-2 w-full h-10 rounded-md border border-gray-300 flex items-center justify-center gap-2 px-3">
           <img src="/icons/add.png" class="w-5 h-5" />
           <span class="text-center">Add Other</span>
         </button>
@@ -156,11 +176,14 @@
       <div class="space-y-4">
         <div class="text-left">
           <label for="new-phone" class="block text-xs font-medium mb-1">Phone number</label>
-          <input id="new-phone" name="new-phone" v-model="newPhone" type="tel" inputmode="tel" placeholder="e.g. 0977 301 6902" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <input id="new-phone" name="new-phone" v-model="newPhone" type="tel" inputmode="tel"
+            placeholder="e.g. 0977 301 6902"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
           <label for="new-phone-type" class="block text-xs font-medium mb-1">Type</label>
-          <select id="new-phone-type" name="new-phone-type" v-model="newPhoneType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <select id="new-phone-type" name="new-phone-type" v-model="newPhoneType"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
             <option value="telephone">Telephone</option>
@@ -169,8 +192,11 @@
       </div>
       <template #footer>
         <div class="flex items-center justify-between gap-2">
-          <button class="px-4 h-10 rounded-lg border border-gray-300 hover:bg-gray-100 active:scale-[.98] transition" @click="showAddPhone=false">Cancel</button>
-          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50 hover:-translate-y-0.5 active:scale-[.98] transition" :disabled="!newPhone" @click="saveAddPhone">Save</button>
+          <button class="px-4 h-10 rounded-lg border border-gray-300 hover:bg-gray-100 active:scale-[.98] transition"
+            @click="showAddPhone = false">Cancel</button>
+          <button
+            class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50 hover:-translate-y-0.5 active:scale-[.98] transition"
+            :disabled="!newPhone" @click="saveAddPhone">Save</button>
         </div>
       </template>
     </Modal>
@@ -180,11 +206,13 @@
       <div class="space-y-4">
         <div class="text-left">
           <label for="new-email" class="block text-xs font-medium mb-1">Email</label>
-          <input id="new-email" name="new-email" v-model="newEmail" type="email" placeholder="name@company.com" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <input id="new-email" name="new-email" v-model="newEmail" type="email" placeholder="name@company.com"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
           <label for="new-email-type" class="block text-xs font-medium mb-1">Type</label>
-          <select id="new-email-type" name="new-email-type" v-model="newEmailType" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+          <select id="new-email-type" name="new-email-type" v-model="newEmailType"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
             <option value="personal">Personal</option>
             <option value="business">Business</option>
           </select>
@@ -192,8 +220,9 @@
       </div>
       <template #footer>
         <div class="flex items-center justify-between gap-2">
-          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddEmail=false">Cancel</button>
-          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newEmail" @click="saveAddEmail">Save</button>
+          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddEmail = false">Cancel</button>
+          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newEmail"
+            @click="saveAddEmail">Save</button>
         </div>
       </template>
     </Modal>
@@ -203,21 +232,31 @@
       <div class="space-y-4">
         <div class="text-left">
           <label for="new-social" class="block text-xs font-medium mb-1">URL / Username</label>
-          <input id="new-social" name="new-social" v-model="newSocial" placeholder="https://platform/username" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <input id="new-social" name="new-social" v-model="newSocial" placeholder="https://platform/username"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
         <div class="text-left">
           <label for="social-platform-select" class="block text-xs font-medium mb-1">Platform</label>
           <div class="relative" ref="socialPlatformContainer">
-            <button id="social-platform-select" type="button" @click="toggleSocialTypePicker" class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
+            <button id="social-platform-select" type="button" @click="toggleSocialTypePicker"
+              class="w-full h-11 rounded-xl border border-gray-300 px-3 flex items-center justify-between">
               <span class="flex items-center gap-2">
                 <img :src="currentSocialPlatform.icon" class="w-5 h-5" />
                 <span>{{ currentSocialPlatform.label }}</span>
               </span>
-              <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.063l3.71-3.832a.75.75 0 111.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+              <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.063l3.71-3.832a.75.75 0 111.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                  clip-rule="evenodd" />
+              </svg>
             </button>
             <teleport to="body">
-              <div v-if="showSocialTypePicker" class="fixed z-[9999] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="background-color: white !important; opacity: 1 !important; backdrop-filter: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;" :style="dropdownStyle">
-                <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)" class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
+              <div v-if="showSocialTypePicker"
+                class="fixed z-[9999] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                style="background-color: white !important; opacity: 1 !important; backdrop-filter: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;"
+                :style="dropdownStyle">
+                <button v-for="p in socialPlatforms" :key="p.key" type="button" @click="selectSocialPlatform(p.key)"
+                  class="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none active:bg-gray-100 transition-colors touch-manipulation">
                   <img :src="p.icon" class="w-5 h-5 flex-shrink-0" />
                   <span class="text-sm">{{ p.label }}</span>
                 </button>
@@ -228,8 +267,9 @@
       </div>
       <template #footer>
         <div class="flex items-center justify-between gap-2">
-          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddSocial=false">Cancel</button>
-          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newSocial" @click="saveAddSocial">Save</button>
+          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddSocial = false">Cancel</button>
+          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newSocial"
+            @click="saveAddSocial">Save</button>
         </div>
       </template>
     </Modal>
@@ -239,44 +279,56 @@
       <div class="space-y-4">
         <div class="text-left">
           <label for="new-other" class="block text-xs font-medium mb-1">Link</label>
-          <input id="new-other" name="new-other" v-model="newOther" placeholder="https://your-link" class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+          <input id="new-other" name="new-other" v-model="newOther" placeholder="https://your-link"
+            class="w-full h-11 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
         </div>
       </div>
       <template #footer>
         <div class="flex items-center justify-between gap-2">
-          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddOther=false">Cancel</button>
-          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newOther" @click="saveAddOther">Save</button>
+          <button class="px-4 h-10 rounded-lg border border-gray-300" @click="showAddOther = false">Cancel</button>
+          <button class="px-4 h-10 rounded-lg bg-black text-white disabled:opacity-50" :disabled="!newOther"
+            @click="saveAddOther">Save</button>
         </div>
       </template>
     </Modal>
     <!-- Sidebar overlay -->
-    <div v-if="showSidebar" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" @click="showSidebar=false"></div>
+    <div v-if="showSidebar" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" @click="showSidebar = false"></div>
     <!-- Collapsible sidebar -->
-    <div class="fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-white to-gray-50 text-gray-900 shadow-2xl transform transition-transform duration-200 rounded-r-2xl border-r border-gray-200/70" :class="showSidebar ? 'translate-x-0' : '-translate-x-full'">
+    <div
+      class="fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-white to-gray-50 text-gray-900 shadow-2xl transform transition-transform duration-200 rounded-r-2xl border-r border-gray-200/70"
+      :class="showSidebar ? 'translate-x-0' : '-translate-x-full'">
       <!-- Header -->
       <div class="px-5 pt-6 pb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <img :src="profile.photo || '/icons/user.png'" alt="avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
+          <img :src="profile.photo || '/icons/user.png'" alt="avatar"
+            class="w-10 h-10 rounded-full object-cover border border-gray-200" />
           <div>
             <div class="text-sm font-extrabold leading-tight">{{ profile.name || 'User' }}</div>
             <div class="text-xs opacity-70">GoTapMode</div>
           </div>
         </div>
-        <button @click="showSidebar=false" class="w-8 h-8 rounded-lg border border-gray-300 bg-white/70 flex items-center justify-center shadow-sm">✕</button>
+        <button @click="showSidebar = false"
+          class="w-8 h-8 rounded-lg border border-gray-300 bg-white/70 flex items-center justify-center shadow-sm">✕</button>
       </div>
-      <div class="px-5"><div class="h-px bg-gray-200"></div></div>
+      <div class="px-5">
+        <div class="h-px bg-gray-200"></div>
+      </div>
       <!-- Nav -->
       <nav class="py-2">
-        <button @click="goEditProfile" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
+        <button @click="goEditProfile"
+          class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
           <span class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center text-xs shadow-sm">EP</span>
+            <span
+              class="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center text-xs shadow-sm">EP</span>
             <span class="text-sm">Edit Profile</span>
           </span>
           <span class="opacity-60">›</span>
         </button>
-        <button @click="doLogout" class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
+        <button @click="doLogout"
+          class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
           <span class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-red-600/90 text-white flex items-center justify-center text-xs shadow-sm">LO</span>
+            <span
+              class="w-9 h-9 rounded-xl bg-red-600/90 text-white flex items-center justify-center text-xs shadow-sm">LO</span>
             <span class="text-sm">Logout</span>
           </span>
           <span class="opacity-60">›</span>
@@ -297,7 +349,7 @@ import { processProfileImage } from '../utils/imageUtils'
 const profile = ref({
   photo: '',
   name: 'GoTapMode',
-  subtitle: 'Activate Connection Instantly',  
+  subtitle: 'Activate Connection Instantly',
   company: 'Company',
   bio: 'Bio',
   title: 'Position',
@@ -347,10 +399,10 @@ const socialPlatforms = [
   { key: 'viber', label: 'Viber', icon: '/icons/viber.png' },
   { key: 'whatsapp', label: 'WhatsApp', icon: '/icons/whatsapp.png' },
 
-  
 
-  
-  
+
+
+
 
 ]
 const showSocialTypePicker = ref(false)
@@ -359,18 +411,18 @@ function selectSocialPlatform(key) {
   newSocialType.value = key
   currentSocialPlatform.value = socialPlatforms.find(p => p.key === key) || socialPlatforms[0]
   showSocialTypePicker.value = false
-  
+
   // Auto-fill the textbox with platform-specific URL template
   const platformTemplates = {
     facebook: 'https://facebook.com/',
-    instagram: 'https://instagram.com/',
-    twitter: 'https://twitter.com/',
+    instagram: 'https://instagram.com/@',
+    twitter: 'https://twitter.com/@',
     linkedin: 'https://linkedin.com/in/',
     youtube: 'https://youtube.com/@',
     tiktok: 'https://tiktok.com/@',
     snapchat: 'https://snapchat.com/add/',
     whatsapp: 'https://wa.me/',
-    telegram: 'https://t.me/',
+    telegram: 'https://t.me/@',
     discord: 'https://discord.gg/',
     github: 'https://github.com/',
     behance: 'https://behance.net/',
@@ -386,7 +438,7 @@ function selectSocialPlatform(key) {
     onlyfans: 'https://onlyfans.com/',
     link: 'https://'
   }
-  
+
   newSocial.value = platformTemplates[key] || 'https://'
 }
 
@@ -420,19 +472,19 @@ function handleClickOutside(event) {
 }
 function openAddPhone() { showAddPhone.value = true; newPhone.value = '' }
 function openAddEmail() { showAddEmail.value = true; newEmail.value = '' }
-function openAddSocial() { 
+function openAddSocial() {
   showAddSocial.value = true
   // Initialize with Facebook as default
   newSocialType.value = 'facebook'
   currentSocialPlatform.value = socialPlatforms.find(p => p.key === 'facebook') || socialPlatforms[0]
   newSocial.value = 'https://facebook.com/'
 }
-function openAddOther() { showAddOther.value = true; newOther.value = '' }
+function openAddOther() { showAddOther.value = true; newOther.value = 'https://' }
 
 // Platform-specific URL validation
 function validateSocialUrlForPlatform(url, platform) {
   const lowerUrl = url.toLowerCase()
-  
+
   switch (platform) {
     case 'facebook':
       return lowerUrl.includes('facebook.com/') || lowerUrl.includes('fb.com/')
@@ -488,7 +540,7 @@ function validateSocialUrlForPlatform(url, platform) {
 // Check if URL contains only template content (no actual username/profile)
 function hasOnlyTemplateContent(url, platform) {
   const lowerUrl = url.toLowerCase()
-  
+
   // Define template patterns for each platform (full URLs)
   const templatePatterns = {
     facebook: ['https://facebook.com/', 'https://fb.com/', 'http://facebook.com/', 'http://fb.com/'],
@@ -515,44 +567,44 @@ function hasOnlyTemplateContent(url, platform) {
     onlyfans: ['https://onlyfans.com/', 'http://onlyfans.com/'],
     link: ['https://', 'http://']
   }
-  
+
   const patterns = templatePatterns[platform] || ['https://', 'http://']
   console.log('Platform:', platform, 'Patterns:', patterns, 'URL:', lowerUrl)
-  
+
   // Check if URL exactly matches any of the template patterns
   const result = patterns.some(pattern => {
     const matches = lowerUrl === pattern
     console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
-    return matches 
+    return matches
   })
-  
+
   console.log('Final result:', result)
   return result
 }
 async function saveAddPhone() {
   if (!userId.value) return
-  
+
   // Validation
   const phone = newPhone.value?.trim()
   if (!phone) {
     alert('Please enter a phone number')
     return
   }
-  
+
   // Remove all non-digit characters for validation
   const cleanPhone = phone.replace(/\D/g, '')
   if (cleanPhone.length < 7 || cleanPhone.length > 15) {
     alert('Please enter a valid phone number (7-15 digits)')
     return
   }
-  
+
   // Check for duplicates
   const existingPhone = phones.value.find(p => p.number.replace(/\D/g, '') === cleanPhone)
   if (existingPhone) {
     alert('This phone number already exists')
     return
   }
-  
+
   try {
     await addPhone(phone, newPhoneType.value)
     showAddPhone.value = false
@@ -564,28 +616,28 @@ async function saveAddPhone() {
 }
 async function saveAddEmail() {
   if (!userId.value) return
-  
+
   // Validation
   const email = newEmail.value?.trim()
   if (!email) {
     alert('Please enter an email address')
     return
   }
-  
+
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) {
     alert('Please enter a valid email address')
     return
   }
-  
+
   // Check for duplicates (case insensitive)
   const existingEmail = emails.value.find(e => e.value.toLowerCase() === email.toLowerCase())
   if (existingEmail) {
     alert('This email address already exists')
     return
   }
-  
+
   try {
     await addEmail(email)
     showAddEmail.value = false
@@ -597,14 +649,14 @@ async function saveAddEmail() {
 }
 async function saveAddSocial() {
   if (!userId.value) return
-  
+
   // Validation
   const socialUrl = newSocial.value?.trim()
   if (!socialUrl) {
     alert('Please enter a social media URL')
     return
   }
-  
+
   // URL validation
   try {
     new URL(socialUrl)
@@ -612,20 +664,20 @@ async function saveAddSocial() {
     alert('Please enter a valid URL (must start with http:// or https://)')
     return
   }
-  
+
   // Check if URL starts with http/https
   if (!socialUrl.startsWith('http://') && !socialUrl.startsWith('https://')) {
     alert('Please enter a valid URL (must start with http:// or https://)')
     return
   }
-  
+
   // Check for duplicates
   const existingSocial = socials.value.find(s => s.value.toLowerCase() === socialUrl.toLowerCase())
   if (existingSocial) {
     alert('This social media URL already exists')
     return
   }
-  
+
   // Platform-specific validation
   const platform = newSocialType.value
   const isValidForPlatform = validateSocialUrlForPlatform(socialUrl, platform)
@@ -633,17 +685,17 @@ async function saveAddSocial() {
     alert(`Please enter a valid ${platform} URL`)
     return
   }
-  
+
   // Check if URL has actual content (not just template)
   console.log('Checking template content for:', socialUrl, 'platform:', platform)
   const isTemplateOnly = hasOnlyTemplateContent(socialUrl, platform)
   console.log('Is template only:', isTemplateOnly)
-  
+
   if (isTemplateOnly) {
     alert(`Please enter a complete ${platform} URL with your username or profile`)
     return
   }
-  
+
   try {
     await addSocial(socialUrl)
     showAddSocial.value = false
@@ -655,14 +707,14 @@ async function saveAddSocial() {
 }
 async function saveAddOther() {
   if (!userId.value) return
-  
+
   // Validation
   const otherUrl = newOther.value?.trim()
   if (!otherUrl) {
     alert('Please enter a URL')
     return
   }
-  
+
   // URL validation
   try {
     new URL(otherUrl)
@@ -670,26 +722,26 @@ async function saveAddOther() {
     alert('Please enter a valid URL (must start with http:// or https://)')
     return
   }
-  
+
   // Check if URL starts with http/https
   if (!otherUrl.startsWith('http://') && !otherUrl.startsWith('https://')) {
     alert('Please enter a valid URL (must start with http:// or https://)')
     return
   }
-  
+
   // Check for duplicates
   const existingOther = others.value.find(o => o.value.toLowerCase() === otherUrl.toLowerCase())
   if (existingOther) {
     alert('This URL already exists')
     return
   }
-  
+
   // Check if URL has actual content (not just template)
   if (hasOnlyTemplateContent(otherUrl, 'link')) {
     alert('Please enter a complete URL with actual content')
     return
   }
-  
+
   try {
     await addOther(otherUrl)
     showAddOther.value = false
@@ -720,7 +772,7 @@ onMounted(async () => {
     const transformContacts = (data, type) => {
       return (data || []).map(r => {
         const base = { id: r.id, isMain: !!r.is_main }
-        switch(type) {
+        switch (type) {
           case 'phones': return { ...base, number: r.phonenumber, type: r.type }
           case 'emails': return { ...base, value: r.email, type: r.type }
           case 'socials': return { ...base, platform: r.type || 'link', value: r.social }
@@ -751,7 +803,7 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-  
+
   // Add click outside listener
   document.addEventListener('click', handleClickOutside)
 })
@@ -761,26 +813,26 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-async function addPhone(v, t) { 
-  if (!v) return; 
-  const row = await userApi.addPhone({ phonenumber: v, type: t || null }); 
+async function addPhone(v, t) {
+  if (!v) return;
+  const row = await userApi.addPhone({ phonenumber: v, type: t || null });
   const newPhone = { id: row.id, number: row.phonenumber, type: row.type, isMain: !!row.is_main };
   phones.value.push(newPhone);
-  
+
   // If this is the first phone, set it as main
   if (phones.value.length === 1) {
     await onToggleMain(newPhone);
   }
 }
-async function onToggleMain(p) { 
-  if (!p?.id) return; 
-  try { 
-    await userApi.setMainPhone(p.id); 
+async function onToggleMain(p) {
+  if (!p?.id) return;
+  try {
+    await userApi.setMainPhone(p.id);
     // Update only the isMain status without reordering
     phones.value.forEach(phone => {
       phone.isMain = phone.id === p.id;
     });
-  } catch (_) {} 
+  } catch (_) { }
 }
 async function deletePhone(phone) {
   if (!phone?.id) return;
@@ -791,68 +843,68 @@ async function deletePhone(phone) {
     console.error("Error deleting phone:", error);
   }
 }
-async function addEmail(v) { 
-  if (!v) return; 
-  const row = await userApi.addEmail({ email: v }); 
+async function addEmail(v) {
+  if (!v) return;
+  const row = await userApi.addEmail({ email: v });
   const newEmail = { id: row.id, value: row.email, isMain: !!row.is_main };
   emails.value.push(newEmail);
-  
+
   // If this is the first email, set it as main
   if (emails.value.length === 1) {
     await onToggleMainEmail(newEmail);
   }
 }
-async function addSocial(v) { 
-  if (!v) return; 
-  const row = await userApi.addSocial({ social: v, type: newSocialType.value || 'link' }); 
+async function addSocial(v) {
+  if (!v) return;
+  const row = await userApi.addSocial({ social: v, type: newSocialType.value || 'link' });
   const newSocial = { id: row.id, platform: row.type || 'link', value: row.social, isMain: !!row.is_main };
   socials.value.push(newSocial);
-  
+
   // If this is the first social link, set it as main
   if (socials.value.length === 1) {
     await onToggleMainSocial(newSocial);
   }
 }
-async function addOther(v) { 
-  if (!v) return; 
-  const row = await userApi.addOther({ others: v }); 
+async function addOther(v) {
+  if (!v) return;
+  const row = await userApi.addOther({ others: v });
   const newOther = { id: row.id, value: row.others, isMain: !!row.is_main };
   others.value.push(newOther);
-  
+
   // If this is the first other link, set it as main
   if (others.value.length === 1) {
     await onToggleMainOther(newOther);
   }
 }
-async function onToggleMainEmail(e) { 
-  if (!e?.id) return; 
-  try { 
-    await userApi.setMainEmail(e.id); 
+async function onToggleMainEmail(e) {
+  if (!e?.id) return;
+  try {
+    await userApi.setMainEmail(e.id);
     // Update only the isMain status without reordering
     emails.value.forEach(email => {
       email.isMain = email.id === e.id;
     });
-  } catch (_) {} 
+  } catch (_) { }
 }
-async function onToggleMainSocial(s) { 
-  if (!s?.id) return; 
-  try { 
-    await userApi.setMainSocial(s.id); 
+async function onToggleMainSocial(s) {
+  if (!s?.id) return;
+  try {
+    await userApi.setMainSocial(s.id);
     // Update only the isMain status without reordering
     socials.value.forEach(social => {
       social.isMain = social.id === s.id;
     });
-  } catch (_) {} 
+  } catch (_) { }
 }
-async function onToggleMainOther(o) { 
-  if (!o?.id) return; 
-  try { 
-    await userApi.setMainOther(o.id); 
+async function onToggleMainOther(o) {
+  if (!o?.id) return;
+  try {
+    await userApi.setMainOther(o.id);
     // Update only the isMain status without reordering
     others.value.forEach(other => {
       other.isMain = other.id === o.id;
     });
-  } catch (_) {} 
+  } catch (_) { }
 }
 async function deleteEmail(email) {
   if (!email?.id) return;
@@ -884,7 +936,7 @@ async function deleteOther(other) {
 
 function goEditProfile() {
   showSidebar.value = false
-  try { router.push({ name: 'edit-profile' }) } catch {}
+  try { router.push({ name: 'edit-profile' }) } catch { }
 }
 
 // Removed goProfilePhoto; profile photo handled in Edit Profile and Profile Details
@@ -925,7 +977,7 @@ function socialIcon(platform) {
 // Format position to proper case (first letter capitalized)
 function formatPosition(position) {
   if (!position) return ''
-  return position.toLowerCase().split(' ').map(word => 
+  return position.toLowerCase().split(' ').map(word =>
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ')
 }
@@ -933,7 +985,7 @@ function formatPosition(position) {
 // Get smart display name for social media links
 function getSocialDisplayName(social) {
   const platform = social.platform;
-  
+
   // Return only the platform name with proper formatting
   const platformNames = {
     facebook: 'Facebook',
@@ -951,28 +1003,28 @@ function getSocialDisplayName(social) {
     reddit: 'Reddit',
     link: 'Link'
   };
-  
+
   return platformNames[platform] || 'Social Media';
 }
 
 // Get smart display name for other links (similar to social media)
 function getOtherLinkDisplayName(link) {
   const url = link.value;
-  
+
   if (!url) return 'Link';
-  
+
   try {
     // Parse the URL to extract the domain name
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
-    
+
     // Remove www. prefix
     const cleanHostname = hostname.replace(/^www\./, '');
-    
+
     // Extract domain name (remove subdomains for common services)
     const domainParts = cleanHostname.split('.');
     let domain = cleanHostname;
-    
+
     // Handle common domains - show main domain for known services
     if (domainParts.length > 2) {
       const mainDomain = domainParts.slice(-2).join('.');
@@ -980,12 +1032,10 @@ function getOtherLinkDisplayName(link) {
         domain = mainDomain;
       }
     }
-    
-    // Capitalize the first letter of each word in the domain
-    return domain.split('.').map(part => 
-      part.charAt(0).toUpperCase() + part.slice(1)
-    ).join('.');
-    
+
+    // Return domain in original case
+    return domain;
+
   } catch (error) {
     // If URL parsing fails, show "Website" as fallback
     return 'Website';
@@ -998,7 +1048,7 @@ async function onDial(p) {
   const raw = (p?.number || '').toString().trim()
   if (!raw) return
   const digits = raw.replace(/[^+0-9]/g, '')
-  try { await navigator.clipboard?.writeText?.(raw) } catch {}
+  try { await navigator.clipboard?.writeText?.(raw) } catch { }
   try {
     window.location.href = `tel:${encodeURIComponent(digits)}`
   } catch {
@@ -1016,7 +1066,7 @@ function sendEmail(email) {
     // Fallback: copy email to clipboard
     try {
       navigator.clipboard?.writeText?.(email.value)
-    } catch {}
+    } catch { }
   }
 }
 
@@ -1030,7 +1080,7 @@ function openSocialLink(social) {
     // Fallback: copy link to clipboard
     try {
       navigator.clipboard?.writeText?.(social.value)
-    } catch {}
+    } catch { }
   }
 }
 
@@ -1044,7 +1094,7 @@ function openOtherLink(other) {
     // Fallback: copy link to clipboard
     try {
       navigator.clipboard?.writeText?.(other.value)
-    } catch {}
+    } catch { }
   }
 }
 
@@ -1078,7 +1128,7 @@ export default {
       emits: ['add'],
       data() { return { input: '' } },
       methods: {
-        onAdd() { if (!this.input) return; this.$emit('add', this.input); this.input=''; },
+        onAdd() { if (!this.input) return; this.$emit('add', this.input); this.input = ''; },
       },
       template: `
         <div class="mt-2">
@@ -1123,21 +1173,19 @@ export default {
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: #94a3b8;
   }
-  
+
   /* Better touch targets for mobile */
   button {
     min-height: 25px;
   }
-  
+
   /* Improve dropdown positioning on mobile */
   .relative {
     position: relative;
   }
 }
 </style>
-
-
