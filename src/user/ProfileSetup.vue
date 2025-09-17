@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-svh flex flex-col items-center gap-6 px-6 sm:px-8 pb-safe pt-36">
     <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-2" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
 
     <section class="w-full max-w-md bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-5 sm:p-7 mt-6 sm:mt-8">

@@ -1,14 +1,14 @@
 <template>
   <div class="min-h-svh flex flex-col items-center gap-6 px-8 sm:px-8 pb-safe pt-32 sm:pt-56 bg-gradient-to-b from-black/0 to-black/0">
     <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-2" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+      <p class="-mt-0.5 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
 
     <section class="w-full max-w-md bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-5 sm:p-7 mt-6 sm:mt-8">
-      <h2 class="text-center text-2xl sm:text-3xl font-black mb-1">Instant Access!</h2>
-      <p class="text-center text-sm text-gray-500 mt-1 mb-5">Sign in to continue to GoTapMode</p>
+      <h2 class="text-center text-2xl sm:text-3xl font-black mb-0">Instant Access!</h2>
+      <p class="text-center text-sm text-gray-500 mt-0 mb-5">Sign in to continue to GoTapMode</p>
       <form class="grid gap-3" @submit.prevent="onSubmit">
         <div>
           <label class="block text-xs font-medium mb-1 opacity-80" for="email">Email</label>
@@ -48,7 +48,7 @@
       </form>
 
       <div class="text-center text-sm mt-4 opacity-90">
-        <a href="#" @click.prevent="onRegister">GoTapMode</a>
+        <p>Connect instantly with your digital business card</p>
       </div>
     </section>
     <Modal v-model="showError" title="Login failed" :message="errorMsg" />
