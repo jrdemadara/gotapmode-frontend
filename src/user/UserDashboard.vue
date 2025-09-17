@@ -74,7 +74,10 @@
           <div v-for="(e, idx) in emails" :key="e.id || ('e-' + idx)"
             class="flex items-center gap-3 h-12 px-3 bg-gray-100 border border-gray-200 rounded-lg">
             <img src="/icons/email.png" class="w-5 h-5" alt="email" />
-            <div class="flex-1 text-sm">{{ e.value }}</div>
+            <div class="flex-1 text-sm">
+              <span class="hidden sm:inline">{{ e.value }}</span>
+              <span class="sm:hidden">{{ e.value.length > 15 ? e.value.substring(0, 15) + '...' : e.value }}</span>
+            </div>
             <div class="flex items-center gap-3">
               <button @click="onToggleMainEmail(e)" type="button" aria-label="Set main email"
                 class="relative w-10 h-6 rounded-full transition-colors duration-200"
@@ -318,8 +321,7 @@
         <button @click="goEditProfile"
           class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
           <span class="flex items-center gap-3">
-            <span
-              class="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center text-xs shadow-sm">EP</span>
+            <img src="/icons/edit.png" class="w-6 h-6" alt="edit" />
             <span class="text-sm">Edit Profile</span>
           </span>
           <span class="opacity-60">›</span>
@@ -327,8 +329,7 @@
         <button @click="doLogout"
           class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
           <span class="flex items-center gap-3">
-            <span
-              class="w-9 h-9 rounded-xl bg-red-600/90 text-white flex items-center justify-center text-xs shadow-sm">LO</span>
+            <img src="/icons/logout.png" class="w-6 h-6" alt="logout" />
             <span class="text-sm">Logout</span>
           </span>
           <span class="opacity-60">›</span>
