@@ -15,9 +15,16 @@ import NfcWriting from '../admin/NFCWriting.vue'
 import CardClear from '../admin/CardClear.vue'
 import NFCCards from '../admin/NFCCards.vue'
 import Administrators from '../admin/Administrators.vue'
+import Landing from '../landingpages/Landing.vue'
+import Contact from '../landingpages/Contact.vue'
+import HowItWorks from '../landingpages/HowItWorks.vue'
 
 const routes = [
-  { path: '/', name: 'login', component: Login },
+  { path: '/', name: 'home', component: Landing },
+  { path: '/login', name: 'login', component: Login },
+  { path: '/get-card', name: 'landing-get-card', component: Landing },
+  { path: '/contact', name: 'contact', component: Contact },
+  { path: '/how-it-works', name: 'how-it-works', component: HowItWorks },
   { path: '/signup', name: 'signup', component: Signup },
   { path: '/activate', name: 'activate', component: Activate },
   { path: '/card-validation', name: 'card-validation', component: CardValidation },

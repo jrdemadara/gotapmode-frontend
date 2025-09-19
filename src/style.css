@@ -1,13 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind CSS v4 theme configuration */
+/* stylelint-disable-next-line at-rule-no-unknown */
+@theme {
+  --font-family-sans: "Rajdhani", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  
+  --color-primary: #0d1117;
+  --color-light-primary: #ffffff;
+  --color-light-secondary: #f9fafb;
+  --color-light-tertiary: #f3f4f6;
+  --color-light-accent: #000000;
+  
+  --shadow-card: 0 8px 24px rgba(16,24,40,.06);
+  --radius-xl: 1.25rem;
+}
 
 /* MINIMAL DARK MODE FIX - Preserve Original Design */
 @layer base {
   :root {
     /* Force light color scheme */
     color-scheme: light only;
-    forced-colors: none;
   }
 
   /* Only override when system is in dark mode */
