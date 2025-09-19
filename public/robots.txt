@@ -1,16 +1,114 @@
-User-agent: *
+# GoTapMode Robots.txt - Enhanced Security Configuration
+
+# Allow legitimate search engines with appropriate crawl delays
+User-agent: Googlebot
 Allow: /
-
-# Sitemap location
-Sitemap: https://gotapmode.info/sitemap.xml
-
-# Allow search engines to crawl all pages
+Allow: /how-it-works
+Allow: /contact
+Allow: /login
 Disallow: /admin/
 Disallow: /dashboard/
-Disallow: /edit-profile/
 Disallow: /profile-setup/
 Disallow: /profile-details/
+Disallow: /edit-profile/
 Disallow: /card-validation/
+Disallow: /signup
+Disallow: /p/
+Crawl-delay: 1
 
-# Allow public profiles
-Allow: /p/
+User-agent: Bingbot
+Allow: /
+Allow: /how-it-works
+Allow: /contact
+Allow: /login
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile-setup/
+Disallow: /profile-details/
+Disallow: /edit-profile/
+Disallow: /card-validation/
+Disallow: /signup
+Disallow: /p/
+Crawl-delay: 2
+
+# Block aggressive and malicious crawlers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: LinkpadBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+# Block scrapers and email harvesters
+User-agent: EmailCollector
+Disallow: /
+
+User-agent: EmailSiphon
+Disallow: /
+
+User-agent: WebBandit
+Disallow: /
+
+User-agent: EmailWolf
+Disallow: /
+
+User-agent: ExtractorPro
+Disallow: /
+
+User-agent: CopyRightCheck
+Disallow: /
+
+User-agent: WebStripper
+Disallow: /
+
+User-agent: WebZIP
+Disallow: /
+
+User-agent: Wget
+Disallow: /
+
+User-agent: HTTrack
+Disallow: /
+
+# Default rules for other bots (more restrictive)
+User-agent: *
+Allow: /
+Allow: /how-it-works
+Allow: /contact
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile-setup/
+Disallow: /profile-details/
+Disallow: /edit-profile/
+Disallow: /card-validation/
+Disallow: /signup
+Disallow: /p/
+Disallow: /login
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*?*
+Crawl-delay: 5
+
+# Sitemap location (only for legitimate crawlers)
+Sitemap: https://gotapmode.info/sitemap.xml
