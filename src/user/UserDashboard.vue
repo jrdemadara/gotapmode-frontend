@@ -328,6 +328,16 @@
           </span>
           <span class="opacity-60">›</span>
         </button>
+        <button @click="goChangePassword"
+          class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5">
+          <span class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+            <span class="text-sm">Change Password</span>
+          </span>
+          <span class="opacity-60">›</span>
+        </button>
         <button @click="doLogout"
           class="w-full flex items-center justify-between gap-3 px-5 h-12 hover:bg-black/5 text-red-600">
           <span class="flex items-center gap-3">
@@ -420,7 +430,7 @@ function selectSocialPlatform(key) {
   // Auto-fill the textbox with platform-specific URL template
   const platformTemplates = {
     facebook: 'https://facebook.com/',
-    instagram: 'https://instagram.com/@',
+    instagram: 'https://instagram.com/',
     twitter: 'https://twitter.com/@',
     linkedin: 'https://linkedin.com/in/',
     youtube: 'https://youtube.com/@',
@@ -942,6 +952,11 @@ async function deleteOther(other) {
 function goEditProfile() {
   showSidebar.value = false
   try { router.push({ name: 'edit-profile' }) } catch { }
+}
+
+function goChangePassword() {
+  showSidebar.value = false
+  try { router.push({ name: 'change-password' }) } catch { }
 }
 
 // Removed goProfilePhoto; profile photo handled in Edit Profile and Profile Details
