@@ -7,6 +7,7 @@ import ProfileSetup from '../user/ProfileSetup.vue'
 import ProfileDetails from '../user/ProfileDetails.vue'
 import UserDashboard from '../user/UserDashboard.vue'
 import EditProfile from '../user/EditProfile.vue'
+import ChangePassword from '../user/ChangePassword.vue'
 import PublicProfile from '../user/PublicProfile.vue'
 import AdminDashboard from '../admin/Dashboard.vue'
 import AdminUsers from '../admin/Users.vue'
@@ -33,6 +34,7 @@ const routes = [
   { path: '/profile-details', name: 'profile-details', component: ProfileDetails, meta: { requiresUser: true } },
   { path: '/dashboard', name: 'dashboard', component: UserDashboard, meta: { requiresUser: true } },
   { path: '/edit-profile', name: 'edit-profile', component: EditProfile, meta: { requiresUser: true } },
+  { path: '/change-password', name: 'change-password', component: ChangePassword, meta: { requiresUser: true } },
   { path: '/p/:code', name: 'public-profile', component: PublicProfile },
   { path: '/admin/dashboard', name: 'admin-dashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
   { path: '/admin/users', name: 'admin-users', component: AdminUsers, meta: { requiresAdmin: true } },
