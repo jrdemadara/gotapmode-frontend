@@ -78,10 +78,10 @@
   </div>
   
   <!-- CropperJS modal -->
-  <div v-if="showCropper" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-2 sm:mx-4 max-h-[92vh] overflow-hidden">
+  <div v-if="showCropper" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-safe">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-2 sm:mx-4 max-h-[85vh] sm:max-h-[92vh] overflow-hidden flex flex-col">
       <!-- Header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
         <h3 class="text-lg font-bold text-gray-900">{{ cropMode === 'avatar' ? 'Crop Profile Picture' : 'Crop Cover Photo' }}</h3>
         <button @click="closeCropper" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center">
           <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
         </button>
       </div>
       <!-- Toolbar -->
-      <div class="px-3 sm:px-4 pt-3 pb-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 border-b border-gray-100">
+      <div class="px-3 sm:px-4 pt-3 pb-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 border-b border-gray-100 flex-shrink-0">
         <div class="w-full sm:w-auto flex items-center justify-center gap-2">
           <button @click="resetCropper" class="h-8 sm:h-9 px-2 sm:px-3 rounded-md border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm">Reset</button>
           <button v-if="cropMode==='cover'" @click="rotateLeft" class="h-8 sm:h-9 px-2 sm:px-3 rounded-md border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm">Rotate Left</button>
@@ -105,14 +105,14 @@
         </div>
       </div>
       <!-- Cropper Container -->
-      <div class="p-3 sm:p-4">
-        <div class="relative w-full overflow-hidden bg-gray-50 rounded-xl border border-gray-200 h-[60vh] sm:h-[420px]">
+      <div class="p-3 sm:p-4 flex-1 min-h-0 flex flex-col">
+        <div class="relative w-full overflow-hidden bg-gray-50 rounded-xl border border-gray-200 flex-1 min-h-[280px] max-h-[50vh] sm:max-h-[420px]">
           <img v-if="cropImageSrc" :src="cropImageSrc" ref="cropperRef" class="w-full h-full" />
         </div>
-        <p class="mt-2 text-[11px] sm:text-xs text-gray-500 text-center">Drag to move. Use buttons to reset/rotate. {{ cropMode==='avatar' ? 'Circular area will be saved.' : 'Rectangular area will be saved.' }}</p>
+        <p class="mt-2 text-[11px] sm:text-xs text-gray-500 text-center flex-shrink-0">Drag to move. Use buttons to reset/rotate. {{ cropMode==='avatar' ? 'Circular area will be saved.' : 'Rectangular area will be saved.' }}</p>
       </div>
       <!-- Footer -->
-      <div class="flex items-center justify-end gap-2 sm:gap-3 p-3 sm:p-4 border-t border-gray-200">
+      <div class="flex items-center justify-end gap-2 sm:gap-3 p-3 sm:p-4 border-t border-gray-200 flex-shrink-0">
         <button @click="closeCropper" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
           Cancel
         </button>
