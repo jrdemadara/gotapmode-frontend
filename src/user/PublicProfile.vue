@@ -1,24 +1,32 @@
 <template>
-  <div class="min-h-svh flex flex-col items-center gap-6 px-8 sm:px-8 pb-16 pt-6">
-    <!-- Brand -->
-    <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
-      <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+  <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-0 relative">
+
+    <!-- Profile header -->
+    <div class="w-full mb-6">
+      <!-- Mobile: edge-to-edge; Desktop: align to contacts (max-w-2xl) -->
+      <div class="-mx-8 relative sm:mx-auto sm:max-w-2xl sm:w-full">
+        <img :src="profile.cover || '/logo/cover1.jpg'" alt="cover"
+          class="w-full h-56 sm:h-64 object-cover bg-gray-100" />
+        <div class="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
+        <!-- Circular profile avatar overlapping bottom-left -->
+        <img :src="profile.photo || '/icons/user.png'" alt="avatar"
+          class="absolute left-1/2 -translate-x-1/2 -bottom-14 sm:-bottom-16 w-35 h-35 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-xl" />
+      </div>
+      <!-- Details under the profile photo, centered -->
+      <div class="mt-15 sm:mt-16 px-6 sm:px-0 text-center sm:max-w-2xl sm:mx-auto">
+        <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-gray-900">{{ formatPosition(profile.name) }}</h2>
+        <div class="mt-0 sm:mt-1 text-sm sm:text-base text-gray-700">
+          <p v-if="profile.company">{{ formatPosition(profile.company) }}</p>
+          <p v-if="profile.position" class="mt-0 sm:mt-0.5 text-blue-600">{{ formatPosition(profile.position) }}</p>
+        </div>
+        <p v-if="profile.bio" class="mt-0.5 sm:mt-1 text-sm text-gray-700 max-w-3xl mx-auto">{{ profile.bio }}</p>
+      </div>
     </div>
 
-    <!-- Profile card -->
-    <section class="w-full max-w-md bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-6">
-      <div class="text-center">
-        <img class="w-40 h-40 rounded-full object-cover border-[2px] border-gray-300 mx-auto" :src="profile.photo || '/icons/user.png'" :alt="`${profile.name || 'User'} profile picture`" />
-        <h2 class="mt-4 text-xl font-extrabold">{{ profile.name || 'User' }}</h2>
-        <p class="text-sm opacity-80" v-if="profile.company">{{ profile.company }}</p>
-        <p class="text-sm opacity-70 text-blue-500 font-bold" v-if="profile.position">{{ profile.position }}</p>
-        <p class="text-sm opacity-70 mt-2 max-w-xs mx-auto leading-relaxed" v-if="profile.bio">{{ profile.bio }}</p>
-      </div>
-
+    <!-- Contact Actions Section -->
+    <div class="w-full max-w-md">
       <!-- Actions row: Phone, Email, Social(main), Web -->
-      <div class="mt-4 flex items-center justify-center gap-5">
+      <div class="mb-4 flex items-center justify-center gap-5">
         <button :disabled="!mainPhone" @click="dialMain" class="w-12 h-12 rounded-full bg-black flex items-center justify-center disabled:opacity-40">
           <img src="/icons/phone-call.png" class="w-5 h-5 invert" alt="call" />
         </button>
@@ -33,11 +41,11 @@
         </button>
       </div>
 
-      <button @click="saveToContacts" class="mt-4 w-full h-10 rounded-md bg-gray-900 text-white text-sm font-semibold flex items-center justify-center gap-2">
+      <button @click="saveToContacts" class="w-full h-10 rounded-md bg-gray-900 text-white text-sm font-semibold flex items-center justify-center gap-2 mb-6">
         <img src="/icons/user.png" alt="save to contacts" class="w-6 h- invert" />
         <span>Save to Contacts</span>
       </button>
-    </section>
+    </div>
 
     <!-- Social Links -->
     <section v-if="socials.length" class="w-full max-w-md">
@@ -74,7 +82,7 @@ import { processProfileImage } from '../utils/imageUtils'
 const route = useRoute()
 const router = useRouter()
 
-const profile = ref({ photo: '', name: '', company: '', bio: '' })
+const profile = ref({ photo: '', cover: '', name: '', company: '', bio: '', position: '' })
 const phones = ref([])
 const emails = ref([])
 const socials = ref([])
@@ -150,6 +158,9 @@ onMounted(async () => {
     if (pd?.full_name) profile.value.name = pd.full_name
     if (pr?.profile_pic) {
       profile.value.photo = processProfileImage(pr.profile_pic)
+    }
+    if (pr?.cover_pic) {
+      profile.value.cover = processProfileImage(pr.cover_pic)
     }
     if (pr?.company) profile.value.company = pr.company
     if (pr?.position) profile.value.position = pr.position
@@ -473,6 +484,13 @@ async function saveToContacts() {
   a.click()
   a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 1500)
+}
+
+function formatPosition(position) {
+  if (!position) return ''
+  return position.toLowerCase().split(' ').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ')
 }
 </script>
 
