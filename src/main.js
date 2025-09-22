@@ -74,8 +74,28 @@ function stopIdle() {
 }
 function updateIdle(to) {
   const routeName = (to?.name || router.currentRoute.value.name)
-  const onLogin = routeName === 'login'
-  if (onLogin) stopIdle()
+  const routePath = (to?.path || router.currentRoute.value.path)
+  
+  // Routes to exclude from idle timeout
+  const excludedRoutes = [
+    'login',
+    'home',
+    'landing-get-card',
+    'how-it-works',
+    'contact'
+  ]
+  
+  // Also exclude any route that starts with landing pages paths
+  const isLandingPage = routePath?.startsWith('/') && (
+    routePath === '/' ||
+    routePath === '/get-card' ||
+    routePath === '/how-it-works' ||
+    routePath === '/contact'
+  )
+  
+  const shouldExclude = excludedRoutes.includes(routeName) || isLandingPage
+  
+  if (shouldExclude) stopIdle()
   else startIdle()
 }
 updateIdle(router.currentRoute.value)

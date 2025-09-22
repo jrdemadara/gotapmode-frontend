@@ -2,9 +2,9 @@
   <div class="min-h-svh flex flex-col items-center gap-6 px-6 sm:px-8 pb-safe pt-36 sm:pt-56 bg-gradient-to-b from-black/0 to-black/0">
     <!-- Brand -->
     <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-2" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
 
     <!-- Card -->
@@ -25,8 +25,9 @@
               <path d="M3.75 4h16.5A1.75 1.75 0 0 1 22 5.75v12.5A1.75 1.75 0 0 1 20.25 20H3.75A1.75 1.75 0 0 1 2 18.25V5.75A1.75 1.75 0 0 1 3.75 4Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
               <path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <input id="email" v-model.trim="email" type="email" autocomplete="email" placeholder="customer@gotapmode.info" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 pl-9 pr-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+            <input id="email" v-model.trim="email" type="email" autocomplete="email" placeholder="customer@gotapmode.info" :class="['block w-full h-11 rounded-lg border bg-gray-50 pl-9 pr-3.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4', emailError ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500']" />
           </div>
+          <p v-if="emailError" class="mt-1 text-xs text-red-600">{{ emailError }}</p>
         </div>
 
         <div>
@@ -35,7 +36,7 @@
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-70 text-gray-500">
               <path d="M12 1.75a3.75 3.75 0 00-3.75 3.75V8H6.5A2.5 2.5 0 004 10.5v7A2.5 2.5 0 006.5 20h11a2.5 2.5 0 002.5-2.5v-7A2.5 2.5 0 0017.5 8H15.75V5.5A3.75 3.75 0 0012 1.75zm-2.25 6.25V5.5a2.25 2.25 0 114.5 0V8h-4.5z"/>
             </svg>
-            <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="********" class="block w-full h-11 rounded-lg border border-gray-300 bg-gray-50 pl-9 pr-12 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500" />
+            <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="********" :class="['block w-full h-11 rounded-lg border bg-gray-50 pl-9 pr-12 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-4', passwordError ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500']" />
             <button type="button" @click="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 opacity-70 hover:opacity-100 transition-opacity">
               <svg v-if="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5 text-gray-500">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
@@ -46,6 +47,7 @@
               </svg>
             </button>
           </div>
+          <p v-if="passwordError" class="mt-1 text-xs text-red-600">{{ passwordError }}</p>
         </div>
 
         <div class="flex items-center justify-between text-xs -mt-1">
@@ -70,6 +72,8 @@ const password = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 const showPassword = ref(false)
+const emailError = ref('')
+const passwordError = ref('')
 const router = useRouter()
 
 onMounted(() => {
@@ -91,8 +95,43 @@ onMounted(() => {
   }
 })
 
+function validateForm() {
+  let isValid = true
+  
+  // Reset errors
+  emailError.value = ''
+  passwordError.value = ''
+  
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!email.value) {
+    emailError.value = 'Email is required'
+    isValid = false
+  } else if (!emailRegex.test(email.value)) {
+    emailError.value = 'Please enter a valid email address'
+    isValid = false
+  }
+  
+  // Password validation
+  if (!password.value) {
+    passwordError.value = 'Password is required'
+    isValid = false
+  } else if (password.value.length < 8) {
+    passwordError.value = 'Password must be at least 8 characters long'
+    isValid = false
+  }
+  
+  return isValid
+}
+
 async function onSubmit() {
   errorMsg.value = ''
+  
+  // Validate form before submission
+  if (!validateForm()) {
+    return
+  }
+  
   loading.value = true
   try {
     const guessedName = email.value?.split('@')[0] || 'New User'

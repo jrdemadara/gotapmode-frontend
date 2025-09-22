@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-svh flex flex-col items-center gap-6 px-8 sm:px-8 pb-16 pt-10">
+  <div class="min-h-svh flex flex-col items-center gap-6 px-8 sm:px-8 pb-16 pt-6">
     <!-- Brand -->
     <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-2" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="mt-1 text-sm opacity-70">Activate Connection Instantly</p>
+      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
 
     <!-- Profile card -->
