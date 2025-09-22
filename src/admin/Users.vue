@@ -73,9 +73,9 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
       <!-- Mobile Header -->
-      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm flex-shrink-0">
         <div class="px-3 sm:px-6 py-4">
           <div class="flex items-center justify-between">
             <!-- Left Section - Logo and Brand -->
@@ -97,7 +97,7 @@
         </div>
       </div>
 
-      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <main class="flex-1 p-4 sm:p-6 space-y-6 sm:space-y-8 overflow-y-auto">
       <!-- Page Title -->
       <div class="text-center">
         <h2 class="text-2xl font-bold text-gray-900">User Management System</h2>

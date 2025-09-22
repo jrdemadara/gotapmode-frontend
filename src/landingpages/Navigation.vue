@@ -84,7 +84,6 @@
             <router-link :to="{ name: 'home' }" @click="closeMobileMenu" class="group block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-xl transition-all duration-300 hover:shadow-sm">Home</router-link>
             <router-link :to="{ name: 'how-it-works' }" @click="closeMobileMenu" class="group block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-xl transition-all duration-300 hover:shadow-sm">How it Works</router-link>
             <router-link :to="{ name: 'contact' }" @click="closeMobileMenu" class="group block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-xl transition-all duration-300 hover:shadow-sm">Contact</router-link>
-            <router-link :to="{ name: 'login' }" @click="closeMobileMenu" class="group block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-xl transition-all duration-300 hover:shadow-sm">Sign In</router-link>
           </nav>
         </div>
         

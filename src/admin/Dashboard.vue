@@ -73,9 +73,9 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
       <!-- Mobile Header -->
-      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+      <div class="lg:hidden bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40 shadow-sm flex-shrink-0">
         <div class="px-3 sm:px-6 py-4">
           <div class="flex items-center justify-between">
             <!-- Left Section - Logo and Brand -->
@@ -97,8 +97,8 @@
         </div>
       </div>
 
-      <main class="flex-1 p-6 sm:p-8">
-      <div class="max-w-7xl mx-auto w-full space-y-8 sm:space-y-10">
+      <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
+      <div class="max-w-7xl mx-auto w-full space-y-4 sm:space-y-6">
 
       <div v-if="loading || error" class="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg p-8 text-center">
         <div v-if="loading" class="text-gray-600 text-lg">Loading admin dashboard…</div>
@@ -110,7 +110,7 @@
         <section>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
             <!-- Registered Users -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Cards -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-purple-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 114 0 2 2 0 01-4 0zm8 0a2 2 0 114 0 2 2 0 01-4 0z" clip-rule="evenodd"/></svg>
@@ -138,7 +138,7 @@
             </div>
 
             <!-- Activated -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-green-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -152,7 +152,7 @@
             </div>
 
             <!-- Expired Cards -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-orange-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
@@ -166,7 +166,7 @@
             </div>
 
             <!-- Taps / Day -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-pink-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-pink-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
@@ -182,10 +182,10 @@
         </section>
 
         <!-- Contact Metrics Row -->
-        <section class="mt-6 sm:mt-8">
+        <section class="mt-4 sm:mt-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
             <!-- Email Addresses -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
@@ -199,7 +199,7 @@
             </div>
 
             <!-- Contact Numbers -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-green-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
@@ -213,7 +213,7 @@
             </div>
 
             <!-- Social Links -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-purple-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
@@ -227,7 +227,7 @@
             </div>
 
             <!-- Other Links -->
-            <div class="relative bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 overflow-hidden min-h-[90px] sm:min-h-[110px]">
+            <div class="relative bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 overflow-hidden min-h-[80px] sm:min-h-[90px]">
               <div class="flex items-center h-full gap-4">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-orange-50 flex items-center justify-center">
                   <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/></svg>
@@ -245,7 +245,7 @@
         <!-- Chart and Sidebar Section -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <!-- Chart Section -->
-          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 lg:col-span-2 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 lg:col-span-2 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
             <!-- Header Section -->
             <div class="flex flex-col mb-4 sm:mb-6">
               <div class="mb-3 sm:mb-0">
@@ -276,7 +276,7 @@
             </div>
             
             <!-- Chart Container -->
-            <div class="h-64 sm:h-72 md:h-80 lg:h-96 bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-100 shadow-inner">
+            <div class="h-48 sm:h-56 md:h-64 lg:h-72 bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-100 shadow-inner">
                <div v-if="stats.series?.data && stats.series?.dates" class="w-full h-full">
                  <apexchart 
                    :options="chartOptions" 
@@ -301,7 +301,7 @@
           <!-- Sidebar Section -->
           <div class="lg:col-span-1 space-y-4 sm:space-y-6">
             <!-- Recent Activations -->
-          <div class="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Recent Activations</h3>
               <div v-if="stats.recent_activated_cards.length === 0" class="text-sm text-gray-500 text-center py-4">No recent activations</div>
               <ul v-else class="space-y-3">
@@ -318,7 +318,7 @@
             </div>
 
             <!-- System Health -->
-          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
               <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">System Health</h3>
               <div class="space-y-4">
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
