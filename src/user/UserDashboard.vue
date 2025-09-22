@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-10 relative">
+  <div class="min-h-svh flex flex-col items-center px-8 sm:px-12 pb-16 pt-0 relative">
     <!-- Hamburger button -->
     <button @click="showSidebar = true"
       class="absolute left-4 top-4 z-50 w-10 h-10 rounded-lg border border-gray-200 bg-white flex flex-col items-center justify-center gap-1">
@@ -7,12 +7,7 @@
       <span class="block w-5 h-0.5 bg-black"></span>
       <span class="block w-5 h-0.5 bg-black"></span>
     </button>
-    <!-- Brand -->
-    <div class="text-center mb-6">
-      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
-      <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
-      <p class="-mt-1 text-sm opacity-70">Activate Connection Instantly</p>
-    </div>
+    
 
     <!-- Loading / Error -->
     <div class="w-full max-w-2xl mb-4" v-if="loading || loadError">
@@ -21,14 +16,26 @@
     </div>
 
     <!-- Profile header -->
-    <div class="flex flex-col items-center mb-6">
-      <img class="w-40 h-40 rounded-full object-cover border border-black" :src="profile.photo || '/icons/user.png'"
-        alt="profile" />
-      <h2 class="mt-4 text-xl font-extrabold">{{ formatPosition(profile.name) }}</h2>
-      <p class="text-sm opacity-80 font-bold">{{ formatPosition(profile.company) }}</p>
-      <p class="text-sm opacity-70 font-bold text-blue-500" v-if="profile.position">{{ formatPosition(profile.position)
-        }}</p>
-      <p class="text-sm font-bold" v-if="profile.bio">{{ profile.bio }}</p>
+    <div class="w-full mb-6">
+      <!-- Mobile: edge-to-edge; Desktop: align to contacts (max-w-2xl) -->
+      <div class="-mx-8 relative sm:mx-auto sm:max-w-2xl sm:w-full">
+        <img :src="profile.cover || '/logo/cover1.jpg'" alt="cover"
+          class="w-full h-56 sm:h-64 object-cover bg-gray-100" />
+        <div class="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
+        <!-- Circular profile avatar overlapping bottom-left -->
+        <img :src="profile.photo || '/icons/user.png'" alt="avatar"
+          class="absolute left-1/2 -translate-x-1/2 -bottom-14 sm:-bottom-16 w-35 h-35 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-xl" />
+      </div>
+      <!-- Details under the profile photo, centered -->
+      <div class="mt-15 sm:mt-16 px-6 sm:px-0 text-center sm:max-w-2xl sm:mx-auto">
+        <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-gray-900">{{ formatPosition(profile.name) }}</h2>
+        <div class="mt-0 sm:mt-1 text-sm sm:text-base text-gray-700">
+          <p v-if="profile.company">{{ formatPosition(profile.company) }}</p>
+          <p v-if="profile.position" class="mt-0 sm:mt-0.5 text-blue-600">{{ formatPosition(profile.position) }}</p>
+        </div>
+        <p v-if="profile.bio" class="mt-0.5 sm:mt-1 text-sm text-gray-700 max-w-3xl mx-auto">{{ profile.bio }}</p>
+      </div>
+      
     </div>
 
     <div class="w-full max-w-2xl space-y-px" v-if="!loading && !loadError">
@@ -357,17 +364,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { userApi } from '../config/api'
+import { userApi, BACKEND_BASE } from '../config/api'
 import Modal from '../components/Modal.vue'
 import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({
   photo: '',
+  cover: '',
   name: 'GoTapMode',
-  subtitle: 'Activate Connection Instantly',
   company: 'Company',
   bio: 'Bio',
-  title: 'Position',
+  position: '',
 })
 
 const userId = ref(null)
@@ -804,14 +811,25 @@ onMounted(async () => {
 
     // Update profile data
     if (personalData?.full_name) profile.value.name = personalData.full_name
-    if (profileData?.profile_pic) {
-      profile.value.photo = processProfileImage(profileData.profile_pic)
-    } else {
-      profile.value.photo = ''
-    }
     if (profileData?.company) profile.value.company = profileData.company
     if (profileData?.bio) profile.value.bio = profileData.bio
     if (profileData?.position) profile.value.position = profileData.position
+
+    // Build avatar URL only if we know there's a profile photo
+    if (profileData?.profile_pic && profileData.profile_pic.trim()) {
+      profile.value.photo = processProfileImage(profileData.profile_pic)
+    } else {
+      // No profile photo, leave empty so template shows placeholder
+      profile.value.photo = ''
+    }
+
+    // Build cover URL only if we know there's a cover photo
+    if (profileData?.cover_pic && profileData.cover_pic.trim()) {
+      profile.value.cover = processProfileImage(profileData.cover_pic)
+    } else {
+      // No cover photo, leave empty so template shows placeholder
+      profile.value.cover = ''
+    }
 
   } catch (e) {
     loadError.value = e?.message || 'Failed to load dashboard.'
