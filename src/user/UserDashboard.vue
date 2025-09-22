@@ -19,8 +19,30 @@
     <div class="w-full mb-6">
       <!-- Mobile: edge-to-edge; Desktop: align to contacts (max-w-2xl) -->
       <div class="-mx-8 relative sm:mx-auto sm:max-w-2xl sm:w-full">
-        <img :src="profile.cover || '/logo/cover1.jpg'" alt="cover"
-          class="w-full h-56 sm:h-64 object-cover bg-gray-100" />
+        <div v-if="profile.cover" class="w-full h-56 sm:h-64">
+          <img :src="profile.cover" alt="cover"
+            class="w-full h-full object-cover" />
+        </div>
+        <div v-else class="w-full h-56 sm:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 flex flex-col items-center justify-start pt-4 relative overflow-hidden">
+          <!-- Subtle pattern overlay -->
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-4 left-4 w-8 h-8 border border-white/20 rounded-full"></div>
+            <div class="absolute top-8 right-8 w-6 h-6 border border-white/20 rounded-full"></div>
+            <div class="absolute bottom-12 left-12 w-4 h-4 border border-white/20 rounded-full"></div>
+            <div class="absolute bottom-8 right-16 w-10 h-10 border border-white/20 rounded-full"></div>
+          </div>
+          
+          <!-- GoTapMode branded icon -->
+          <div class="relative z-10 flex flex-col items-center">
+            <div class="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-2 border border-white/20">
+              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <span class="text-white/90 text-sm font-semibold tracking-wide">Upload Cover Photo</span>
+            <span class="text-white/60 text-xs mt-1">Make your profile stand out</span>
+          </div>
+        </div>
         <div class="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
         <!-- Circular profile avatar overlapping bottom-left -->
         <img :src="profile.photo || '/icons/user.png'" alt="avatar"
