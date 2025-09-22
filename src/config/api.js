@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Backend API base URL configuration
 const DEFAULT_BASE = 'https://api.gotapmode.info/api';
-// const DEFAULT_BASE = 'http://192.168.50.56:8000/api';
+// const DEFAULT_BASE = 'http://192.168.50.57:8000/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -166,9 +166,13 @@ export const userApi = {
   getProfile: () => api.get('/card-users/profile'),
   updateProfile: (data) => api.post('/card-users/profile', data),
   updateCompleteProfile: (data) => api.post('/card-users/complete-profile', data),
+  uploadCover: (formData) => http.post('/card-users/profile/cover', formData),
   
   // Card activation
   activateCard: (activationCode) => api.post('/cards/activate', { activation_code: activationCode }),
+  
+  // Password change
+  changePassword: (data) => api.post('/card-users/change-password', data),
   
   // Contact management
   getContacts: () => api.get('/contacts/'),

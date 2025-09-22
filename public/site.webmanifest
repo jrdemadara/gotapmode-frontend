@@ -1,0 +1,27 @@
+{
+  "name": "GoTapMode - Digital Business Cards",
+  "short_name": "GoTapMode",
+  "description": "Digital business cards with NFC technology for instant contact sharing",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo/GoTapMode.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo/GoTapMode.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "networking"],
+  "lang": "en",
+  "dir": "ltr"
+}

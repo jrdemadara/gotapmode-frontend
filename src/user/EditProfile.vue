@@ -7,7 +7,16 @@
     </div>
 
     <section class="w-full max-w-2xl bg-white text-gray-900 border border-gray-100 shadow-card rounded-2xl p-5 sm:p-7">
-      <!-- Profile photo at top -->
+      <!-- Cover photo upload (moved to top) -->
+      <div class="mb-5">
+        <label for="cover-pic" class="block text-xs font-medium mb-1 opacity-80">Cover Photo</label>
+        <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-50 h-40 sm:h-48 flex items-center justify-center">
+          <img v-if="coverPicPreview" :src="coverPicPreview" class="absolute inset-0 w-full h-full object-cover"/>
+          <input id="cover-pic" name="cover-pic" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" @change="onPickCover" />
+          <span v-if="!coverPicPreview" class="text-xs opacity-70">Click to upload cover</span>
+        </div>
+      </div>
+      <!-- Profile photo -->
       <div class="flex items-center justify-center mb-5">
         <label for="profile-pic" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden hover:shadow-md transition-shadow">
           <input id="profile-pic" name="profile-pic" type="file" accept="image/*" class="hidden" @change="onPick" />
@@ -15,7 +24,6 @@
           <span v-else class="text-xs opacity-70">Click to upload</span>
         </label>
       </div>
-      <div class="flex items-center justify-center"></div>
 
       <!-- Full name -->
       <div class="grid sm:grid-cols-3 gap-3">
@@ -66,41 +74,111 @@
         <button :disabled="saving" class="px-5 h-11 rounded-lg bg-black text-white font-semibold disabled:opacity-50" @click="onSave">{{ saving ? 'Saving…' : 'Save changes' }}</button>
       </div>
     </section>
+
+  </div>
+  
+  <!-- CropperJS modal -->
+  <div v-if="showCropper" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-2 sm:mx-4 max-h-[92vh] overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 class="text-lg font-bold text-gray-900">{{ cropMode === 'avatar' ? 'Crop Profile Picture' : 'Crop Cover Photo' }}</h3>
+        <button @click="closeCropper" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center">
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Toolbar -->
+      <div class="px-3 sm:px-4 pt-3 pb-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 border-b border-gray-100">
+        <div class="w-full sm:w-auto flex items-center justify-center gap-2">
+          <button @click="resetCropper" class="h-8 sm:h-9 px-2 sm:px-3 rounded-md border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm">Reset</button>
+          <button v-if="cropMode==='cover'" @click="rotateLeft" class="h-8 sm:h-9 px-2 sm:px-3 rounded-md border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm">Rotate Left</button>
+          <button v-if="cropMode==='cover'" @click="rotateRight" class="h-8 sm:h-9 px-2 sm:px-3 rounded-md border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm">Rotate Right</button>
+        </div>
+        <div v-if="cropMode==='cover'" class="w-full sm:w-auto flex items-center justify-center sm:ml-auto gap-1 sm:gap-2">
+          <span class="text-[10px] sm:text-xs text-gray-500 mr-1">Aspect</span>
+          <button @click="setAspect(16/9)" :class="aspectBtnClass(16/9)" class="h-8 px-2 rounded-md border text-[10px] sm:text-xs">16:9</button>
+          <button @click="setAspect(4/3)" :class="aspectBtnClass(4/3)" class="h-8 px-2 rounded-md border text-[10px] sm:text-xs">4:3</button>
+          <button @click="setAspect(1)" :class="aspectBtnClass(1)" class="h-8 px-2 rounded-md border text-[10px] sm:text-xs">1:1</button>
+          <button @click="setAspect(NaN)" :class="aspectBtnClass(NaN)" class="h-8 px-2 rounded-md border text-[10px] sm:text-xs">Free</button>
+        </div>
+      </div>
+      <!-- Cropper Container -->
+      <div class="p-3 sm:p-4">
+        <div class="relative w-full overflow-hidden bg-gray-50 rounded-xl border border-gray-200 h-[60vh] sm:h-[420px]">
+          <img v-if="cropImageSrc" :src="cropImageSrc" ref="cropperRef" class="w-full h-full" />
+        </div>
+        <p class="mt-2 text-[11px] sm:text-xs text-gray-500 text-center">Drag to move. Use buttons to reset/rotate. {{ cropMode==='avatar' ? 'Circular area will be saved.' : 'Rectangular area will be saved.' }}</p>
+      </div>
+      <!-- Footer -->
+      <div class="flex items-center justify-end gap-2 sm:gap-3 p-3 sm:p-4 border-t border-gray-200">
+        <button @click="closeCropper" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          Cancel
+        </button>
+        <button @click="applyCropper" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors">
+          Apply Crop
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, http, userApi } from '../config/api'
 import { processProfileImage } from '../utils/imageUtils'
+import Cropper from 'cropperjs/dist/cropper.esm.js'
+import 'cropperjs/dist/cropper.css'
 
+// Router
 const router = useRouter()
-const userId = ref(null)
 
-// Personal data
+// Core state
+const userId = ref(null)
+const saving = ref(false)
+
+// Form fields
 const first = ref('')
 const middle = ref('')
 const last = ref('')
-
-// Profile
-const profilePicFile = ref(null)
-const profilePicPreview = ref('')
 const bio = ref('')
 const company = ref('')
 const position = ref('')
 const companynumber = ref('')
 const companyemail = ref('')
 const companyadress = ref('')
-const saving = ref(false)
-const savingPhoto = ref(false)
+
+// Image state
+const profilePicFile = ref(null)
+const profilePicPreview = ref('')
+const coverPicFile = ref(null)
+const coverPicPreview = ref('')
+const croppedAvatarBlob = ref(null)
+const croppedCoverBlob = ref(null)
+
+// Cropper modal state
+const showCropper = ref(false)
+const cropMode = ref('avatar') // 'avatar' | 'cover'
+const cropImageSrc = ref('')
+const cropperRef = ref(null)
+let cropper = null
+
+// Lifecycle
+onUnmounted(() => {
+  if (cropper) {
+    cropper.destroy()
+    cropper = null
+  }
+})
 
 onMounted(async () => {
   try {
     const u = JSON.parse(localStorage.getItem('gtm_user') || 'null')
     userId.value = u?.id || null
     if (!userId.value) return
-    
+
     // Load personal data
     try {
       const pd = await api.get('/card-users/personal-data')
@@ -109,10 +187,8 @@ onMounted(async () => {
         middle.value = pd.middle_name || ''
         last.value = pd.last_name || ''
       }
-    } catch (err) {
-      console.error('Error loading personal data:', err)
-    }
-    
+    } catch {}
+
     // Load profile
     try {
       const pr = await api.get('/card-users/profile')
@@ -123,107 +199,201 @@ onMounted(async () => {
         companynumber.value = pr.companynumber || ''
         companyemail.value = pr.companyemail || ''
         companyadress.value = pr.companyadress || ''
-        if (pr.profile_pic) {
-          profilePicPreview.value = processProfileImage(pr.profile_pic)
-        }
+        if (pr.profile_pic) profilePicPreview.value = processProfileImage(pr.profile_pic)
+        if (pr.cover_pic) coverPicPreview.value = processProfileImage(pr.cover_pic)
       }
-    } catch (err) {
-      console.error('Error loading profile:', err)
-    }
-  } catch (err) {
-    console.error('Error in onMounted:', err)
-  }
+    } catch {}
+  } catch {}
 })
 
+// Handlers: select images => open cropper immediately
 function onPick(e) {
   const f = e.target.files?.[0]
   if (!f) return
-  if (!/^image\//.test(f.type)) {
-    alert('Please choose a valid image file.')
-    e.target.value = ''
-    return
-  }
-  // Backend limit is 2MB (max:2048 in validation)
-  if (f.size > 2 * 1024 * 1024) {
-    alert('Image is too large. Max 2MB allowed.')
-    e.target.value = ''
-    return
-  }
+  if (!/^image\//.test(f.type)) { e.target.value = ''; return }
+  if (f.size > 2 * 1024 * 1024) { e.target.value = ''; return }
   profilePicFile.value = f
+  croppedAvatarBlob.value = null
   profilePicPreview.value = URL.createObjectURL(f)
+  cropMode.value = 'avatar'
+  cropImageSrc.value = profilePicPreview.value
+  showCropper.value = true
+  nextTick(initCropper)
 }
 
-async function uploadPhoto() {
-  if (!profilePicFile.value) return
-  savingPhoto.value = true
-  try {
-    const fd = new FormData()
-    fd.append('profile_pic_file', profilePicFile.value)
-    const resp = await http.post('/card-users/profile/picture', fd)
-    const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
-    if (url) {
-      profilePicPreview.value = url
-    }
-    profilePicFile.value = null
-    alert('Profile photo updated.')
-  } catch (err) {
-    let errorMessage = 'Upload failed. Please try again.'
-    if (err?.response?.status === 422) {
-      errorMessage = 'Invalid image. Use JPG, PNG, GIF, or WebP up to 2MB.'
-    } else if (err?.response?.status === 413) {
-      errorMessage = 'Image too large. Max size is 2MB.'
-    } else if (err?.response?.status === 500) {
-      errorMessage = err?.response?.data?.message || 'Server error. Please try again later.'
-    }
-    alert(errorMessage)
-  } finally {
-    savingPhoto.value = false
+function onPickCover(e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  if (!/^image\//.test(f.type)) { e.target.value = ''; return }
+  if (f.size > 4 * 1024 * 1024) { e.target.value = ''; return }
+  coverPicFile.value = f
+  croppedCoverBlob.value = null
+  coverPicPreview.value = URL.createObjectURL(f)
+  cropMode.value = 'cover'
+  cropImageSrc.value = coverPicPreview.value
+  showCropper.value = true
+  nextTick(initCropper)
+}
+
+// Cropper core
+function initCropper() {
+  if (!cropperRef.value) return
+  if (cropper) { cropper.destroy(); cropper = null }
+  const isAvatar = cropMode.value === 'avatar'
+  cropper = new Cropper(cropperRef.value, {
+    viewMode: 1,
+    aspectRatio: isAvatar ? 1 : 16 / 9,
+    dragMode: 'move',
+    background: true,
+    autoCropArea: 0.9,
+    responsive: true,
+    cropBoxResizable: true,
+    cropBoxMovable: true,
+    guides: true,
+    center: true,
+    highlight: false,
+    modal: false,
+    scalable: true,
+    zoomable: true,
+    rotatable: true,
+    checkOrientation: false,
+    ...(isAvatar && {
+      ready() {
+        const cropBox = this.cropper.cropBox
+        const container = this.cropper.container
+        const viewBox = container?.querySelector?.('.cropper-view-box')
+        const face = container?.querySelector?.('.cropper-face')
+        if (cropBox) {
+          cropBox.style.borderRadius = '50%'
+          cropBox.style.border = '2px solid #3b82f6'
+        }
+        if (viewBox) viewBox.style.borderRadius = '50%'
+        if (face) face.style.borderRadius = '50%'
+      },
+      crop() {
+        const cropBox = this.cropper.cropBox
+        const container = this.cropper.container
+        const viewBox = container?.querySelector?.('.cropper-view-box')
+        const face = container?.querySelector?.('.cropper-face')
+        if (cropBox) cropBox.style.borderRadius = '50%'
+        if (viewBox) viewBox.style.borderRadius = '50%'
+        if (face) face.style.borderRadius = '50%'
+      }
+    })
+  })
+}
+
+function closeCropper() {
+  if (cropper) { cropper.destroy(); cropper = null }
+  showCropper.value = false
+}
+
+async function getCroppedBlob(mode) {
+  if (!cropper) return null
+  const isAvatar = mode === 'avatar'
+  const canvas = cropper.getCroppedCanvas({
+    width: isAvatar ? 512 : 1200,
+    height: isAvatar ? 512 : 675,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high'
+  })
+  if (!canvas) return null
+  if (isAvatar) {
+    const circularCanvas = document.createElement('canvas')
+    circularCanvas.width = 512
+    circularCanvas.height = 512
+    const ctx = circularCanvas.getContext('2d')
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, 512, 512)
+    ctx.globalCompositeOperation = 'destination-in'
+    ctx.beginPath()
+    ctx.arc(256, 256, 256, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.fill()
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.drawImage(canvas, 0, 0, 512, 512)
+    return await new Promise(res => circularCanvas.toBlob(b => res(b), 'image/jpeg', 0.92))
   }
+  return await new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', 0.92))
 }
 
+async function applyCropper() {
+  const blob = await getCroppedBlob(cropMode.value)
+  if (blob) {
+    if (cropMode.value === 'avatar') {
+      croppedAvatarBlob.value = blob
+      try { profilePicPreview.value = URL.createObjectURL(blob) } catch {}
+    } else {
+      croppedCoverBlob.value = blob
+      try { coverPicPreview.value = URL.createObjectURL(blob) } catch {}
+    }
+  }
+  closeCropper()
+}
+
+// Toolbar actions (shared)
+function resetCropper() {
+  try {
+    if (!cropper) return
+    cropper.reset()
+    const isAvatar = cropMode.value === 'avatar'
+    cropper.setAspectRatio(isAvatar ? 1 : cropper.options.aspectRatio || NaN)
+    cropper.crop()
+  } catch {}
+}
+function rotateLeft() { try { cropper?.rotate?.(-90) } catch {} }
+function rotateRight() { try { cropper?.rotate?.(90) } catch {} }
+function setAspect(r) {
+  if (!cropper) return
+  if (isNaN(r)) cropper.setAspectRatio(NaN)
+  else cropper.setAspectRatio(r)
+}
+function aspectBtnClass(r) {
+  const active = (isNaN(r) && isNaN(cropper?.options?.aspectRatio)) || (cropper?.options?.aspectRatio === r)
+  return `${active ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`
+}
+
+// Save + navigation
 async function onSave() {
   if (!userId.value) return
-  
-  // Validate required fields
-  if (!first.value.trim()) {
-    alert('First name is required')
-    return
-  }
-  if (!last.value.trim()) {
-    alert('Last name is required')
-    return
-  }
-  
+  if (!first.value.trim()) { alert('First name is required'); return }
+  if (!last.value.trim()) { alert('Last name is required'); return }
+
   saving.value = true
-  
   try {
-    // If a new photo was selected, upload it first
-    if (profilePicFile.value) {
+    if (profilePicFile.value || croppedAvatarBlob.value) {
       const fd = new FormData()
-      fd.append('profile_pic_file', profilePicFile.value)
+      const blob = croppedAvatarBlob.value || profilePicFile.value
+      if (blob instanceof Blob) fd.append('profile_pic_file', blob, 'profile.jpg')
+      else fd.append('profile_pic_file', blob)
       const resp = await http.post('/card-users/profile/picture', fd)
       const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
-      if (url) {
-        profilePicPreview.value = url
-      }
+      if (url) profilePicPreview.value = url
       profilePicFile.value = null
+      croppedAvatarBlob.value = null
     }
-    console.log('Saving complete profile...')
-    
-    // Use the new combined endpoint that saves both tables atomically
-    // Helper function to convert empty strings to null
+
+    if (coverPicFile.value || croppedCoverBlob.value) {
+      const fd2 = new FormData()
+      const blob2 = croppedCoverBlob.value || coverPicFile.value
+      if (blob2 instanceof Blob) fd2.append('cover_pic_file', blob2, 'cover.jpg')
+      else fd2.append('cover_pic_file', blob2)
+      const resp2 = await userApi.uploadCover(fd2)
+      const coverUrl = resp2?.data?.cover_pic_url || processProfileImage(resp2?.data?.cover_pic || '')
+      if (coverUrl) coverPicPreview.value = coverUrl
+      coverPicFile.value = null
+      croppedCoverBlob.value = null
+    }
+
     const emptyToNull = (value) => {
       const trimmed = value.trim()
       return trimmed === '' ? null : trimmed
     }
 
     const profileData = {
-      // Personal data (PersonalData table) - required fields
       first_name: first.value.trim(),
       middle_name: emptyToNull(middle.value),
       last_name: last.value.trim(),
-      
-      // Profile data (Profile table) - optional fields
       bio: emptyToNull(bio.value),
       company: emptyToNull(company.value),
       position: emptyToNull(position.value),
@@ -231,29 +401,13 @@ async function onSave() {
       companyemail: emptyToNull(companyemail.value),
       companyadress: emptyToNull(companyadress.value),
     }
-    
-    console.log('Sending profile data:', profileData)
-    
+
     await userApi.updateCompleteProfile(profileData)
-    
-    console.log('Complete profile saved successfully')
-    
-    // Success - redirect to dashboard
     router.push({ name: 'dashboard' })
-    
   } catch (err) {
-    console.error('Error saving profile:', err)
-    console.error('Error response:', err.response)
-    console.error('Error response data:', err.response?.data)
-    
-    // Enhanced error handling
-    if (err.response?.data?.message) {
-      alert('Failed to save profile: ' + err.response.data.message)
-    } else if (err.response?.data?.error) {
-      alert('Failed to save profile: ' + err.response.data.error)
-    } else {
-      alert('Failed to save profile: ' + (err.message || 'Unknown error'))
-    }
+    if (err.response?.data?.message) alert('Failed to save profile: ' + err.response.data.message)
+    else if (err.response?.data?.error) alert('Failed to save profile: ' + err.response.data.error)
+    else alert('Failed to save profile: ' + (err.message || 'Unknown error'))
   } finally {
     saving.value = false
   }
