@@ -63,8 +63,9 @@
       aria-label="Navigation menu"
       class="sm:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out"
       :class="mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'"
+      style="height: 100dvh;"
     >
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full pt-safe">
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
           <div class="flex items-center gap-3">
@@ -88,7 +89,7 @@
         </div>
         
         <!-- Bottom Action -->
-        <div class="p-6 border-t border-gray-200">
+        <div class="p-6 pb-safe border-t border-gray-200">
           <router-link :to="{ name: 'login' }" @click="closeMobileMenu" class="block w-full px-6 py-3 bg-gray-900 text-white text-base font-semibold rounded-lg hover:bg-gray-800 transition-colors text-center">
             Sign In
           </router-link>
@@ -165,6 +166,15 @@ a:focus, button:focus {
   z-index: 50;
 }
 
+/* Safe area support for mobile */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* Mobile menu styling */
 @media (max-width: 640px) {
   .fixed {
@@ -188,6 +198,7 @@ a:focus, button:focus {
   
   .h-full {
     height: 100vh;
+    height: 100dvh;
   }
 }
 </style>
