@@ -658,15 +658,21 @@
     </div>
 
          <!-- Enhanced User Details Modal -->
-     <div v-if="selectedUser" class="fixed inset-0 z-50 overflow-y-auto">
+     <div v-if="selectedUser || loadingUserDetails" class="fixed inset-0 z-[60] overflow-y-auto">
        <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
          <!-- Backdrop with blur effect -->
-         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+         <div class="fixed inset-0 transition-opacity z-[59]" aria-hidden="true">
            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
          </div>
          
+         <!-- Loading State -->
+         <div v-if="loadingUserDetails" class="relative z-[61] inline-block align-bottom bg-white rounded-2xl text-center overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md border border-gray-200/50 p-8">
+           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+           <div class="text-lg text-gray-600">Loading user details...</div>
+         </div>
+         
                    <!-- Modal Container -->
-          <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-6xl border border-gray-200/50">
+          <div v-else class="relative z-[61] inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full max-w-6xl border border-gray-200/50">
            
            <!-- Header Section -->
            <div class="bg-gray-50 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200 relative">
@@ -703,19 +709,33 @@
              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                <!-- Basic Info Card -->
                <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                 <div class="flex items-center gap-2 mb-3">
-                   <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
-                     <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                     </svg>
+                   <div class="flex items-center gap-2 mb-3">
+                     <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
+                       <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                       </svg>
+                     </div>
+                     <h4 class="text-sm font-semibold text-gray-900">Basic Information</h4>
                    </div>
-                   <h4 class="text-sm font-semibold text-gray-900">Basic Information</h4>
-                 </div>
-                 <div class="space-y-2">
-                   <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
-                     <span class="text-sm font-medium text-gray-600">Full Name</span>
-                     <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0">{{ selectedUser.name }}</span>
-                   </div>
+                   <div class="space-y-2">
+                     <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
+                       <span class="text-sm font-medium text-gray-600">Full Name</span>
+                       <div class="flex items-center gap-3 mt-1 lg:mt-0">
+                         <div v-if="selectedUser.profile?.profile_pic_url" class="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0 relative">
+                           <img :src="selectedUser.profile.profile_pic_url" 
+                                :alt="selectedUser.name" 
+                                class="w-full h-full object-cover"
+                                @error="handleImageError">
+                           <div class="fallback-initials absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold" style="display: none;">
+                             {{ getUserInitials(selectedUser.name) }}
+                           </div>
+                         </div>
+                         <div v-else class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                           {{ getUserInitials(selectedUser.name) }}
+                         </div>
+                         <span class="text-sm font-semibold text-gray-900">{{ selectedUser.name }}</span>
+                       </div>
+                     </div>
                    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center py-2 border-b border-gray-200/50">
                      <span class="text-sm font-medium text-gray-600">Email</span>
                      <span class="text-sm font-semibold text-gray-900 mt-1 lg:mt-0 break-all">{{ selectedUser.email }}</span>
@@ -765,23 +785,25 @@
                </div>
              </div>
 
-             <!-- Statistics Cards -->
+             <!-- User Statistics -->
              <div class="mb-4 sm:mb-6">
                <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                  </svg>
-                 Statistics
+                 Account Overview
                </h4>
-               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                  <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs font-medium text-gray-600">Total Cards</p>
-                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.cards?.length || 0 }}</p>
+                       <p class="text-xs font-medium text-gray-600">NFC Card Status</p>
+                       <p class="text-lg font-bold" :class="selectedUser.cards?.[0]?.is_activated ? 'text-green-600' : 'text-orange-600'">
+                         {{ selectedUser.cards?.[0]?.is_activated ? 'Activated' : 'Not Activated' }}
+                       </p>
                      </div>
-                     <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center">
-                       <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <div class="w-8 h-8 rounded flex items-center justify-center" :class="selectedUser.cards?.[0]?.is_activated ? 'bg-green-100' : 'bg-orange-100'">
+                       <svg class="w-4 h-4" :class="selectedUser.cards?.[0]?.is_activated ? 'text-green-600' : 'text-orange-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                        </svg>
                      </div>
@@ -791,26 +813,12 @@
                  <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                    <div class="flex items-center justify-between">
                      <div>
-                       <p class="text-xs font-medium text-gray-600">Activated Cards</p>
-                       <p class="text-lg font-bold text-gray-900">{{ selectedUser.activated_cards?.length || 0 }}</p>
-                     </div>
-                     <div class="w-8 h-8 rounded bg-green-100 flex items-center justify-center">
-                       <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                       </svg>
-                     </div>
-                   </div>
-                 </div>
-                 
-                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                   <div class="flex items-center justify-between">
-                     <div>
-                       <p class="text-xs font-medium text-gray-600">Contact Info</p>
+                       <p class="text-xs font-medium text-gray-600">Contact Methods</p>
                        <p class="text-lg font-bold text-gray-900">{{ selectedUser.contact_info?.length || 0 }}</p>
                      </div>
                      <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center">
                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                        </svg>
                      </div>
                    </div>
@@ -819,56 +827,187 @@
              </div>
 
              <!-- Contact Information Section -->
-             <div v-if="selectedUser.contact_info && selectedUser.contact_info.length > 0" class="mb-6 sm:mb-8">
+             <div class="mb-6 sm:mb-8">
                <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                  </svg>
                  Contact Information
                </h4>
-               <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                 <div v-for="contact in selectedUser.contact_info" :key="contact.id" 
-                      class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                   <div class="flex items-center gap-3">
-                     <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
-                       <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                       </svg>
+               
+               <!-- Contact Columns -->
+               <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                 <!-- Phone Numbers Column -->
+                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                   <div class="p-4 border-b border-gray-200">
+                     <div class="flex items-center gap-2">
+                       <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
+                         <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                         </svg>
+                       </div>
+                       <h5 class="text-sm font-semibold text-gray-900">Phone Numbers</h5>
                      </div>
-                     <div class="flex-1">
-                       <div class="text-sm font-medium text-gray-900">{{ contact.type }}</div>
-                       <div class="text-sm text-gray-600 break-all">{{ contact.value }}</div>
+                   </div>
+                   <div class="p-4">
+                     <div v-if="selectedUser.phones && selectedUser.phones.length > 0" class="space-y-2">
+                       <div v-for="phone in selectedUser.phones" :key="phone.id" 
+                            class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                         <div class="flex-1">
+                           <div class="text-sm font-medium text-gray-900">{{ phone.phonenumber }}</div>
+                           <div class="text-xs text-gray-600">{{ phone.type || 'Phone' }}</div>
+                         </div>
+                         <span v-if="phone.is_main" class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">Main</span>
+                       </div>
+                     </div>
+                     <div v-else class="text-center py-4">
+                       <div class="text-gray-400 text-sm">No phone numbers</div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <!-- Email Addresses Column -->
+                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                   <div class="p-4 border-b border-gray-200">
+                     <div class="flex items-center gap-2">
+                       <div class="w-6 h-6 rounded bg-purple-100 flex items-center justify-center">
+                         <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                         </svg>
+                       </div>
+                       <h5 class="text-sm font-semibold text-gray-900">Email Addresses</h5>
+                     </div>
+                   </div>
+                   <div class="p-4">
+                     <div v-if="selectedUser.emails && selectedUser.emails.length > 0" class="space-y-2">
+                       <div v-for="email in selectedUser.emails" :key="email.id" 
+                            class="flex items-center justify-between p-2 bg-purple-50 rounded-lg">
+                         <div class="flex-1">
+                           <div class="text-sm font-medium text-gray-900 break-all">{{ email.email }}</div>
+                           <div class="text-xs text-gray-600">{{ email.type || 'Email' }}</div>
+                         </div>
+                         <span v-if="email.is_main" class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full">Main</span>
+                       </div>
+                     </div>
+                     <div v-else class="text-center py-4">
+                       <div class="text-gray-400 text-sm">No email addresses</div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <!-- Social Media Column -->
+                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                   <div class="p-4 border-b border-gray-200">
+                     <div class="flex items-center gap-2">
+                       <div class="w-6 h-6 rounded bg-green-100 flex items-center justify-center">
+                         <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                         </svg>
+                       </div>
+                       <h5 class="text-sm font-semibold text-gray-900">Social Media</h5>
+                     </div>
+                   </div>
+                   <div class="p-4">
+                     <div v-if="selectedUser.socials && selectedUser.socials.length > 0" class="space-y-2">
+                       <div v-for="social in selectedUser.socials" :key="social.id" 
+                            class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                         <div class="flex-1">
+                           <div class="text-sm font-medium text-gray-900 break-all">{{ social.social }}</div>
+                           <div class="text-xs text-gray-600">{{ social.type || 'Social' }}</div>
+                         </div>
+                         <span v-if="social.is_main" class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">Main</span>
+                       </div>
+                     </div>
+                     <div v-else class="text-center py-4">
+                       <div class="text-gray-400 text-sm">No social media</div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <!-- Other Links Column -->
+                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                   <div class="p-4 border-b border-gray-200">
+                     <div class="flex items-center gap-2">
+                       <div class="w-6 h-6 rounded bg-orange-100 flex items-center justify-center">
+                         <svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                         </svg>
+                       </div>
+                       <h5 class="text-sm font-semibold text-gray-900">Other Links</h5>
+                     </div>
+                   </div>
+                   <div class="p-4">
+                     <div v-if="selectedUser.others && selectedUser.others.length > 0" class="space-y-2">
+                       <div v-for="other in selectedUser.others" :key="other.id" 
+                            class="flex items-center justify-between p-2 bg-orange-50 rounded-lg">
+                         <div class="flex-1">
+                           <div class="text-sm font-medium text-gray-900 break-all">{{ other.others }}</div>
+                           <div class="text-xs text-gray-600">{{ other.type || 'Link' }}</div>
+                         </div>
+                         <span v-if="other.is_main" class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">Main</span>
+                       </div>
+                     </div>
+                     <div v-else class="text-center py-4">
+                       <div class="text-gray-400 text-sm">No other links</div>
                      </div>
                    </div>
                  </div>
                </div>
              </div>
 
-             <!-- Cards Information Section -->
+             <!-- NFC Card Information Section -->
              <div v-if="selectedUser.cards && selectedUser.cards.length > 0">
                <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"></path>
                  </svg>
-                 Digital Cards
+                 NFC Card Details
                </h4>
-               <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                 <div v-for="card in selectedUser.cards" :key="card.id" 
-                      class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                   <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
-                     <div class="text-sm font-medium text-orange-900">Code: {{ card.unique_code }}</div>
-                     <span :class="[
-                       'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                       card.is_activated 
-                         ? 'bg-green-100 text-green-800 border border-green-200' 
-                         : 'bg-orange-100 text-orange-800 border border-orange-200'
-                     ]">
-                       <div :class="`w-2 h-2 rounded-full mr-2 ${card.is_activated ? 'bg-green-500' : 'bg-orange-500'}`"></div>
-                       {{ card.is_activated ? 'Activated' : 'Not Activated' }}
-                     </span>
+               <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200/50 shadow-sm">
+                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                   <div class="flex items-center gap-3">
+                     <div class="w-10 h-10 rounded-lg bg-orange-200 flex items-center justify-center">
+                       <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"></path>
+                       </svg>
+                     </div>
+                     <div>
+                       <div class="text-sm font-medium text-orange-900">Activation Code</div>
+                       <div class="text-lg font-bold text-orange-800 font-mono">{{ selectedUser.cards[0].unique_code }}</div>
+                     </div>
                    </div>
-                   <div class="text-xs text-orange-600">Created: {{ formatDate(card.created_at) }}</div>
+                   <span :class="[
+                     'inline-flex px-3 py-1 text-sm font-semibold rounded-full',
+                     selectedUser.cards[0].is_activated 
+                       ? 'bg-green-100 text-green-800 border border-green-200' 
+                       : 'bg-orange-100 text-orange-800 border border-orange-200'
+                   ]">
+                     <div :class="`w-2 h-2 rounded-full mr-2 ${selectedUser.cards[0].is_activated ? 'bg-green-500' : 'bg-orange-500'}`"></div>
+                     {{ selectedUser.cards[0].is_activated ? 'Activated' : 'Not Activated' }}
+                   </span>
                  </div>
+                 <div class="text-sm text-orange-600">
+                   <span class="font-medium">Created:</span> {{ formatDate(selectedUser.cards[0].created_at) }}
+                 </div>
+               </div>
+             </div>
+             
+             <!-- No Card State -->
+             <div v-else class="mb-6 sm:mb-8">
+               <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"></path>
+                 </svg>
+                 NFC Card Details
+               </h4>
+               <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
+                 <div class="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                   <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"></path>
+                   </svg>
+                 </div>
+                 <div class="text-gray-600 font-medium mb-1">No NFC Card Assigned</div>
+                 <div class="text-sm text-gray-500">This user doesn't have an NFC card yet</div>
                </div>
              </div>
            </div>
@@ -1365,6 +1504,7 @@ const userToRestore = ref(null)
 const showSuccessNotification = ref(false)
 const successMessage = ref('')
 const notificationTimer = ref(null)
+const loadingUserDetails = ref(false)
 
 // Server-side pagination state
 const currentPage = ref(1)
@@ -1422,6 +1562,16 @@ function getUserInitials(name) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
+function handleImageError(event) {
+  // Hide the image and show initials instead
+  event.target.style.display = 'none'
+  const parent = event.target.parentElement
+  const fallback = parent.querySelector('.fallback-initials')
+  if (fallback) {
+    fallback.style.display = 'flex'
+  }
+}
+
 function formatDate(date) {
   if (!date) return 'N/A'
   return new Date(date).toLocaleDateString('en-US', {
@@ -1431,7 +1581,7 @@ function formatDate(date) {
   })
 }
 
-function viewUserDetails(user) {
+async function viewUserDetails(user) {
   // Check if this is a deleted user (has deleted_at property)
   if (user.deleted_at) {
     // For deleted users, show detailed information in an alert
@@ -1448,8 +1598,17 @@ Deleted: ${formatDate(user.deleted_at)}
     
     alert(details)
   } else {
-    // For regular users, set as selected user (existing behavior)
-  selectedUser.value = user
+    // For regular users, fetch full details from API
+    loadingUserDetails.value = true
+    try {
+      const fullUserData = await adminApi.getUser(user.id)
+      selectedUser.value = fullUserData
+    } catch (e) {
+      console.error('Failed to load user details:', e)
+      alert('Failed to load user details: ' + e.message)
+    } finally {
+      loadingUserDetails.value = false
+    }
   }
 }
 
