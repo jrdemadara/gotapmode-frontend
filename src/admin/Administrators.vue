@@ -1334,9 +1334,11 @@ const adminName = ref('Admin')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
 
-// Pagination state
+// Server-side pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const totalPages = ref(0)
+const totalItems = ref(0)
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -1358,17 +1360,23 @@ const fetchAdministrators = async () => {
   error.value = ''
 
   try {
-    console.log('Fetching administrators...')
-    const response = await adminApi.getAdministrators()
-    console.log('API Response:', response)
+    // Fetch with server-side pagination
+    const response = await adminApi.getAdministrators(currentPage.value, itemsPerPage.value, searchQuery.value)
 
-    // The api.get wrapper already extracts r.data, so response is the actual JSON object
-    if (response && response.administrators) {
-      administrators.value = response.administrators
-      console.log('Administrators loaded:', administrators.value)
+    // Server-side pagination response structure
+    if (response && response.data && Array.isArray(response.data)) {
+      administrators.value = response.data
+      
+      // Update pagination metadata
+      if (response.pagination) {
+        currentPage.value = response.pagination.current_page
+        totalPages.value = response.pagination.last_page
+        totalItems.value = response.pagination.total
+      }
     } else {
       administrators.value = []
-      console.log('No administrators found in response')
+      totalPages.value = 0
+      totalItems.value = 0
     }
   } catch (err) {
     console.error('Error:', err)
@@ -1379,37 +1387,37 @@ const fetchAdministrators = async () => {
   }
 }
 
-// Computed properties
-const filteredAdministrators = computed(() => {
-  if (!searchQuery.value) return administrators.value
-
-  const query = searchQuery.value.toLowerCase()
-  return administrators.value.filter(admin =>
-    admin.name.toLowerCase().includes(query) ||
-    admin.email.toLowerCase().includes(query) ||
-    admin.id.toString().includes(query)
-  )
-})
-
+// Computed properties for server-side pagination
 const paginatedAdministrators = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredAdministrators.value.slice(start, end)
+  // Administrators are already paginated from the server
+  return Array.isArray(administrators.value) ? administrators.value : []
 })
 
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  resetPagination()
-})
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredAdministrators.value.length / itemsPerPage.value)
+const filteredAdministrators = computed(() => {
+  // For compatibility - administrators are already filtered on server
+  return paginatedAdministrators.value
 })
 
 const paginationInfo = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value + 1
-  const end = Math.min(currentPage.value * itemsPerPage.value, filteredAdministrators.value.length)
-  return { start, end, total: filteredAdministrators.value.length }
+  const start = totalItems.value > 0 ? ((currentPage.value - 1) * itemsPerPage.value) + 1 : 0
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value)
+  return { start, end, total: totalItems.value }
+})
+
+// Watch for search query and pagination changes - debounce search
+let searchTimeout = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1 // Reset to first page on search
+    fetchAdministrators()
+  }, 500) // 500ms debounce
+})
+
+// Watch for itemsPerPage changes
+watch(itemsPerPage, () => {
+  currentPage.value = 1 // Reset to first page on page size change
+  fetchAdministrators()
 })
 
 // Functions
@@ -1423,10 +1431,6 @@ function getAdmin() {
     const raw = localStorage.getItem('gtm_admin_user')
     if (raw) adminName.value = JSON.parse(raw)?.name || 'Admin'
   } catch {}
-}
-
-function resetPagination() {
-  currentPage.value = 1
 }
 
 // Modal state
@@ -1744,7 +1748,11 @@ onUnmounted(() => {
 })
 
 const changePage = (page) => {
-  currentPage.value = page
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    currentPage.value = validPage
+    fetchAdministrators() // Fetch new page from server
+  }
 }
 
 function changeItemsPerPage(newSize) {
