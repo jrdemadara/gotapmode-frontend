@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 // Backend API base URL configuration
-const DEFAULT_BASE = 'https://api.gotapmode.info/api';
-// const DEFAULT_BASE = 'http://192.168.50.57:8000/api';
+// const DEFAULT_BASE = 'https://api.gotapmode.info/api';
+const DEFAULT_BASE = 'http://127.0.0.1:8000/api';
 export const BACKEND_BASE = (import.meta?.env?.VITE_API_BASE || DEFAULT_BASE).replace(/\/$/, '');
 
 // Frontend base URL for NFC card writing
@@ -99,7 +99,13 @@ export const adminApi = {
   stats: () => api.get('/admin/stats'),
 
   // User management
-  getUsers: () => api.get('/admin/users'),
+  getUsers: (page = 1, perPage = 10, search = '') => {
+    const params = new URLSearchParams()
+    params.append('page', page)
+    params.append('per_page', perPage)
+    if (search) params.append('search', search)
+    return api.get(`/admin/users?${params.toString()}`)
+  },
   getUser: (id) => api.get(`/admin/users/${id}`),
   getSoftDeletedUsers: () => api.get('/admin/users/soft-deleted'),
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
@@ -132,14 +138,26 @@ export const adminApi = {
 
   // NFC Card management
   createNfcCard: (data) => api.post('/admin/cards', data),
-  getCards: () => api.get('/admin/cards'),
+  getCards: (page = 1, perPage = 10, search = '') => {
+    const params = new URLSearchParams()
+    params.append('page', page)
+    params.append('per_page', perPage)
+    if (search) params.append('search', search)
+    return api.get(`/admin/cards?${params.toString()}`)
+  },
   deleteCard: (id) => api.delete(`/admin/cards/${id}`),
   getSoftDeletedCards: () => api.get('/admin/cards/soft-deleted'),
   restoreCard: (id) => api.post(`/admin/cards/${id}/restore`),
   forceDeleteCard: (id) => api.delete(`/admin/cards/${id}/force`),
 
   // Administrator management
-  getAdministrators: () => api.get('/admin/administrators'),
+  getAdministrators: (page = 1, perPage = 10, search = '') => {
+    const params = new URLSearchParams()
+    params.append('page', page)
+    params.append('per_page', perPage)
+    if (search) params.append('search', search)
+    return api.get(`/admin/administrators?${params.toString()}`)
+  },
   createAdministrator: (data) => api.post('/admin/administrators', data),
   updateAdministrator: (id, data) => api.put(`/admin/administrators/${id}`, data),
   softDeleteAdministrator: (id) => api.delete(`/admin/administrators/${id}`),

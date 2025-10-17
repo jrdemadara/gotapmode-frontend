@@ -1104,9 +1104,12 @@ const searchQuery = ref('')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
 
-// Pagination state
+// Server-side pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const totalPages = ref(0)
+const totalItems = ref(0)
+const stats = ref({ total: 0, activated: 0, unactivated: 0 })
 
 // Modal states
 const showCardModal = ref(false)
@@ -1144,73 +1147,41 @@ const getTimeAgo = (dateString) => {
 }
 
 const fetchCards = async () => {
-  console.log('fetchCards: Starting...')
   loading.value = true
   error.value = ''
-  console.log('fetchCards: Loading set to true, error cleared')
 
   try {
-    console.log('Fetching NFC cards from API...')
-    
     const token = localStorage.getItem('gtm_admin_token')
-    console.log('fetchCards: Token exists:', !!token)
     if (!token) {
       throw new Error('No admin token found')
     }
 
-    const data = await adminApi.getCards()
+    // Fetch with server-side pagination
+    const data = await adminApi.getCards(currentPage.value, itemsPerPage.value, searchQuery.value)
     
-    console.log('Raw API response:', data)
-    console.log('Response type:', typeof data)
-    console.log('Is array:', Array.isArray(data))
-    console.log('Has data property:', data && 'data' in data)
-    console.log('Data property is array:', data && Array.isArray(data.data))
-    console.log('Has cards property:', data && 'cards' in data)
-    console.log('Cards property type:', data && typeof data.cards)
-    console.log('Cards property is array:', data && Array.isArray(data.cards))
-    if (data && data.cards) {
-      console.log('Cards object keys:', Object.keys(data.cards))
-      console.log('Cards object values:', Object.values(data.cards))
-    }
-    
-    // Transform the data to ensure it has the expected structure
-    // Handle both direct array response and paginated response
-    if (Array.isArray(data)) {
-      cards.value = data
-      console.log('Using data as direct array')
-    } else if (data && Array.isArray(data.data)) {
+    // Server-side pagination response structure
+    if (data && data.data && Array.isArray(data.data)) {
       cards.value = data.data
-      console.log('Using data.data array')
-    } else if (data && Array.isArray(data.cards)) {
-      cards.value = data.cards
-      console.log('Using data.cards array')
-    } else if (data && data.cards && typeof data.cards === 'object') {
-      // Handle case where cards is an object (like paginated response)
-      // Check if it has a data property or if it's the actual cards object
-      if (Array.isArray(data.cards.data)) {
-        cards.value = data.cards.data
-        console.log('Using data.cards.data array')
-      } else if (Array.isArray(data.cards.cards)) {
-        cards.value = data.cards.cards
-        console.log('Using data.cards.cards array')
-      } else {
-        // If cards is an object but not the expected structure, try to convert it
-        cards.value = Object.values(data.cards).filter(item => 
-          item && typeof item === 'object' && item.id
-        )
-        console.log('Using Object.values(data.cards) as array')
+      
+      // Update pagination metadata
+      if (data.pagination) {
+        currentPage.value = data.pagination.current_page
+        totalPages.value = data.pagination.last_page
+        totalItems.value = data.pagination.total
+      }
+
+      // Update stats if available
+      if (data.stats) {
+        stats.value = data.stats
       }
     } else {
       cards.value = []
-      console.log('No valid array found, using empty array')
+      totalPages.value = 0
+      totalItems.value = 0
     }
-    
-    console.log('Final cards.value:', cards.value)
-    console.log('Cards count:', cards.value.length)
   } catch (err) {
     console.error('Error fetching cards:', err)
     if (err.message && err.message.includes('401')) {
-      // Token expired or invalid
       localStorage.removeItem('gtm_admin_token')
       localStorage.removeItem('gtm_admin_user')
       router.replace({ name: 'login' })
@@ -1219,69 +1190,41 @@ const fetchCards = async () => {
     error.value = err.message || 'Failed to load NFC cards. Please try again.'
     cards.value = []
   } finally {
-    console.log('fetchCards: Setting loading to false')
     loading.value = false
-    console.log('fetchCards: Final state - loading:', loading.value, 'error:', error.value, 'cards count:', cards.value.length)
   }
 }
 
-// Computed properties
-const filteredCards = computed(() => {
-  console.log('filteredCards computed - cards.value:', cards.value)
-  console.log('filteredCards computed - isArray:', Array.isArray(cards.value))
-  console.log('filteredCards computed - searchQuery:', searchQuery.value)
-  
-  if (!Array.isArray(cards.value)) {
-    console.log('filteredCards: returning empty array - not an array')
-    return []
-  }
-  if (!searchQuery.value) {
-    console.log('filteredCards: returning all cards - no search query')
-    return cards.value
-  }
-
-  const query = searchQuery.value.toLowerCase()
-  const filtered = cards.value.filter(card =>
-    card.id.toString().includes(query) ||
-    card.user?.name?.toLowerCase().includes(query) ||
-    card.user?.email?.toLowerCase().includes(query)
-  )
-  console.log('filteredCards: filtered result:', filtered)
-  return filtered
-})
-
+// Computed properties for server-side pagination
 const paginatedCards = computed(() => {
-  console.log('paginatedCards computed - filteredCards.value:', filteredCards.value)
-  console.log('paginatedCards computed - isArray:', Array.isArray(filteredCards.value))
-  console.log('paginatedCards computed - currentPage:', currentPage.value)
-  console.log('paginatedCards computed - itemsPerPage:', itemsPerPage.value)
-  
-  if (!Array.isArray(filteredCards.value)) {
-    console.log('paginatedCards: returning empty array - not an array')
-    return []
-  }
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  const paginated = filteredCards.value.slice(start, end)
-  console.log('paginatedCards: paginated result:', paginated)
-  return paginated
+  // Cards are already paginated from the server
+  return Array.isArray(cards.value) ? cards.value : []
 })
 
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  resetPagination()
-})
-
-const totalPages = computed(() => {
-  if (!Array.isArray(filteredCards.value)) return 0
-  return Math.ceil(filteredCards.value.length / itemsPerPage.value)
+const filteredCards = computed(() => {
+  // For compatibility - cards are already filtered on server
+  return paginatedCards.value
 })
 
 const paginationInfo = computed(() => {
-  if (!Array.isArray(filteredCards.value)) return { start: 0, end: 0, total: 0 }
-  const start = (currentPage.value - 1) * itemsPerPage.value + 1
-  const end = Math.min(currentPage.value * itemsPerPage.value, filteredCards.value.length)
-  return { start, end, total: filteredCards.value.length }
+  const start = totalItems.value > 0 ? ((currentPage.value - 1) * itemsPerPage.value) + 1 : 0
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value)
+  return { start, end, total: totalItems.value }
+})
+
+// Watch for search query and pagination changes - debounce search
+let searchTimeout = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1 // Reset to first page on search
+    fetchCards()
+  }, 500) // 500ms debounce
+})
+
+// Watch for itemsPerPage changes
+watch(itemsPerPage, () => {
+  currentPage.value = 1 // Reset to first page on page size change
+  fetchCards()
 })
 
 const filteredRestoreCards = computed(() => {
@@ -1351,10 +1294,6 @@ async function confirmDelete() {
   }
 }
 
-function resetPagination() {
-  currentPage.value = 1
-}
-
 // Soft delete functions
 async function loadSoftDeletedCards() {
   try {
@@ -1416,14 +1355,15 @@ function exportCards() {
 }
 
 const changePage = (page) => {
-  currentPage.value = page
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    currentPage.value = validPage
+    fetchCards() // Fetch new page from server
+  }
 }
 
 const validateAndChangePage = (page) => {
-  const validPage = Math.max(1, Math.min(page, totalPages.value))
-  if (validPage !== currentPage.value) {
-    changePage(validPage)
-  }
+  changePage(page)
 }
 
 const getVisiblePages = () => {

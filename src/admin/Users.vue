@@ -1366,40 +1366,43 @@ const showSuccessNotification = ref(false)
 const successMessage = ref('')
 const notificationTimer = ref(null)
 
-// Pagination state
+// Server-side pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const totalPages = ref(0)
+const totalItems = ref(0)
 
-// Computed properties
-        const filteredUsers = computed(() => {
-          if (!searchQuery.value) return users.value
-          
-          const query = searchQuery.value.toLowerCase()
-          return users.value.filter(user => 
-            user.name.toLowerCase().includes(query) ||
-            user.email.toLowerCase().includes(query) ||
-            (user.profile?.company && user.profile.company.toLowerCase().includes(query)) ||
-            (user.contact_info && user.contact_info.some(contact => 
-              contact.value.toLowerCase().includes(query) || 
-              contact.type.toLowerCase().includes(query)
-            ))
-          )
-        })
-
+// Computed properties for server-side pagination
 const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredUsers.value.slice(start, end)
+  // Users are already paginated from the server
+  return Array.isArray(users.value) ? users.value : []
 })
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredUsers.value.length / itemsPerPage.value)
+const filteredUsers = computed(() => {
+  // For compatibility - users are already filtered on server
+  return paginatedUsers.value
 })
 
 const paginationInfo = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value + 1
-  const end = Math.min(currentPage.value * itemsPerPage.value, filteredUsers.value.length)
-  return { start, end, total: filteredUsers.value.length }
+  const start = totalItems.value > 0 ? ((currentPage.value - 1) * itemsPerPage.value) + 1 : 0
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value)
+  return { start, end, total: totalItems.value }
+})
+
+// Watch for search query and pagination changes - debounce search
+let searchTimeout = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1 // Reset to first page on search
+    loadUsers()
+  }, 500) // 500ms debounce
+})
+
+// Watch for itemsPerPage changes
+watch(itemsPerPage, () => {
+  currentPage.value = 1 // Reset to first page on page size change
+  loadUsers()
 })
 
 const filteredRestoreUsers = computed(() => {
@@ -1560,7 +1563,11 @@ function exportUsers() {
 }
 
 function changePage(page) {
-  currentPage.value = page
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    currentPage.value = validPage
+    loadUsers() // Fetch new page from server
+  }
 }
 
 
@@ -1622,12 +1629,28 @@ async function loadUsers() {
   error.value = ''
   
   try {
-    const data = await adminApi.getUsers()
-    console.log('Users data:', data)
-    users.value = data.users || []
+    // Fetch with server-side pagination
+    const data = await adminApi.getUsers(currentPage.value, itemsPerPage.value, searchQuery.value)
+    
+    // Server-side pagination response structure
+    if (data && data.data && Array.isArray(data.data)) {
+      users.value = data.data
+      
+      // Update pagination metadata
+      if (data.pagination) {
+        currentPage.value = data.pagination.current_page
+        totalPages.value = data.pagination.last_page
+        totalItems.value = data.pagination.total
+      }
+    } else {
+      users.value = []
+      totalPages.value = 0
+      totalItems.value = 0
+    }
   } catch (e) {
     console.error('Failed to load users:', e)
     error.value = e?.message || 'Failed to load users'
+    users.value = []
   }
   
   loading.value = false
