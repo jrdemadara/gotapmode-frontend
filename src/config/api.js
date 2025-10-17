@@ -97,6 +97,11 @@ export const adminApi = {
   logout: () => api.post('/admin/logout'),
   me: () => api.get('/admin/me'),
   stats: () => api.get('/admin/stats'),
+  
+  // Password reset
+  forgotPassword: (email) => api.post('/admin/forgot-password', { email }),
+  verifyResetCode: (email, code) => api.post('/admin/verify-reset-code', { email, code }),
+  resetPassword: (email, code, password, password_confirmation) => api.post('/admin/reset-password', { email, code, password, password_confirmation }),
 
   // User management
   getUsers: (page = 1, perPage = 10, search = '') => {
@@ -177,6 +182,11 @@ export const userApi = {
   logout: () => api.post('/card-users/logout'),
   me: () => api.get('/card-users/me'),
   register: (name, email, password) => api.post('/card-users/register', { name, email, password }),
+  
+  // Password reset
+  forgotPassword: (email) => api.post('/card-users/forgot-password', { email }),
+  verifyResetCode: (email, code) => api.post('/card-users/verify-reset-code', { email, code }),
+  resetPassword: (email, code, password, password_confirmation) => api.post('/card-users/reset-password', { email, code, password, password_confirmation }),
   
   // Profile and personal data management
   getPersonalData: () => api.get('/card-users/personal-data'),

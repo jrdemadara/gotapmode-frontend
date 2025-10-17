@@ -19,6 +19,12 @@ import Administrators from '../admin/Administrators.vue'
 import Landing from '../landingpages/Landing.vue'
 import Contact from '../landingpages/Contact.vue'
 import HowItWorks from '../landingpages/HowItWorks.vue'
+import ForgotPassword from '../user/ForgotPassword.vue'
+import VerifyResetCode from '../user/VerifyResetCode.vue'
+import SetNewPassword from '../user/SetNewPassword.vue'
+import AdminForgotPassword from '../admin/ForgotPassword.vue'
+import AdminVerifyResetCode from '../admin/VerifyResetCode.vue'
+import AdminSetNewPassword from '../admin/SetNewPassword.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Landing },
@@ -27,6 +33,9 @@ const routes = [
   { path: '/contact', name: 'contact', component: Contact },
   { path: '/how-it-works', name: 'how-it-works', component: HowItWorks },
   { path: '/signup', name: 'signup', component: Signup },
+  { path: '/forgot-password', name: 'forgot-password', component: ForgotPassword },
+  { path: '/verify-reset-code', name: 'verify-reset-code', component: VerifyResetCode },
+  { path: '/set-new-password', name: 'set-new-password', component: SetNewPassword },
   { path: '/activate', name: 'activate', component: Activate },
   { path: '/card-validation', name: 'card-validation', component: CardValidation },
   { path: '/:activationCode', name: 'nfc-card', component: CardValidation },
@@ -36,6 +45,9 @@ const routes = [
   { path: '/edit-profile', name: 'edit-profile', component: EditProfile, meta: { requiresUser: true } },
   { path: '/change-password', name: 'change-password', component: ChangePassword, meta: { requiresUser: true } },
   { path: '/p/:code', name: 'public-profile', component: PublicProfile },
+  { path: '/admin/forgot-password', name: 'admin-forgot-password', component: AdminForgotPassword },
+  { path: '/admin/verify-reset-code', name: 'admin-verify-reset-code', component: AdminVerifyResetCode },
+  { path: '/admin/set-new-password', name: 'admin-set-new-password', component: AdminSetNewPassword },
   { path: '/admin/dashboard', name: 'admin-dashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
   { path: '/admin/users', name: 'admin-users', component: AdminUsers, meta: { requiresAdmin: true } },
   { path: '/admin/users/:id/edit', name: 'admin-edit-user', component: EditUser, meta: { requiresAdmin: true } },
