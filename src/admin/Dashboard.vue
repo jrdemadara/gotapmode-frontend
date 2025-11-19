@@ -750,14 +750,21 @@ async function logout() {
 }
 
 async function refreshHealth() {
-  try { const t0 = performance.now(); const res = await api.get('/health'); const t1 = performance.now(); health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } }
+  try { 
+    const t0 = performance.now(); 
+    // Bypass cache for refresh to get fresh data
+    const res = await api.get('/health', { skipCache: true }); 
+    const t1 = performance.now(); 
+    health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } 
+  }
   catch { health.value = { ok: false, time: '', rttMs: '-' } }
 }
 
 async function load() {
   loading.value = true; error.value = ''
   try { 
-    const data = await adminApi.stats(); 
+    // Bypass cache when explicitly loading to get fresh data
+    const data = await adminApi.stats(true); 
     console.log('Admin stats data:', data);
     stats.value = data 
   } catch (e) { 

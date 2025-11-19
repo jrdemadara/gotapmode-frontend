@@ -163,7 +163,7 @@
                   </svg>
                   <span class="hidden xs:inline">Add Admin</span>
                 </button>
-                <button @click="fetchAdministrators" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button @click="() => fetchAdministrators(true)" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
@@ -1355,13 +1355,16 @@ const getUserInitials = (name) => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const fetchAdministrators = async () => {
+const fetchAdministrators = async (forceRefresh = false) => {
   loading.value = true
   error.value = ''
 
   try {
     // Fetch with server-side pagination
-    const response = await adminApi.getAdministrators(currentPage.value, itemsPerPage.value, searchQuery.value)
+    // If forceRefresh is true (from refresh button), bypass cache to get fresh data
+    const response = await adminApi.getAdministrators(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
+
+    console.log('Administrators API response:', response) // Debug log
 
     // Server-side pagination response structure
     if (response && response.data && Array.isArray(response.data)) {
@@ -1411,7 +1414,7 @@ watch(searchQuery, () => {
   searchTimeout = setTimeout(() => {
     currentPage.value = 1 // Reset to first page on search
     fetchAdministrators()
-  }, 500) // 500ms debounce
+  }, 300) // 300ms debounce
 })
 
 // Watch for itemsPerPage changes
@@ -1888,7 +1891,15 @@ async function openRestoreModal() {
 async function loadSoftDeletedAdministrators() {
   try {
     const response = await adminApi.getSoftDeletedAdministrators()
-    softDeletedAdministrators.value = response.administrators || []
+    // Handle new paginated response structure
+    if (response.data && Array.isArray(response.data)) {
+      softDeletedAdministrators.value = response.data
+    } else if (response.administrators && Array.isArray(response.administrators)) {
+      // Fallback for old response format
+      softDeletedAdministrators.value = response.administrators
+    } else {
+      softDeletedAdministrators.value = []
+    }
   } catch (e) {
     console.error('Failed to load soft deleted administrators:', e)
     softDeletedAdministrators.value = []

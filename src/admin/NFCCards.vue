@@ -157,7 +157,7 @@
                   </svg>
                   <span class="hidden xs:inline">Restore</span>
                 </button>
-                <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button @click="() => fetchCards(true)" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
@@ -1146,7 +1146,7 @@ const getTimeAgo = (dateString) => {
   return formatDate(dateString)
 }
 
-const fetchCards = async () => {
+const fetchCards = async (forceRefresh = false) => {
   loading.value = true
   error.value = ''
 
@@ -1157,7 +1157,10 @@ const fetchCards = async () => {
     }
 
     // Fetch with server-side pagination
-    const data = await adminApi.getCards(currentPage.value, itemsPerPage.value, searchQuery.value)
+    // If forceRefresh is true (from refresh button), bypass cache to get fresh data
+    const data = await adminApi.getCards(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
+    
+    console.log('Cards API response:', data) // Debug log
     
     // Server-side pagination response structure
     if (data && data.data && Array.isArray(data.data)) {
@@ -1218,7 +1221,7 @@ watch(searchQuery, () => {
   searchTimeout = setTimeout(() => {
     currentPage.value = 1 // Reset to first page on search
     fetchCards()
-  }, 500) // 500ms debounce
+  }, 300) // 300ms debounce
 })
 
 // Watch for itemsPerPage changes
@@ -1298,7 +1301,15 @@ async function confirmDelete() {
 async function loadSoftDeletedCards() {
   try {
     const data = await adminApi.getSoftDeletedCards()
-    softDeletedCards.value = data.cards || []
+    // Handle new paginated response structure
+    if (data.data && Array.isArray(data.data)) {
+      softDeletedCards.value = data.data
+    } else if (data.cards && Array.isArray(data.cards)) {
+      // Fallback for old response format
+      softDeletedCards.value = data.cards
+    } else {
+      softDeletedCards.value = []
+    }
   } catch (e) {
     console.error('Failed to load soft deleted cards:', e)
     softDeletedCards.value = []
