@@ -158,7 +158,7 @@
                     </svg>
                     <span class="hidden xs:inline">Restore</span>
                   </button>
-                  <button @click="loadUsers" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                  <button @click="() => loadUsers(true)" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                     <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
@@ -1536,7 +1536,7 @@ watch(searchQuery, () => {
   searchTimeout = setTimeout(() => {
     currentPage.value = 1 // Reset to first page on search
     loadUsers()
-  }, 500) // 500ms debounce
+  }, 300) // 300ms debounce
 })
 
 // Watch for itemsPerPage changes
@@ -1707,7 +1707,15 @@ async function openRestoreModal() {
 async function loadSoftDeletedUsers() {
   try {
     const response = await adminApi.getSoftDeletedUsers()
-    softDeletedUsers.value = response.users || []
+    // Handle new paginated response structure
+    if (response.data && Array.isArray(response.data)) {
+      softDeletedUsers.value = response.data
+    } else if (response.users && Array.isArray(response.users)) {
+      // Fallback for old response format
+      softDeletedUsers.value = response.users
+    } else {
+      softDeletedUsers.value = []
+    }
   } catch (e) {
     console.error('Failed to load soft deleted users:', e)
     softDeletedUsers.value = []
@@ -1783,13 +1791,16 @@ async function logout() {
   router.replace({ name: 'login' })
 }
 
-async function loadUsers() {
+async function loadUsers(forceRefresh = false) {
   loading.value = true
   error.value = ''
   
   try {
     // Fetch with server-side pagination
-    const data = await adminApi.getUsers(currentPage.value, itemsPerPage.value, searchQuery.value)
+    // If forceRefresh is true (from refresh button), bypass cache to get fresh data
+    const data = await adminApi.getUsers(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
+    
+    console.log('Users API response:', data) // Debug log
     
     // Server-side pagination response structure
     if (data && data.data && Array.isArray(data.data)) {
@@ -1802,6 +1813,7 @@ async function loadUsers() {
         totalItems.value = data.pagination.total
       }
     } else {
+      console.warn('Unexpected response structure:', data)
       users.value = []
       totalPages.value = 0
       totalItems.value = 0
@@ -1810,9 +1822,9 @@ async function loadUsers() {
     console.error('Failed to load users:', e)
     error.value = e?.message || 'Failed to load users'
     users.value = []
+  } finally {
+    loading.value = false
   }
-  
-  loading.value = false
 }
 
 function getAdmin() {

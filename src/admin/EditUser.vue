@@ -812,14 +812,24 @@ async function saveProfileInfo() {
 
     // Then upload profile photo if present using dedicated endpoint
     if (profilePicFile.value) {
-      const photoForm = new FormData()
-      photoForm.append('profile_pic_file', profilePicFile.value)
-      const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      try { console.log('Admin photo upload logs (profile save):', photoResp?.logs) } catch {}
+      try {
+        const photoForm = new FormData()
+        photoForm.append('profile_pic_file', profilePicFile.value)
+        
+        console.log('Admin uploading profile picture (save), file size:', profilePicFile.value?.size || 'unknown')
+        // Don't set Content-Type header - let browser set it with boundary
+        const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, { 
+          timeout: 30000 // 30 second timeout for file uploads
+        })
+        
+        console.log('Admin photo upload response (save):', photoResp)
+        try { console.log('Admin photo upload logs (profile save):', photoResp?.logs) } catch {}
+      } catch (photoError) {
+        console.error('Admin profile photo upload failed:', photoError)
+        console.error('Error response:', photoError?.response?.data)
+        alert(photoError?.response?.data?.message || photoError?.message || 'Failed to upload profile picture')
+        throw photoError // Re-throw to prevent continuing
+      }
     }
 
     // Clear the uploaded image after successful save
@@ -1262,12 +1272,20 @@ async function saveAdminPhoto() {
   try {
     const fd = new FormData()
     fd.append('profile_pic_file', newPhotoFile.value)
-    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    
+    console.log('Admin uploading profile picture, file size:', newPhotoFile.value?.size || 'unknown')
+    // Don't set Content-Type header - let browser set it with boundary
+    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { 
+      timeout: 30000 // 30 second timeout for file uploads
+    })
+    
+    console.log('Admin photo upload response:', resp)
     try { console.log('Admin photo upload logs (modal):', resp?.logs) } catch {}
     // Reflect new preview immediately (data URL doesn't need cache busting)
     profilePicPreview.value = newPhotoPreview.value
     showPhotoModal.value = false
   } catch (e) {
+    console.error('Admin photo upload failed:', e)
     try { console.log('Admin photo upload error logs (modal):', e?.response?.data?.logs) } catch {}
     alert(e?.response?.data?.message || e.message || 'Upload failed')
   }

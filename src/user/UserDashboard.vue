@@ -20,8 +20,9 @@
       <!-- Mobile: edge-to-edge; Desktop: align to contacts (max-w-2xl) -->
       <div class="-mx-8 relative sm:mx-auto sm:max-w-2xl sm:w-full">
         <div v-if="profile.cover" class="w-full h-56 sm:h-64">
-          <img :src="profile.cover" alt="cover"
-            class="w-full h-full object-cover" />
+          <LazyImage :src="profile.cover" alt="cover"
+            image-class="w-full h-full object-cover"
+            placeholder-class="w-full h-full bg-gray-200" />
         </div>
         <div v-else class="w-full h-56 sm:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 flex flex-col items-center justify-start pt-4 relative overflow-hidden">
           <!-- Subtle pattern overlay -->
@@ -45,8 +46,10 @@
         </div>
         <div class="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
         <!-- Circular profile avatar overlapping bottom-left -->
-        <img :src="profile.photo || '/icons/user.png'" alt="avatar"
-          class="absolute left-1/2 -translate-x-1/2 -bottom-14 sm:-bottom-16 w-35 h-35 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-xl" />
+        <LazyImage :src="profile.photo || '/icons/user.png'" alt="avatar"
+          image-class="absolute left-1/2 -translate-x-1/2 -bottom-14 sm:-bottom-16 w-35 h-35 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-xl"
+          placeholder-class="absolute left-1/2 -translate-x-1/2 -bottom-14 sm:-bottom-16 w-35 h-35 sm:w-36 sm:h-36 rounded-full bg-gray-200 border-4 border-white shadow-xl"
+          :show-placeholder="false" />
       </div>
       <!-- Details under the profile photo, centered -->
       <div class="mt-15 sm:mt-16 px-6 sm:px-0 text-center sm:max-w-2xl sm:mx-auto">
@@ -388,6 +391,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { userApi, BACKEND_BASE } from '../config/api'
 import Modal from '../components/Modal.vue'
+import LazyImage from '../components/LazyImage.vue'
 import { processProfileImage } from '../utils/imageUtils'
 
 const profile = ref({

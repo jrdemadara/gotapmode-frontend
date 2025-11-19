@@ -1,60 +1,167 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../user/userlogin.vue'
-import Signup from '../user/Signup.vue'
-import Activate from '../user/Activate.vue'
-import CardValidation from '../user/CardValidation.vue'
-import ProfileSetup from '../user/ProfileSetup.vue'
-import ProfileDetails from '../user/ProfileDetails.vue'
-import UserDashboard from '../user/UserDashboard.vue'
-import EditProfile from '../user/EditProfile.vue'
-import ChangePassword from '../user/ChangePassword.vue'
-import PublicProfile from '../user/PublicProfile.vue'
-import AdminDashboard from '../admin/Dashboard.vue'
-import AdminUsers from '../admin/Users.vue'
-import EditUser from '../admin/EditUser.vue'
-import NfcWriting from '../admin/NFCWriting.vue'
-import CardClear from '../admin/CardClear.vue'
-import NFCCards from '../admin/NFCCards.vue'
-import Administrators from '../admin/Administrators.vue'
-import Landing from '../landingpages/Landing.vue'
-import Contact from '../landingpages/Contact.vue'
-import HowItWorks from '../landingpages/HowItWorks.vue'
-import ForgotPassword from '../user/ForgotPassword.vue'
-import VerifyResetCode from '../user/VerifyResetCode.vue'
-import SetNewPassword from '../user/SetNewPassword.vue'
-import AdminForgotPassword from '../admin/ForgotPassword.vue'
-import AdminVerifyResetCode from '../admin/VerifyResetCode.vue'
-import AdminSetNewPassword from '../admin/SetNewPassword.vue'
 
+// Route-based code splitting with dynamic imports
+// This reduces initial bundle size by loading components only when needed
 const routes = [
-  { path: '/', name: 'home', component: Landing },
-  { path: '/login', name: 'login', component: Login },
-  { path: '/get-card', name: 'landing-get-card', component: Landing },
-  { path: '/contact', name: 'contact', component: Contact },
-  { path: '/how-it-works', name: 'how-it-works', component: HowItWorks },
-  { path: '/signup', name: 'signup', component: Signup },
-  { path: '/forgot-password', name: 'forgot-password', component: ForgotPassword },
-  { path: '/verify-reset-code', name: 'verify-reset-code', component: VerifyResetCode },
-  { path: '/set-new-password', name: 'set-new-password', component: SetNewPassword },
-  { path: '/activate', name: 'activate', component: Activate },
-  { path: '/card-validation', name: 'card-validation', component: CardValidation },
-  { path: '/:activationCode', name: 'nfc-card', component: CardValidation },
-  { path: '/profile-setup', name: 'profile-setup', component: ProfileSetup, meta: { requiresUser: true } },
-  { path: '/profile-details', name: 'profile-details', component: ProfileDetails, meta: { requiresUser: true } },
-  { path: '/dashboard', name: 'dashboard', component: UserDashboard, meta: { requiresUser: true } },
-  { path: '/edit-profile', name: 'edit-profile', component: EditProfile, meta: { requiresUser: true } },
-  { path: '/change-password', name: 'change-password', component: ChangePassword, meta: { requiresUser: true } },
-  { path: '/p/:code', name: 'public-profile', component: PublicProfile },
-  { path: '/admin/forgot-password', name: 'admin-forgot-password', component: AdminForgotPassword },
-  { path: '/admin/verify-reset-code', name: 'admin-verify-reset-code', component: AdminVerifyResetCode },
-  { path: '/admin/set-new-password', name: 'admin-set-new-password', component: AdminSetNewPassword },
-  { path: '/admin/dashboard', name: 'admin-dashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
-  { path: '/admin/users', name: 'admin-users', component: AdminUsers, meta: { requiresAdmin: true } },
-  { path: '/admin/users/:id/edit', name: 'admin-edit-user', component: EditUser, meta: { requiresAdmin: true } },
-  { path: '/admin/administrators', name: 'admin-administrators', component: Administrators, meta: { requiresAdmin: true } },
-  { path: '/admin/nfc-writing', name: 'admin-nfc-writing', component: NfcWriting, meta: { requiresAdmin: true } },
-  { path: '/admin/card-clear', name: 'admin-card-clear', component: CardClear, meta: { requiresAdmin: true } },
-  { path: '/admin/nfc-cards', name: 'admin-nfc-cards', component: NFCCards, meta: { requiresAdmin: true } },
+  // Landing pages (loaded immediately for fast initial load)
+  { 
+    path: '/', 
+    name: 'home', 
+    component: () => import('../landingpages/Landing.vue') 
+  },
+  { 
+    path: '/get-card', 
+    name: 'landing-get-card', 
+    component: () => import('../landingpages/Landing.vue') 
+  },
+  { 
+    path: '/contact', 
+    name: 'contact', 
+    component: () => import('../landingpages/Contact.vue') 
+  },
+  { 
+    path: '/how-it-works', 
+    name: 'how-it-works', 
+    component: () => import('../landingpages/HowItWorks.vue') 
+  },
+  
+  // Public user routes (lazy loaded)
+  { 
+    path: '/login', 
+    name: 'login', 
+    component: () => import('../user/userlogin.vue') 
+  },
+  { 
+    path: '/signup', 
+    name: 'signup', 
+    component: () => import('../user/Signup.vue') 
+  },
+  { 
+    path: '/forgot-password', 
+    name: 'forgot-password', 
+    component: () => import('../user/ForgotPassword.vue') 
+  },
+  { 
+    path: '/verify-reset-code', 
+    name: 'verify-reset-code', 
+    component: () => import('../user/VerifyResetCode.vue') 
+  },
+  { 
+    path: '/set-new-password', 
+    name: 'set-new-password', 
+    component: () => import('../user/SetNewPassword.vue') 
+  },
+  { 
+    path: '/activate', 
+    name: 'activate', 
+    component: () => import('../user/Activate.vue') 
+  },
+  { 
+    path: '/card-validation', 
+    name: 'card-validation', 
+    component: () => import('../user/CardValidation.vue') 
+  },
+  { 
+    path: '/:activationCode', 
+    name: 'nfc-card', 
+    component: () => import('../user/CardValidation.vue') 
+  },
+  { 
+    path: '/p/:code', 
+    name: 'public-profile', 
+    component: () => import('../user/PublicProfile.vue') 
+  },
+  
+  // Authenticated user routes (lazy loaded)
+  { 
+    path: '/profile-setup', 
+    name: 'profile-setup', 
+    component: () => import('../user/ProfileSetup.vue'), 
+    meta: { requiresUser: true } 
+  },
+  { 
+    path: '/profile-details', 
+    name: 'profile-details', 
+    component: () => import('../user/ProfileDetails.vue'), 
+    meta: { requiresUser: true } 
+  },
+  { 
+    path: '/dashboard', 
+    name: 'dashboard', 
+    component: () => import('../user/UserDashboard.vue'), 
+    meta: { requiresUser: true } 
+  },
+  { 
+    path: '/edit-profile', 
+    name: 'edit-profile', 
+    component: () => import('../user/EditProfile.vue'), 
+    meta: { requiresUser: true } 
+  },
+  { 
+    path: '/change-password', 
+    name: 'change-password', 
+    component: () => import('../user/ChangePassword.vue'), 
+    meta: { requiresUser: true } 
+  },
+  
+  // Admin routes (lazy loaded - largest components)
+  { 
+    path: '/admin/forgot-password', 
+    name: 'admin-forgot-password', 
+    component: () => import('../admin/ForgotPassword.vue') 
+  },
+  { 
+    path: '/admin/verify-reset-code', 
+    name: 'admin-verify-reset-code', 
+    component: () => import('../admin/VerifyResetCode.vue') 
+  },
+  { 
+    path: '/admin/set-new-password', 
+    name: 'admin-set-new-password', 
+    component: () => import('../admin/SetNewPassword.vue') 
+  },
+  { 
+    path: '/admin/dashboard', 
+    name: 'admin-dashboard', 
+    component: () => import('../admin/Dashboard.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/users', 
+    name: 'admin-users', 
+    component: () => import('../admin/Users.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/users/:id/edit', 
+    name: 'admin-edit-user', 
+    component: () => import('../admin/EditUser.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/administrators', 
+    name: 'admin-administrators', 
+    component: () => import('../admin/Administrators.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/nfc-writing', 
+    name: 'admin-nfc-writing', 
+    component: () => import('../admin/NFCWriting.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/card-clear', 
+    name: 'admin-card-clear', 
+    component: () => import('../admin/CardClear.vue'), 
+    meta: { requiresAdmin: true } 
+  },
+  { 
+    path: '/admin/nfc-cards', 
+    name: 'admin-nfc-cards', 
+    component: () => import('../admin/NFCCards.vue'), 
+    meta: { requiresAdmin: true } 
+  },
 ]
 
 export const router = createRouter({

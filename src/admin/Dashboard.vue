@@ -242,6 +242,62 @@
           </div>
         </section>
 
+        <!-- Security Metrics Row - Password Reset Security -->
+        <section class="mt-4 sm:mt-6">
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border-l-4 border-red-500">
+            <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+              </svg>
+              Password Reset Security
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <!-- Active Reset Codes -->
+              <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                <div class="text-xs text-gray-600 font-medium mb-1">Active Codes</div>
+                <div class="text-2xl font-black text-gray-900">{{ stats.security?.active_codes || 0 }}</div>
+                <div class="text-xs text-green-600 mt-1">Valid now</div>
+              </div>
+              
+              <!-- Locked Accounts -->
+              <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                <div class="text-xs text-gray-600 font-medium mb-1">Locked Accounts</div>
+                <div class="text-2xl font-black" :class="(stats.security?.locked_accounts || 0) > 0 ? 'text-red-600' : 'text-gray-900'">
+                  {{ stats.security?.locked_accounts || 0 }}
+                </div>
+                <div class="text-xs" :class="(stats.security?.locked_accounts || 0) > 0 ? 'text-red-600' : 'text-gray-500'" >
+                  {{ (stats.security?.locked_accounts || 0) > 0 ? '⚠️ Alert' : 'No issues' }}
+                </div>
+              </div>
+              
+              <!-- Requests Last Hour -->
+              <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                <div class="text-xs text-gray-600 font-medium mb-1">Requests/Hour</div>
+                <div class="text-2xl font-black text-gray-900">{{ stats.security?.requests_last_hour || 0 }}</div>
+                <div class="text-xs text-blue-600 mt-1">Last 60 min</div>
+              </div>
+              
+              <!-- Failed Attempts -->
+              <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                <div class="text-xs text-gray-600 font-medium mb-1">Failed Attempts</div>
+                <div class="text-2xl font-black" :class="(stats.security?.failed_attempts_last_hour || 0) > 20 ? 'text-orange-600' : 'text-gray-900'">
+                  {{ stats.security?.failed_attempts_last_hour || 0 }}
+                </div>
+                <div class="text-xs" :class="(stats.security?.failed_attempts_last_hour || 0) > 20 ? 'text-orange-600' : 'text-gray-500'">
+                  {{ (stats.security?.failed_attempts_last_hour || 0) > 20 ? '⚠️ High' : 'Last hour' }}
+                </div>
+              </div>
+              
+              <!-- Requests Last Day -->
+              <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                <div class="text-xs text-gray-600 font-medium mb-1">Requests/Day</div>
+                <div class="text-2xl font-black text-gray-900">{{ stats.security?.requests_last_day || 0 }}</div>
+                <div class="text-xs text-purple-600 mt-1">Last 24h</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Chart and Sidebar Section -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <!-- Chart Section -->
@@ -415,7 +471,7 @@ import { adminApi, api } from '../config/api'
 const router = useRouter()
 const loading = ref(true)
 const error = ref('')
-const stats = ref({ totals: { admins: 0, card_users: 0, cards: 0, activated_cards: 0, expired_cards: 0 }, series: { dates: [], data: { card_users: [], cards: [], activations: [] } }, recent_activated_cards: [] })
+const stats = ref({ totals: { admins: 0, card_users: 0, cards: 0, activated_cards: 0, expired_cards: 0 }, series: { dates: [], data: { card_users: [], cards: [], activations: [] } }, recent_activated_cards: [], security: { active_codes: 0, locked_accounts: 0, requests_last_hour: 0, requests_last_day: 0, failed_attempts_last_hour: 0 } })
 const adminName = ref('Admin')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
@@ -694,14 +750,21 @@ async function logout() {
 }
 
 async function refreshHealth() {
-  try { const t0 = performance.now(); const res = await api.get('/health'); const t1 = performance.now(); health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } }
+  try { 
+    const t0 = performance.now(); 
+    // Bypass cache for refresh to get fresh data
+    const res = await api.get('/health', { skipCache: true }); 
+    const t1 = performance.now(); 
+    health.value = { ok: !!res?.ok, time: res?.time || '', rttMs: Math.round(t1 - t0) } 
+  }
   catch { health.value = { ok: false, time: '', rttMs: '-' } }
 }
 
 async function load() {
   loading.value = true; error.value = ''
   try { 
-    const data = await adminApi.stats(); 
+    // Bypass cache when explicitly loading to get fresh data
+    const data = await adminApi.stats(true); 
     console.log('Admin stats data:', data);
     stats.value = data 
   } catch (e) { 

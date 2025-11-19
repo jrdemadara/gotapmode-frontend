@@ -163,33 +163,67 @@ onMounted(async () => {
       return
     }
 
-    // Load all data in parallel for maximum speed
-    const [c, pd, pr] = await Promise.all([
-      api.get(`/contacts/${userId}`),
-      api.get(`/card-users/personal-data/${userId}`).catch(() => null),
-      api.get(`/card-users/profile/${userId}`).catch(() => null),
-    ])
+    // Use batch endpoint to load all data in a single request (optimized)
+    try {
+      console.log('Loading public profile data for user:', userId)
+      const batchData = await api.get(`/card-users/public-data/${userId}`)
+      console.log('Batch data received:', batchData)
+      
+      const c = batchData.contacts || { phones: [], emails: [], socials: [], others: [] }
+      const pd = batchData.personal_data || null
+      const pr = batchData.profile || null
 
-    // Update all data simultaneously
-    phones.value = (c.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
-    emails.value = (c.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
-    socials.value = (c.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
-    others.value = (c.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+      // Update all data simultaneously
+      phones.value = (c.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
+      emails.value = (c.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
+      socials.value = (c.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+      others.value = (c.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
 
-    // Update profile data
-    if (pd?.full_name) profile.value.name = pd.full_name
-    if (pr?.profile_pic) {
-      profile.value.photo = processProfileImage(pr.profile_pic)
+      // Update profile data
+      if (pd?.full_name) profile.value.name = pd.full_name
+      if (pr?.profile_pic) {
+        profile.value.photo = processProfileImage(pr.profile_pic)
+      }
+      if (pr?.cover_pic) {
+        profile.value.cover = processProfileImage(pr.cover_pic)
+      }
+      if (pr?.company) profile.value.company = pr.company
+      if (pr?.position) profile.value.position = pr.position
+      if (pr?.bio) profile.value.bio = pr.bio
+
+      // Update SEO after loading profile data
+      updateSEOForProfile()
+    } catch (batchErr) {
+      // Fallback to individual requests if batch endpoint fails
+      console.warn('Batch endpoint failed, falling back to individual requests:', batchErr)
+      try {
+        const [c, pd, pr] = await Promise.all([
+          api.get(`/contacts/${userId}`),
+          api.get(`/card-users/personal-data/${userId}`).catch(() => null),
+          api.get(`/card-users/profile/${userId}`).catch(() => null),
+        ])
+        
+        phones.value = (c.phones || []).map(r => ({ id: r.id, number: r.phonenumber, type: r.type, isMain: !!r.is_main }))
+        emails.value = (c.emails || []).map(r => ({ id: r.id, value: r.email, isMain: !!r.is_main }))
+        socials.value = (c.socials || []).map(r => ({ id: r.id, platform: r.type || 'link', value: r.social, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+        others.value = (c.others || []).map(r => ({ id: r.id, value: r.others, isMain: !!r.is_main })).sort((a, b) => a.id - b.id)
+
+        if (pd?.full_name) profile.value.name = pd.full_name
+        if (pr?.profile_pic) profile.value.photo = processProfileImage(pr.profile_pic)
+        if (pr?.cover_pic) profile.value.cover = processProfileImage(pr.cover_pic)
+        if (pr?.company) profile.value.company = pr.company
+        if (pr?.position) profile.value.position = pr.position
+        if (pr?.bio) profile.value.bio = pr.bio
+
+        updateSEOForProfile()
+      } catch (fallbackErr) {
+        console.error('Fallback requests also failed:', fallbackErr)
+        router.push({ 
+          name: 'card-validation', 
+          query: { error: 'Failed to load profile. Please try again.' } 
+        })
+      }
     }
-    if (pr?.cover_pic) {
-      profile.value.cover = processProfileImage(pr.cover_pic)
-    }
-    if (pr?.company) profile.value.company = pr.company
-    if (pr?.position) profile.value.position = pr.position
-    if (pr?.bio) profile.value.bio = pr.bio
-
-    // Update SEO after loading profile data
-    updateSEOForProfile()
   } catch (err) {
     console.error('Error loading profile:', err)
     router.push({ 
