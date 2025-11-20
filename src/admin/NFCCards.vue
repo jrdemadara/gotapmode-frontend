@@ -103,13 +103,8 @@
         <h2 class="text-2xl font-bold text-gray-900">NFC Cards Management System</h2>
       </div>
 
-      <!-- Loading and Error States -->
-      <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <div class="text-lg text-gray-600">Loading NFC cards...</div>
-      </div>
-
-      <div v-else-if="error" class="bg-white rounded-2xl shadow p-6 text-center">
+      <!-- Error State -->
+      <div v-if="error && !loading" class="bg-white rounded-2xl shadow p-6 text-center mb-4">
         <div class="text-red-600 text-lg mb-2">{{ error }}</div>
         <button @click="fetchCards" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Try Again
@@ -117,7 +112,7 @@
       </div>
 
       <!-- Cards Table -->
-      <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <!-- Table Header -->
         <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div class="flex flex-col gap-4">
@@ -175,7 +170,13 @@
         </div>
 
         <!-- Desktop Table -->
-        <div class="hidden lg:block w-full overflow-hidden">
+        <div class="hidden lg:block w-full overflow-hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading NFC cards...</div>
+            </div>
+          </div>
           <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
             <table class="w-full enhanced-table" role="table" aria-label="NFC Cards table">
               <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
@@ -328,7 +329,13 @@
         </div>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden">
+        <div class="lg:hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading NFC cards...</div>
+            </div>
+          </div>
           <div class="p-4 space-y-4">
             <div v-for="card in paginatedCards" :key="card.id"
                  class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
@@ -1160,8 +1167,6 @@ const fetchCards = async (forceRefresh = false) => {
     // If forceRefresh is true (from refresh button), bypass cache to get fresh data
     const data = await adminApi.getCards(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
     
-    console.log('Cards API response:', data) // Debug log
-    
     // Server-side pagination response structure
     if (data && data.data && Array.isArray(data.data)) {
       cards.value = data.data
@@ -1268,7 +1273,6 @@ async function confirmDelete() {
 
   try {
     isDeleting.value = true
-    console.log('Deleting card:', cardToDelete.value.id)
     
     const token = localStorage.getItem('gtm_admin_token')
     if (!token) {
@@ -1280,7 +1284,6 @@ async function confirmDelete() {
     // Remove card from list
     cards.value = cards.value.filter(card => card.id !== cardToDelete.value.id)
     
-    console.log('Card deleted successfully')
     closeDeleteModal()
   } catch (err) {
     console.error('Error deleting card:', err)
@@ -1333,8 +1336,6 @@ async function restoreCard(card) {
     
     // Refresh main cards list
     await fetchCards()
-    
-    console.log('Card restored successfully')
   } catch (e) {
     console.error('Failed to restore card:', e)
     alert('Failed to restore card: ' + e.message)
@@ -1361,7 +1362,6 @@ Deleted: ${formatDate(card.deleted_at)}
 
 function exportCards() {
   // TODO: Implement export functionality
-  console.log('Export cards:', filteredCards.value)
   alert('Export functionality coming soon!')
 }
 
@@ -1418,7 +1418,6 @@ const copyToClipboard = async (text) => {
   try {
     await navigator.clipboard.writeText(text)
     // You could add a toast notification here
-    console.log('URL copied to clipboard')
   } catch (err) {
     console.error('Failed to copy: ', err)
   }
@@ -1428,7 +1427,6 @@ async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success

@@ -740,7 +740,6 @@ async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success
@@ -765,7 +764,6 @@ async function load() {
   try { 
     // Bypass cache when explicitly loading to get fresh data
     const data = await adminApi.stats(true); 
-    console.log('Admin stats data:', data);
     stats.value = data 
   } catch (e) { 
     console.error('Failed to load stats:', e);

@@ -371,7 +371,6 @@ async function onSave() {
           fd.append('profile_pic_file', blob)
         }
         
-        console.log('Uploading profile picture, FormData size:', blob?.size || 'unknown')
         const resp = await http.post('/card-users/profile/picture', fd, {
           headers: {
             // Let browser set Content-Type with boundary
@@ -379,7 +378,6 @@ async function onSave() {
           timeout: 30000 // 30 second timeout for file uploads
         })
         
-        console.log('Profile picture upload response:', resp?.data)
         const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
         if (url) profilePicPreview.value = url
         profilePicFile.value = null
@@ -402,10 +400,7 @@ async function onSave() {
           fd2.append('cover_pic_file', blob2)
         }
         
-        console.log('Uploading cover picture, FormData size:', blob2?.size || 'unknown')
         const resp2 = await userApi.uploadCover(fd2)
-        
-        console.log('Cover picture upload response:', resp2?.data)
         const coverUrl = resp2?.data?.cover_pic_url || processProfileImage(resp2?.data?.cover_pic || '')
         if (coverUrl) coverPicPreview.value = coverUrl
         coverPicFile.value = null

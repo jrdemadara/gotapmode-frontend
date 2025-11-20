@@ -617,16 +617,13 @@ function hasOnlyTemplateContent(url, platform) {
   }
 
   const patterns = templatePatterns[platform] || ['https://', 'http://']
-  console.log('Platform:', platform, 'Patterns:', patterns, 'URL:', lowerUrl)
 
   // Check if URL exactly matches any of the template patterns
   const result = patterns.some(pattern => {
     const matches = lowerUrl === pattern
-    console.log('Pattern:', pattern, 'URL:', lowerUrl, 'Matches:', matches)
     return matches
   })
 
-  console.log('Final result:', result)
   return result
 }
 async function saveAddPhone() {
@@ -735,9 +732,7 @@ async function saveAddSocial() {
   }
 
   // Check if URL has actual content (not just template)
-  console.log('Checking template content for:', socialUrl, 'platform:', platform)
   const isTemplateOnly = hasOnlyTemplateContent(socialUrl, platform)
-  console.log('Is template only:', isTemplateOnly)
 
   if (isTemplateOnly) {
     alert(`Please enter a complete ${platform} URL with your username or profile`)
@@ -1009,7 +1004,6 @@ async function doLogout() {
   try {
     await userApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success

@@ -103,13 +103,8 @@
         <h2 class="text-2xl font-bold text-gray-900">Administrator Management System</h2>
       </div>
 
-      <!-- Loading and Error States -->
-      <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <div class="text-lg text-gray-600">Loading administrators...</div>
-      </div>
-
-      <div v-else-if="error" class="bg-white rounded-2xl shadow p-6 text-center">
+      <!-- Error State -->
+      <div v-if="error && !loading" class="bg-white rounded-2xl shadow p-6 text-center mb-4">
         <div class="text-red-600 text-lg mb-2">{{ error }}</div>
         <button @click="fetchAdministrators" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Try Again
@@ -117,7 +112,7 @@
       </div>
 
              <!-- Administrators Table -->
-       <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+       <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <!-- Table Header -->
         <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div class="flex flex-col gap-4">
@@ -181,7 +176,13 @@
         </div>
 
         <!-- Desktop Table -->
-        <div class="hidden lg:block w-full overflow-hidden">
+        <div class="hidden lg:block w-full overflow-hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading administrators...</div>
+            </div>
+          </div>
           <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
             <table class="w-full enhanced-table" role="table" aria-label="Administrators table">
               <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
@@ -302,7 +303,13 @@
         </div>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden">
+        <div class="lg:hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading administrators...</div>
+            </div>
+          </div>
           <div class="p-2 sm:p-4 space-y-3 sm:space-y-4">
             <div v-for="admin in paginatedAdministrators" :key="admin.id"
                  class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200">
@@ -1364,8 +1371,6 @@ const fetchAdministrators = async (forceRefresh = false) => {
     // If forceRefresh is true (from refresh button), bypass cache to get fresh data
     const response = await adminApi.getAdministrators(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
 
-    console.log('Administrators API response:', response) // Debug log
-
     // Server-side pagination response structure
     if (response && response.data && Array.isArray(response.data)) {
       administrators.value = response.data
@@ -1578,17 +1583,8 @@ const addNewUser = async () => {
 
       // Make API call to create the user
   try {
-    console.log('Making API call with data:', {
-      name: newUser.value.name,
-      email: newUser.value.email,
-      password: newUser.value.password,
-      password_confirmation: newUser.value.password_confirmation,
-      is_admin: newUser.value.is_admin
-    })
-
     // Check if admin token exists
     const adminToken = localStorage.getItem('gtm_admin_token')
-    console.log('Admin token exists:', !!adminToken)
 
     const response = await adminApi.createAdministrator({
       name: newUser.value.name,
@@ -1598,14 +1594,9 @@ const addNewUser = async () => {
       is_admin: newUser.value.is_admin
     })
 
-    console.log('User created successfully:', response)
-
       // Success - close modal and refresh list
       closeAddModal()
       await fetchAdministrators()
-
-      // Show success message (you can implement a toast notification here)
-      console.log('Administrator created successfully!')
 
     } catch (apiError) {
       console.error('API Error:', apiError)
@@ -1685,11 +1676,7 @@ const updateAdministrator = async () => {
 
     // Make API call to update the administrator
     try {
-      console.log('Updating administrator with data:', updateData)
-
       const response = await adminApi.updateAdministrator(editForm.value.id, updateData)
-
-      console.log('Administrator updated successfully:', response)
 
       // Success - close modal and refresh list
       editSuccess.value = 'Administrator profile updated successfully!'
@@ -1807,7 +1794,6 @@ const getVisiblePages = () => {
 // Export function
 const exportAdministrators = () => {
   // Placeholder for export functionality
-  console.log('Export administrators functionality to be implemented')
 }
 
 // Soft delete and restore functions
@@ -1924,7 +1910,6 @@ async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success
