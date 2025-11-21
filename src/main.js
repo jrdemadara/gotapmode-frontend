@@ -27,7 +27,6 @@ function forceLightTheme() {
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   if (mediaQuery.matches) {
     // User has dark mode enabled, but we force light mode
-    console.log('System dark mode detected - forcing light mode');
   }
 }
 
@@ -58,7 +57,6 @@ function startIdle() {
           await userApi.logout()
         }
       } catch (e) {
-        console.log('Idle logout API call failed:', e)
         // Even if API call fails, we still clear local storage
       }
       // Always clear local storage, regardless of API call success

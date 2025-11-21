@@ -119,7 +119,6 @@ onMounted(async () => {
   const hash = route.params.code
   
   if (!hash) {
-    console.log('No hash provided, redirecting to card validation')
     router.push({ 
       name: 'card-validation', 
       query: { error: 'Please scan your NFC card to access this profile.' } 
@@ -165,9 +164,7 @@ onMounted(async () => {
 
     // Use batch endpoint to load all data in a single request (optimized)
     try {
-      console.log('Loading public profile data for user:', userId)
       const batchData = await api.get(`/card-users/public-data/${userId}`)
-      console.log('Batch data received:', batchData)
       
       const c = batchData.contacts || { phones: [], emails: [], socials: [], others: [] }
       const pd = batchData.personal_data || null
@@ -344,8 +341,6 @@ function getOtherLinkDisplayName(link) {
 // Helper function to convert image URL to base64
 async function imageUrlToBase64(url) {
   try {
-    console.log('Converting image to base64:', url)
-    
     // Add cache busting to ensure we get the latest image
     const urlWithCacheBust = url.includes('?') ? `${url}&cb=${Date.now()}` : `${url}?cb=${Date.now()}`
     
@@ -371,7 +366,6 @@ async function imageUrlToBase64(url) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onloadend = () => {
-        console.log('Successfully converted image to base64')
         resolve(reader.result)
       }
       reader.onerror = (error) => {
@@ -471,8 +465,6 @@ async function saveToContacts() {
   // Enhanced photo handling for VCF
   let photoLine = ''
   if (profile.value.photo) {
-    console.log('Processing photo for VCF:', profile.value.photo)
-    
     try {
       // Handle different photo formats
       if (profile.value.photo.startsWith('data:image/')) {
@@ -480,22 +472,17 @@ async function saveToContacts() {
         const base64Data = profile.value.photo.split(',')[1]
         if (base64Data) {
           photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64Data}`
-          console.log('Using base64 data URL for VCF')
         }
       } else if (profile.value.photo.startsWith('http')) {
         // It's a URL - try to convert to base64
-        console.log('Converting HTTP URL to base64 for VCF')
-        
         try {
           const base64Data = await imageUrlToBase64(profile.value.photo)
           if (base64Data && base64Data.includes(',')) {
             const base64String = base64Data.split(',')[1]
             photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${base64String}`
-            console.log('Successfully converted URL to base64 for VCF')
           } else {
             // Fallback to URI format
             photoLine = `PHOTO;VALUE=URI:${profile.value.photo}`
-            console.log('Using URI format for VCF photo')
           }
         } catch (err) {
           console.warn('Failed to convert photo to base64, using URI:', err)
@@ -504,7 +491,6 @@ async function saveToContacts() {
       } else {
         // Assume it's already base64 data
         photoLine = `PHOTO;ENCODING=b;TYPE=JPEG:${profile.value.photo}`
-        console.log('Using raw base64 data for VCF')
       }
     } catch (err) {
       console.error('Error processing photo for VCF:', err)
@@ -512,8 +498,6 @@ async function saveToContacts() {
     }
   }
 
-  console.log('Photo line for VCF:', photoLine ? 'Present' : 'Not included')
-  
   const v = [
     'BEGIN:VCARD',
     'VERSION:3.0',
@@ -527,8 +511,6 @@ async function saveToContacts() {
     ...webLines,
     'END:VCARD',
   ].filter(Boolean).join('\n')
-
-  console.log('Generated VCF content preview:', v.substring(0, 200) + '...')
 
   const blob = new Blob([v], { type: 'text/vcard;charset=utf-8' })
   const url = URL.createObjectURL(blob)
