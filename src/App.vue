@@ -14,6 +14,9 @@ onMounted(() => {
   window.addEventListener('gtm:session-timeout', onTimeoutEvent)
 })
 
+
+
+
 onBeforeUnmount(() => {
   window.removeEventListener('gtm:session-timeout', onTimeoutEvent)
 })

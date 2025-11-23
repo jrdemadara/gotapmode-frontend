@@ -138,18 +138,15 @@ const readCardData = async (message) => {
     for (const record of message.records) {
       if (record.recordType === 'url') {
         const url = new TextDecoder().decode(record.data)
-        console.log('URL found on card:', url)
         
         // Extract activation code from URL
         // URL format: https://GoTapMode.info/activationcode
         if (url.startsWith(FRONTEND_BASE)) {
           activationCode = url.replace(FRONTEND_BASE + '/', '')
-          console.log('Extracted activation code:', activationCode)
         } else {
           // Fallback: get the last part of URL
           const urlParts = url.split('/')
           activationCode = urlParts[urlParts.length - 1]
-          console.log('Extracted activation code (fallback):', activationCode)
         }
         break
       }
@@ -176,8 +173,6 @@ const generateHashAndRedirect = async (activationCode) => {
     loading.value = true
     error.value = null
     success.value = null
-
-    console.log('Generating hash for activation code:', activationCode)
 
     // Generate hash from activation code
     const response = await api.post('/cards/generate-hash', {

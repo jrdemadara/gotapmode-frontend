@@ -812,14 +812,20 @@ async function saveProfileInfo() {
 
     // Then upload profile photo if present using dedicated endpoint
     if (profilePicFile.value) {
-      const photoForm = new FormData()
-      photoForm.append('profile_pic_file', profilePicFile.value)
-      const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      try { console.log('Admin photo upload logs (profile save):', photoResp?.logs) } catch {}
+      try {
+        const photoForm = new FormData()
+        photoForm.append('profile_pic_file', profilePicFile.value)
+        
+        // Don't set Content-Type header - let browser set it with boundary
+        const photoResp = await adminApi.updateUserProfilePhoto(user.value.id, photoForm, { 
+          timeout: 30000 // 30 second timeout for file uploads
+        })
+      } catch (photoError) {
+        console.error('Admin profile photo upload failed:', photoError)
+        console.error('Error response:', photoError?.response?.data)
+        alert(photoError?.response?.data?.message || photoError?.message || 'Failed to upload profile picture')
+        throw photoError // Re-throw to prevent continuing
+      }
     }
 
     // Clear the uploaded image after successful save
@@ -845,7 +851,6 @@ async function saveProfileInfo() {
     } else {
       alert('Failed to update profile: ' + (e.message || e))
     }
-    try { console.log('Admin photo upload error logs (profile save):', e?.response?.data?.logs) } catch {}
   }
 
   savingProfile.value = false
@@ -873,7 +878,6 @@ async function saveAddPhone() {
       phonenumber: newPhone.value,
       type: newPhoneType.value
     })
-    console.log('Add phone response:', response)
     const row = response.data || response
     formData.value.phones.push({
       id: row.id,
@@ -908,7 +912,6 @@ async function saveAddEmail() {
       email: newEmail.value,
       type: newEmailType.value
     })
-    console.log('Add email response:', response)
     const row = response.data || response
     formData.value.emails.push({
       id: row.id,
@@ -943,7 +946,6 @@ async function saveAddSocial() {
       social: newSocial.value,
       type: newSocialType.value
     })
-    console.log('Add social response:', response)
     const row = response.data || response
     formData.value.socials.push({
       id: row.id,
@@ -978,7 +980,6 @@ async function saveAddOther() {
       others: newOther.value,
       type: 'link'
     })
-    console.log('Add other response:', response)
     const row = response.data || response
     formData.value.others.push({
       id: row.id,
@@ -1010,9 +1011,7 @@ async function saveAddOther() {
 async function onToggleMainPhone(p) {
   if (!p?.id || !user.value) return
   try {
-    console.log('Setting main phone:', { userId: user.value.id, phoneId: p.id })
     const response = await adminApi.setMainPhone(user.value.id, p.id)
-    console.log('Set main phone response:', response)
     
     // Update local state with the response
     if (response.phones) {
@@ -1022,7 +1021,6 @@ async function onToggleMainPhone(p) {
         type: phone.type || 'personal',
         isMain: !!phone.is_main
       }))
-      console.log('Updated phones:', formData.value.phones)
     } else {
       console.warn('No phones in response:', response)
     }
@@ -1042,9 +1040,7 @@ async function onToggleMainPhone(p) {
 async function onToggleMainEmail(e) {
   if (!e?.id || !user.value) return
   try {
-    console.log('Setting main email:', { userId: user.value.id, emailId: e.id })
     const response = await adminApi.setMainEmail(user.value.id, e.id)
-    console.log('Set main email response:', response)
     
     if (response.emails) {
       formData.value.emails = response.emails.map(email => ({
@@ -1053,7 +1049,6 @@ async function onToggleMainEmail(e) {
         type: email.type || 'personal',
         isMain: !!email.is_main
       }))
-      console.log('Updated emails:', formData.value.emails)
     } else {
       console.warn('No emails in response:', response)
     }
@@ -1073,9 +1068,7 @@ async function onToggleMainEmail(e) {
 async function onToggleMainSocial(s) {
   if (!s?.id || !user.value) return
   try {
-    console.log('Setting main social:', { userId: user.value.id, socialId: s.id })
     const response = await adminApi.setMainSocial(user.value.id, s.id)
-    console.log('Set main social response:', response)
     
     if (response.socials) {
       formData.value.socials = response.socials.map(social => ({
@@ -1084,7 +1077,6 @@ async function onToggleMainSocial(s) {
         value: social.social || social.value || '',
         isMain: !!social.is_main
       }))
-      console.log('Updated socials:', formData.value.socials)
     } else {
       console.warn('No socials in response:', response)
     }
@@ -1104,9 +1096,7 @@ async function onToggleMainSocial(s) {
 async function onToggleMainOther(o) {
   if (!o?.id || !user.value) return
   try {
-    console.log('Setting main other:', { userId: user.value.id, otherId: o.id })
     const response = await adminApi.setMainOther(user.value.id, o.id)
-    console.log('Set main other response:', response)
     
     if (response.others) {
       formData.value.others = response.others.map(other => ({
@@ -1115,7 +1105,6 @@ async function onToggleMainOther(o) {
         type: other.type || 'link',
         isMain: !!other.is_main
       }))
-      console.log('Updated others:', formData.value.others)
     } else {
       console.warn('No others in response:', response)
     }
@@ -1262,13 +1251,17 @@ async function saveAdminPhoto() {
   try {
     const fd = new FormData()
     fd.append('profile_pic_file', newPhotoFile.value)
-    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-    try { console.log('Admin photo upload logs (modal):', resp?.logs) } catch {}
+    
+    // Don't set Content-Type header - let browser set it with boundary
+    const resp = await adminApi.updateUserProfilePhoto(user.value.id, fd, { 
+      timeout: 30000 // 30 second timeout for file uploads
+    })
+    
     // Reflect new preview immediately (data URL doesn't need cache busting)
     profilePicPreview.value = newPhotoPreview.value
     showPhotoModal.value = false
   } catch (e) {
-    try { console.log('Admin photo upload error logs (modal):', e?.response?.data?.logs) } catch {}
+    console.error('Admin photo upload failed:', e)
     alert(e?.response?.data?.message || e.message || 'Upload failed')
   }
 }
@@ -1290,7 +1283,6 @@ async function loadUser() {
       try {
         const pd = await api.get(`/card-users/personal-data/${userId}`)
         personalData = pd || {}
-        console.log('Loaded personal data separately:', personalData)
       } catch (personalError) {
         console.warn('Could not load personal data:', personalError)
       }
@@ -1301,17 +1293,6 @@ async function loadUser() {
     const middleName = personalData.middle_name || userData.middle_name || ''
     const lastName = personalData.last_name || userData.last_name || ''
     const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ') || userData.name || 'Unknown User'
-
-    console.log('Personal data extracted:', { firstName, middleName, lastName, fullName })
-    console.log('User data from API:', userData)
-    console.log('Contact data from API:', {
-      phones: userData.phones,
-      emails: userData.emails,
-      socials: userData.socials,
-      others: userData.others
-    })
-    console.log('Socials count:', userData.socials?.length || 0)
-    console.log('Others count:', userData.others?.length || 0)
 
     // Populate form with user data
     formData.value = {
@@ -1346,7 +1327,6 @@ async function loadUser() {
         isMain: !!e.is_main
       })),
       socials: (userData.socials || []).map(s => {
-        console.log('Mapping social:', s)
         return {
           id: s.id,
           platform: s.type || s.platform || 'link',
@@ -1355,7 +1335,6 @@ async function loadUser() {
         }
       }),
       others: (userData.others || []).map(o => {
-        console.log('Mapping other:', o)
         return {
           id: o.id,
           value: o.others || o.value || '',
@@ -1368,8 +1347,6 @@ async function loadUser() {
     // Set profile picture preview from loaded data
     const profileData = formData.value.profile || {}
     const profilePicUrl = profileData.profile_pic_url || profileData.profile_pic
-    console.log('Profile data:', profileData)
-    console.log('Profile picture URL from API:', profilePicUrl)
     
     if (profilePicUrl) {
       // If it's already a full URL, add cache busting; otherwise process it with cache busting
@@ -1377,21 +1354,11 @@ async function loadUser() {
         profilePicPreview.value = addCacheBusting(profilePicUrl)
       } else {
         const processedUrl = processProfileImage(profilePicUrl)
-        console.log('Processed URL with cache busting:', processedUrl)
         profilePicPreview.value = processedUrl
       }
-      console.log('Profile picture preview set to:', profilePicPreview.value)
     } else {
       profilePicPreview.value = ''
-      console.log('No profile picture found, clearing preview')
     }
-
-    console.log('Loaded user data:', formData.value)
-    console.log('Profile data specifically:', formData.value.profile)
-    console.log('Profile picture fields:', {
-      profile_pic: formData.value.profile.profile_pic,
-      profile_pic_url: formData.value.profile.profile_pic_url
-    })
   } catch (e) {
     console.error('Failed to load user:', e)
     error.value = e?.message || 'Failed to load user'

@@ -362,27 +362,55 @@ async function onSave() {
   saving.value = true
   try {
     if (profilePicFile.value || croppedAvatarBlob.value) {
-      const fd = new FormData()
-      const blob = croppedAvatarBlob.value || profilePicFile.value
-      if (blob instanceof Blob) fd.append('profile_pic_file', blob, 'profile.jpg')
-      else fd.append('profile_pic_file', blob)
-      const resp = await http.post('/card-users/profile/picture', fd)
-      const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
-      if (url) profilePicPreview.value = url
-      profilePicFile.value = null
-      croppedAvatarBlob.value = null
+      try {
+        const fd = new FormData()
+        const blob = croppedAvatarBlob.value || profilePicFile.value
+        if (blob instanceof Blob) {
+          fd.append('profile_pic_file', blob, 'profile.jpg')
+        } else {
+          fd.append('profile_pic_file', blob)
+        }
+        
+        const resp = await http.post('/card-users/profile/picture', fd, {
+          headers: {
+            // Let browser set Content-Type with boundary
+          },
+          timeout: 30000 // 30 second timeout for file uploads
+        })
+        
+        const url = resp?.data?.profile_pic_url || processProfileImage(resp?.data?.profile_pic || '')
+        if (url) profilePicPreview.value = url
+        profilePicFile.value = null
+        croppedAvatarBlob.value = null
+      } catch (uploadError) {
+        console.error('Profile picture upload failed:', uploadError)
+        console.error('Error response:', uploadError?.response?.data)
+        alert(uploadError?.response?.data?.message || uploadError?.message || 'Failed to upload profile picture')
+        throw uploadError // Re-throw to prevent continuing
+      }
     }
 
     if (coverPicFile.value || croppedCoverBlob.value) {
-      const fd2 = new FormData()
-      const blob2 = croppedCoverBlob.value || coverPicFile.value
-      if (blob2 instanceof Blob) fd2.append('cover_pic_file', blob2, 'cover.jpg')
-      else fd2.append('cover_pic_file', blob2)
-      const resp2 = await userApi.uploadCover(fd2)
-      const coverUrl = resp2?.data?.cover_pic_url || processProfileImage(resp2?.data?.cover_pic || '')
-      if (coverUrl) coverPicPreview.value = coverUrl
-      coverPicFile.value = null
-      croppedCoverBlob.value = null
+      try {
+        const fd2 = new FormData()
+        const blob2 = croppedCoverBlob.value || coverPicFile.value
+        if (blob2 instanceof Blob) {
+          fd2.append('cover_pic_file', blob2, 'cover.jpg')
+        } else {
+          fd2.append('cover_pic_file', blob2)
+        }
+        
+        const resp2 = await userApi.uploadCover(fd2)
+        const coverUrl = resp2?.data?.cover_pic_url || processProfileImage(resp2?.data?.cover_pic || '')
+        if (coverUrl) coverPicPreview.value = coverUrl
+        coverPicFile.value = null
+        croppedCoverBlob.value = null
+      } catch (uploadError) {
+        console.error('Cover picture upload failed:', uploadError)
+        console.error('Error response:', uploadError?.response?.data)
+        alert(uploadError?.response?.data?.message || uploadError?.message || 'Failed to upload cover picture')
+        throw uploadError // Re-throw to prevent continuing
+      }
     }
 
     const emptyToNull = (value) => {

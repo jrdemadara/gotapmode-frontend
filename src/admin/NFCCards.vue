@@ -103,13 +103,8 @@
         <h2 class="text-2xl font-bold text-gray-900">NFC Cards Management System</h2>
       </div>
 
-      <!-- Loading and Error States -->
-      <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <div class="text-lg text-gray-600">Loading NFC cards...</div>
-      </div>
-
-      <div v-else-if="error" class="bg-white rounded-2xl shadow p-6 text-center">
+      <!-- Error State -->
+      <div v-if="error && !loading" class="bg-white rounded-2xl shadow p-6 text-center mb-4">
         <div class="text-red-600 text-lg mb-2">{{ error }}</div>
         <button @click="fetchCards" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Try Again
@@ -117,7 +112,7 @@
       </div>
 
       <!-- Cards Table -->
-      <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <!-- Table Header -->
         <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div class="flex flex-col gap-4">
@@ -157,7 +152,7 @@
                   </svg>
                   <span class="hidden xs:inline">Restore</span>
                 </button>
-                <button @click="fetchCards" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button @click="() => fetchCards(true)" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
@@ -175,7 +170,13 @@
         </div>
 
         <!-- Desktop Table -->
-        <div class="hidden lg:block w-full overflow-hidden">
+        <div class="hidden lg:block w-full overflow-hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading NFC cards...</div>
+            </div>
+          </div>
           <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
             <table class="w-full enhanced-table" role="table" aria-label="NFC Cards table">
               <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
@@ -328,7 +329,13 @@
         </div>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden">
+        <div class="lg:hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading NFC cards...</div>
+            </div>
+          </div>
           <div class="p-4 space-y-4">
             <div v-for="card in paginatedCards" :key="card.id"
                  class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
@@ -1104,9 +1111,12 @@ const searchQuery = ref('')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
 
-// Pagination state
+// Server-side pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const totalPages = ref(0)
+const totalItems = ref(0)
+const stats = ref({ total: 0, activated: 0, unactivated: 0 })
 
 // Modal states
 const showCardModal = ref(false)
@@ -1143,74 +1153,43 @@ const getTimeAgo = (dateString) => {
   return formatDate(dateString)
 }
 
-const fetchCards = async () => {
-  console.log('fetchCards: Starting...')
+const fetchCards = async (forceRefresh = false) => {
   loading.value = true
   error.value = ''
-  console.log('fetchCards: Loading set to true, error cleared')
 
   try {
-    console.log('Fetching NFC cards from API...')
-    
     const token = localStorage.getItem('gtm_admin_token')
-    console.log('fetchCards: Token exists:', !!token)
     if (!token) {
       throw new Error('No admin token found')
     }
 
-    const data = await adminApi.getCards()
+    // Fetch with server-side pagination
+    // If forceRefresh is true (from refresh button), bypass cache to get fresh data
+    const data = await adminApi.getCards(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
     
-    console.log('Raw API response:', data)
-    console.log('Response type:', typeof data)
-    console.log('Is array:', Array.isArray(data))
-    console.log('Has data property:', data && 'data' in data)
-    console.log('Data property is array:', data && Array.isArray(data.data))
-    console.log('Has cards property:', data && 'cards' in data)
-    console.log('Cards property type:', data && typeof data.cards)
-    console.log('Cards property is array:', data && Array.isArray(data.cards))
-    if (data && data.cards) {
-      console.log('Cards object keys:', Object.keys(data.cards))
-      console.log('Cards object values:', Object.values(data.cards))
-    }
-    
-    // Transform the data to ensure it has the expected structure
-    // Handle both direct array response and paginated response
-    if (Array.isArray(data)) {
-      cards.value = data
-      console.log('Using data as direct array')
-    } else if (data && Array.isArray(data.data)) {
+    // Server-side pagination response structure
+    if (data && data.data && Array.isArray(data.data)) {
       cards.value = data.data
-      console.log('Using data.data array')
-    } else if (data && Array.isArray(data.cards)) {
-      cards.value = data.cards
-      console.log('Using data.cards array')
-    } else if (data && data.cards && typeof data.cards === 'object') {
-      // Handle case where cards is an object (like paginated response)
-      // Check if it has a data property or if it's the actual cards object
-      if (Array.isArray(data.cards.data)) {
-        cards.value = data.cards.data
-        console.log('Using data.cards.data array')
-      } else if (Array.isArray(data.cards.cards)) {
-        cards.value = data.cards.cards
-        console.log('Using data.cards.cards array')
-      } else {
-        // If cards is an object but not the expected structure, try to convert it
-        cards.value = Object.values(data.cards).filter(item => 
-          item && typeof item === 'object' && item.id
-        )
-        console.log('Using Object.values(data.cards) as array')
+      
+      // Update pagination metadata
+      if (data.pagination) {
+        currentPage.value = data.pagination.current_page
+        totalPages.value = data.pagination.last_page
+        totalItems.value = data.pagination.total
+      }
+
+      // Update stats if available
+      if (data.stats) {
+        stats.value = data.stats
       }
     } else {
       cards.value = []
-      console.log('No valid array found, using empty array')
+      totalPages.value = 0
+      totalItems.value = 0
     }
-    
-    console.log('Final cards.value:', cards.value)
-    console.log('Cards count:', cards.value.length)
   } catch (err) {
     console.error('Error fetching cards:', err)
     if (err.message && err.message.includes('401')) {
-      // Token expired or invalid
       localStorage.removeItem('gtm_admin_token')
       localStorage.removeItem('gtm_admin_user')
       router.replace({ name: 'login' })
@@ -1219,69 +1198,41 @@ const fetchCards = async () => {
     error.value = err.message || 'Failed to load NFC cards. Please try again.'
     cards.value = []
   } finally {
-    console.log('fetchCards: Setting loading to false')
     loading.value = false
-    console.log('fetchCards: Final state - loading:', loading.value, 'error:', error.value, 'cards count:', cards.value.length)
   }
 }
 
-// Computed properties
-const filteredCards = computed(() => {
-  console.log('filteredCards computed - cards.value:', cards.value)
-  console.log('filteredCards computed - isArray:', Array.isArray(cards.value))
-  console.log('filteredCards computed - searchQuery:', searchQuery.value)
-  
-  if (!Array.isArray(cards.value)) {
-    console.log('filteredCards: returning empty array - not an array')
-    return []
-  }
-  if (!searchQuery.value) {
-    console.log('filteredCards: returning all cards - no search query')
-    return cards.value
-  }
-
-  const query = searchQuery.value.toLowerCase()
-  const filtered = cards.value.filter(card =>
-    card.id.toString().includes(query) ||
-    card.user?.name?.toLowerCase().includes(query) ||
-    card.user?.email?.toLowerCase().includes(query)
-  )
-  console.log('filteredCards: filtered result:', filtered)
-  return filtered
-})
-
+// Computed properties for server-side pagination
 const paginatedCards = computed(() => {
-  console.log('paginatedCards computed - filteredCards.value:', filteredCards.value)
-  console.log('paginatedCards computed - isArray:', Array.isArray(filteredCards.value))
-  console.log('paginatedCards computed - currentPage:', currentPage.value)
-  console.log('paginatedCards computed - itemsPerPage:', itemsPerPage.value)
-  
-  if (!Array.isArray(filteredCards.value)) {
-    console.log('paginatedCards: returning empty array - not an array')
-    return []
-  }
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  const paginated = filteredCards.value.slice(start, end)
-  console.log('paginatedCards: paginated result:', paginated)
-  return paginated
+  // Cards are already paginated from the server
+  return Array.isArray(cards.value) ? cards.value : []
 })
 
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  resetPagination()
-})
-
-const totalPages = computed(() => {
-  if (!Array.isArray(filteredCards.value)) return 0
-  return Math.ceil(filteredCards.value.length / itemsPerPage.value)
+const filteredCards = computed(() => {
+  // For compatibility - cards are already filtered on server
+  return paginatedCards.value
 })
 
 const paginationInfo = computed(() => {
-  if (!Array.isArray(filteredCards.value)) return { start: 0, end: 0, total: 0 }
-  const start = (currentPage.value - 1) * itemsPerPage.value + 1
-  const end = Math.min(currentPage.value * itemsPerPage.value, filteredCards.value.length)
-  return { start, end, total: filteredCards.value.length }
+  const start = totalItems.value > 0 ? ((currentPage.value - 1) * itemsPerPage.value) + 1 : 0
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value)
+  return { start, end, total: totalItems.value }
+})
+
+// Watch for search query and pagination changes - debounce search
+let searchTimeout = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1 // Reset to first page on search
+    fetchCards()
+  }, 300) // 300ms debounce
+})
+
+// Watch for itemsPerPage changes
+watch(itemsPerPage, () => {
+  currentPage.value = 1 // Reset to first page on page size change
+  fetchCards()
 })
 
 const filteredRestoreCards = computed(() => {
@@ -1322,7 +1273,6 @@ async function confirmDelete() {
 
   try {
     isDeleting.value = true
-    console.log('Deleting card:', cardToDelete.value.id)
     
     const token = localStorage.getItem('gtm_admin_token')
     if (!token) {
@@ -1334,7 +1284,6 @@ async function confirmDelete() {
     // Remove card from list
     cards.value = cards.value.filter(card => card.id !== cardToDelete.value.id)
     
-    console.log('Card deleted successfully')
     closeDeleteModal()
   } catch (err) {
     console.error('Error deleting card:', err)
@@ -1351,15 +1300,19 @@ async function confirmDelete() {
   }
 }
 
-function resetPagination() {
-  currentPage.value = 1
-}
-
 // Soft delete functions
 async function loadSoftDeletedCards() {
   try {
     const data = await adminApi.getSoftDeletedCards()
-    softDeletedCards.value = data.cards || []
+    // Handle new paginated response structure
+    if (data.data && Array.isArray(data.data)) {
+      softDeletedCards.value = data.data
+    } else if (data.cards && Array.isArray(data.cards)) {
+      // Fallback for old response format
+      softDeletedCards.value = data.cards
+    } else {
+      softDeletedCards.value = []
+    }
   } catch (e) {
     console.error('Failed to load soft deleted cards:', e)
     softDeletedCards.value = []
@@ -1383,8 +1336,6 @@ async function restoreCard(card) {
     
     // Refresh main cards list
     await fetchCards()
-    
-    console.log('Card restored successfully')
   } catch (e) {
     console.error('Failed to restore card:', e)
     alert('Failed to restore card: ' + e.message)
@@ -1411,19 +1362,19 @@ Deleted: ${formatDate(card.deleted_at)}
 
 function exportCards() {
   // TODO: Implement export functionality
-  console.log('Export cards:', filteredCards.value)
   alert('Export functionality coming soon!')
 }
 
 const changePage = (page) => {
-  currentPage.value = page
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    currentPage.value = validPage
+    fetchCards() // Fetch new page from server
+  }
 }
 
 const validateAndChangePage = (page) => {
-  const validPage = Math.max(1, Math.min(page, totalPages.value))
-  if (validPage !== currentPage.value) {
-    changePage(validPage)
-  }
+  changePage(page)
 }
 
 const getVisiblePages = () => {
@@ -1467,7 +1418,6 @@ const copyToClipboard = async (text) => {
   try {
     await navigator.clipboard.writeText(text)
     // You could add a toast notification here
-    console.log('URL copied to clipboard')
   } catch (err) {
     console.error('Failed to copy: ', err)
   }
@@ -1477,7 +1427,6 @@ async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success

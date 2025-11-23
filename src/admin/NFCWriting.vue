@@ -619,7 +619,6 @@ const logout = async () => {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
   }
   localStorage.removeItem('gtm_admin_token')
   localStorage.removeItem('gtm_admin_user')

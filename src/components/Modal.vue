@@ -31,10 +31,11 @@ const props = defineProps({
   title: { type: String, default: 'Error' },
   message: { type: String, default: '' },
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'close'])
 
 function close() {
   emit('update:modelValue', false)
+  emit('close')
 }
 
 function onKey(e) {

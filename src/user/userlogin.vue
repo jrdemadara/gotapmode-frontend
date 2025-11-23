@@ -105,7 +105,7 @@ async function onSubmit() {
 }
 
 function onForgot() {
-  console.log('Forgot password clicked')
+  router.push({ name: 'forgot-password' })
 }
 
 function onRegister() {

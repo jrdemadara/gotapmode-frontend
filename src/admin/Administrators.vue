@@ -103,13 +103,8 @@
         <h2 class="text-2xl font-bold text-gray-900">Administrator Management System</h2>
       </div>
 
-      <!-- Loading and Error States -->
-      <div v-if="loading" class="bg-white rounded-2xl shadow p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <div class="text-lg text-gray-600">Loading administrators...</div>
-      </div>
-
-      <div v-else-if="error" class="bg-white rounded-2xl shadow p-6 text-center">
+      <!-- Error State -->
+      <div v-if="error && !loading" class="bg-white rounded-2xl shadow p-6 text-center mb-4">
         <div class="text-red-600 text-lg mb-2">{{ error }}</div>
         <button @click="fetchAdministrators" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Try Again
@@ -117,7 +112,7 @@
       </div>
 
              <!-- Administrators Table -->
-       <div v-else class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+       <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <!-- Table Header -->
         <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div class="flex flex-col gap-4">
@@ -163,7 +158,7 @@
                   </svg>
                   <span class="hidden xs:inline">Add Admin</span>
                 </button>
-                <button @click="fetchAdministrators" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button @click="() => fetchAdministrators(true)" class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
@@ -181,7 +176,13 @@
         </div>
 
         <!-- Desktop Table -->
-        <div class="hidden lg:block w-full overflow-hidden">
+        <div class="hidden lg:block w-full overflow-hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading administrators...</div>
+            </div>
+          </div>
           <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
             <table class="w-full enhanced-table" role="table" aria-label="Administrators table">
               <thead class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 border-b-2 border-gray-200/80">
@@ -302,7 +303,13 @@
         </div>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden">
+        <div class="lg:hidden relative">
+          <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div class="text-lg text-gray-600">Loading administrators...</div>
+            </div>
+          </div>
           <div class="p-2 sm:p-4 space-y-3 sm:space-y-4">
             <div v-for="admin in paginatedAdministrators" :key="admin.id"
                  class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200">
@@ -1334,9 +1341,11 @@ const adminName = ref('Admin')
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
 
-// Pagination state
+// Server-side pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const totalPages = ref(0)
+const totalItems = ref(0)
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -1353,22 +1362,29 @@ const getUserInitials = (name) => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const fetchAdministrators = async () => {
+const fetchAdministrators = async (forceRefresh = false) => {
   loading.value = true
   error.value = ''
 
   try {
-    console.log('Fetching administrators...')
-    const response = await adminApi.getAdministrators()
-    console.log('API Response:', response)
+    // Fetch with server-side pagination
+    // If forceRefresh is true (from refresh button), bypass cache to get fresh data
+    const response = await adminApi.getAdministrators(currentPage.value, itemsPerPage.value, searchQuery.value, forceRefresh)
 
-    // The api.get wrapper already extracts r.data, so response is the actual JSON object
-    if (response && response.administrators) {
-      administrators.value = response.administrators
-      console.log('Administrators loaded:', administrators.value)
+    // Server-side pagination response structure
+    if (response && response.data && Array.isArray(response.data)) {
+      administrators.value = response.data
+      
+      // Update pagination metadata
+      if (response.pagination) {
+        currentPage.value = response.pagination.current_page
+        totalPages.value = response.pagination.last_page
+        totalItems.value = response.pagination.total
+      }
     } else {
       administrators.value = []
-      console.log('No administrators found in response')
+      totalPages.value = 0
+      totalItems.value = 0
     }
   } catch (err) {
     console.error('Error:', err)
@@ -1379,37 +1395,37 @@ const fetchAdministrators = async () => {
   }
 }
 
-// Computed properties
-const filteredAdministrators = computed(() => {
-  if (!searchQuery.value) return administrators.value
-
-  const query = searchQuery.value.toLowerCase()
-  return administrators.value.filter(admin =>
-    admin.name.toLowerCase().includes(query) ||
-    admin.email.toLowerCase().includes(query) ||
-    admin.id.toString().includes(query)
-  )
-})
-
+// Computed properties for server-side pagination
 const paginatedAdministrators = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredAdministrators.value.slice(start, end)
+  // Administrators are already paginated from the server
+  return Array.isArray(administrators.value) ? administrators.value : []
 })
 
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  resetPagination()
-})
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredAdministrators.value.length / itemsPerPage.value)
+const filteredAdministrators = computed(() => {
+  // For compatibility - administrators are already filtered on server
+  return paginatedAdministrators.value
 })
 
 const paginationInfo = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value + 1
-  const end = Math.min(currentPage.value * itemsPerPage.value, filteredAdministrators.value.length)
-  return { start, end, total: filteredAdministrators.value.length }
+  const start = totalItems.value > 0 ? ((currentPage.value - 1) * itemsPerPage.value) + 1 : 0
+  const end = Math.min(currentPage.value * itemsPerPage.value, totalItems.value)
+  return { start, end, total: totalItems.value }
+})
+
+// Watch for search query and pagination changes - debounce search
+let searchTimeout = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1 // Reset to first page on search
+    fetchAdministrators()
+  }, 300) // 300ms debounce
+})
+
+// Watch for itemsPerPage changes
+watch(itemsPerPage, () => {
+  currentPage.value = 1 // Reset to first page on page size change
+  fetchAdministrators()
 })
 
 // Functions
@@ -1423,10 +1439,6 @@ function getAdmin() {
     const raw = localStorage.getItem('gtm_admin_user')
     if (raw) adminName.value = JSON.parse(raw)?.name || 'Admin'
   } catch {}
-}
-
-function resetPagination() {
-  currentPage.value = 1
 }
 
 // Modal state
@@ -1571,17 +1583,8 @@ const addNewUser = async () => {
 
       // Make API call to create the user
   try {
-    console.log('Making API call with data:', {
-      name: newUser.value.name,
-      email: newUser.value.email,
-      password: newUser.value.password,
-      password_confirmation: newUser.value.password_confirmation,
-      is_admin: newUser.value.is_admin
-    })
-
     // Check if admin token exists
     const adminToken = localStorage.getItem('gtm_admin_token')
-    console.log('Admin token exists:', !!adminToken)
 
     const response = await adminApi.createAdministrator({
       name: newUser.value.name,
@@ -1591,14 +1594,9 @@ const addNewUser = async () => {
       is_admin: newUser.value.is_admin
     })
 
-    console.log('User created successfully:', response)
-
       // Success - close modal and refresh list
       closeAddModal()
       await fetchAdministrators()
-
-      // Show success message (you can implement a toast notification here)
-      console.log('Administrator created successfully!')
 
     } catch (apiError) {
       console.error('API Error:', apiError)
@@ -1678,11 +1676,7 @@ const updateAdministrator = async () => {
 
     // Make API call to update the administrator
     try {
-      console.log('Updating administrator with data:', updateData)
-
       const response = await adminApi.updateAdministrator(editForm.value.id, updateData)
-
-      console.log('Administrator updated successfully:', response)
 
       // Success - close modal and refresh list
       editSuccess.value = 'Administrator profile updated successfully!'
@@ -1744,7 +1738,11 @@ onUnmounted(() => {
 })
 
 const changePage = (page) => {
-  currentPage.value = page
+  const validPage = Math.max(1, Math.min(page, totalPages.value))
+  if (validPage !== currentPage.value) {
+    currentPage.value = validPage
+    fetchAdministrators() // Fetch new page from server
+  }
 }
 
 function changeItemsPerPage(newSize) {
@@ -1796,7 +1794,6 @@ const getVisiblePages = () => {
 // Export function
 const exportAdministrators = () => {
   // Placeholder for export functionality
-  console.log('Export administrators functionality to be implemented')
 }
 
 // Soft delete and restore functions
@@ -1880,7 +1877,15 @@ async function openRestoreModal() {
 async function loadSoftDeletedAdministrators() {
   try {
     const response = await adminApi.getSoftDeletedAdministrators()
-    softDeletedAdministrators.value = response.administrators || []
+    // Handle new paginated response structure
+    if (response.data && Array.isArray(response.data)) {
+      softDeletedAdministrators.value = response.data
+    } else if (response.administrators && Array.isArray(response.administrators)) {
+      // Fallback for old response format
+      softDeletedAdministrators.value = response.administrators
+    } else {
+      softDeletedAdministrators.value = []
+    }
   } catch (e) {
     console.error('Failed to load soft deleted administrators:', e)
     softDeletedAdministrators.value = []
@@ -1905,7 +1910,6 @@ async function logout() {
   try {
     await adminApi.logout()
   } catch (e) {
-    console.log('Logout API call failed:', e)
     // Even if API call fails, we still clear local storage and redirect
   }
   // Always clear local storage and redirect, regardless of API call success
