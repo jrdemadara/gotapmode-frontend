@@ -81,7 +81,16 @@ async function onSubmit() {
       showError.value = true
     }
   } catch (e) {
-    errorMsg.value = String(e.message || e)
+    // Handle different error types
+    if (e?.response?.status === 500) {
+      errorMsg.value = 'Server error: Unable to process your request. Please try again later or contact support.'
+    } else if (e?.response?.status === 422) {
+      errorMsg.value = e?.response?.data?.message || 'Invalid email address. Please check and try again.'
+    } else if (e?.response?.data?.message) {
+      errorMsg.value = e.response.data.message
+    } else {
+      errorMsg.value = e?.message || 'An error occurred. Please try again.'
+    }
     showError.value = true
   } finally {
     loading.value = false

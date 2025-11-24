@@ -334,7 +334,7 @@
             <!-- Chart Container -->
             <div class="h-48 sm:h-56 md:h-64 lg:h-72 bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-100 shadow-inner">
                <div v-if="stats.series?.data && stats.series?.dates" class="w-full h-full">
-                 <apexchart 
+                 <ApexChart 
                    :options="chartOptions" 
                    :series="chartSeries"
                    height="100%"
@@ -466,6 +466,10 @@
 import { ref, computed, onMounted, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { adminApi, api } from '../config/api'
+import VueApexCharts from 'vue3-apexcharts'
+
+// Register ApexCharts component for use in template
+const ApexChart = VueApexCharts
 
 
 const router = useRouter()
@@ -767,7 +771,16 @@ async function load() {
     stats.value = data 
   } catch (e) { 
     console.error('Failed to load stats:', e);
-    error.value = e?.message || 'Failed to load stats' 
+    // Show more detailed error information
+    if (e?.response?.status === 500) {
+      error.value = 'Server error: Unable to load dashboard statistics. Please try again or contact support.';
+    } else if (e?.response?.status === 401) {
+      error.value = 'Authentication failed. Please log in again.';
+      // Redirect to login if unauthorized
+      router.push({ name: 'login' });
+    } else {
+      error.value = e?.response?.data?.message || e?.message || 'Failed to load stats';
+    }
   }
   loading.value = false
 }
