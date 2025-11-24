@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-svh flex flex-col items-center gap-6 px-8 sm:px-8 pb-safe pt-32 sm:pt-56 bg-gradient-to-b from-black/0 to-black/0">
     <div class="text-center">
-      <img class="w-16 h-16 mx-auto mb-0" src="/logo/GoTapMode.png" alt="Go Tap Mode" />
+      <img class="w-16 h-16 mx-auto mb-0" :src="logoUrl" alt="Go Tap Mode" />
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">Go Tap Mode</h1>
       <p class="-mt-0.5 text-sm opacity-70">Activate Connection Instantly</p>
     </div>
@@ -60,6 +60,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, adminApi } from '../config/api'
 import Modal from '../components/Modal.vue'
+
+const logoUrl = '/logo/GoTapMode.png'
 
 const email = ref('')
 const password = ref('')

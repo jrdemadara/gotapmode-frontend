@@ -1,15 +1,200 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+
+  <!-- Homepage - Primary Landing Page -->
   <url>
     <loc>https://gotapmode.info/</loc>
-    <lastmod>2024-01-01</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    
+    <!-- Primary Brand Images -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>GoTapMode - Digital Business Cards Philippines</image:title>
+      <image:caption>GoTapMode official logo for digital business cards with NFC technology in the Philippines</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+    
+    <!-- Hero Background Images -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/cover1.jpg</image:loc>
+      <image:title>Digital Business Card Technology - GoTapMode</image:title>
+      <image:caption>Advanced NFC digital business card technology showcasing instant contact sharing capabilities</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/cover2.jpg</image:loc>
+      <image:title>Professional Networking Technology - GoTapMode</image:title>
+      <image:caption>Modern professional networking solution with tap-to-share digital business cards</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+    
+    <!-- Favicon and App Icons -->
+    <image:image>
+      <image:loc>https://gotapmode.info/favicon.ico</image:loc>
+      <image:title>GoTapMode Favicon</image:title>
+      <image:caption>GoTapMode website favicon for browser identification</image:caption>
+    </image:image>
   </url>
+
+  <!-- How It Works - Educational Content -->
   <url>
-    <loc>https://gotapmode.info/signup</loc>
-    <lastmod>2024-01-01</lastmod>
+    <loc>https://gotapmode.info/how-it-works</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    
+    <!-- Process demonstration images -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>How Digital Business Cards Work - Step by Step Guide</image:title>
+      <image:caption>Complete guide on how to use GoTapMode digital business cards with NFC technology</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- Contact Page - Business Information -->
+  <url>
+    <loc>https://gotapmode.info/contact</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    
+    <!-- Contact page branding -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>Contact GoTapMode - Digital Business Card Support</image:title>
+      <image:caption>Get in touch with GoTapMode for digital business card inquiries and support</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
   </url>
+
+  <!-- Login Page - User Access -->
+  <url>
+    <loc>https://gotapmode.info/login</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    
+    <!-- Login page branding -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>GoTapMode User Login - Access Your Digital Business Card</image:title>
+      <image:caption>Secure login portal for GoTapMode digital business card users to manage their profiles</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- Dynamic Public Profile Pages (Template for crawlers) -->
+  <url>
+    <loc>https://gotapmode.info/p/sample-profile</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+    
+    <!-- Public profile example -->
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>Digital Business Card Profile - GoTapMode</image:title>
+      <image:caption>Public digital business card profile showcasing professional contact information</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- Alternative URLs and Redirects -->
+  <url>
+    <loc>https://gotapmode.info/home</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Mobile App Download Pages (Future) -->
+  <url>
+    <loc>https://gotapmode.info/download</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>Download GoTapMode App - Digital Business Cards</image:title>
+      <image:caption>Download the GoTapMode mobile application for managing digital business cards</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- Privacy and Legal Pages -->
+  <url>
+    <loc>https://gotapmode.info/privacy</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gotapmode.info/terms</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Support and Help Pages -->
+  <url>
+    <loc>https://gotapmode.info/support</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>GoTapMode Support - Help Center</image:title>
+      <image:caption>Get help and support for your GoTapMode digital business card</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- FAQ Page -->
+  <url>
+    <loc>https://gotapmode.info/faq</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Blog/News Section (Future Content) -->
+  <url>
+    <loc>https://gotapmode.info/blog</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>GoTapMode Blog - Digital Business Card News</image:title>
+      <image:caption>Latest news and updates about digital business cards and networking technology</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
+  <!-- About Us Page -->
+  <url>
+    <loc>https://gotapmode.info/about</loc>
+    <lastmod>2025-09-18T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    
+    <image:image>
+      <image:loc>https://gotapmode.info/logo/GoTapMode.png</image:loc>
+      <image:title>About GoTapMode - Digital Business Card Company</image:title>
+      <image:caption>Learn about GoTapMode, the leading digital business card provider in the Philippines</image:caption>
+      <image:geo_location>Philippines</image:geo_location>
+    </image:image>
+  </url>
+
 </urlset>
