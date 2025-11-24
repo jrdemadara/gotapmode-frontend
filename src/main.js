@@ -3,7 +3,6 @@ import App from './App.vue'
 import { router } from './router/index.js'
 import './style.css'
 import { initIdleLogout } from './utils/idle.js'
-import VueApexCharts from 'vue3-apexcharts'
 
 // FORCE LIGHT THEME - JavaScript approach
 function forceLightTheme() {
@@ -39,7 +38,6 @@ window.addEventListener('DOMContentLoaded', forceLightTheme);
 
 const app = createApp(App)
 app.use(router)
-app.component('apexchart', VueApexCharts)
 app.mount('#app')
 
 // Idle logout after 3 minutes, but not on the login page
