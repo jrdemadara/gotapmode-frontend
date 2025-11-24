@@ -134,7 +134,7 @@
                   name="nfc-search"
                   v-model="searchQuery"
                   type="text"
-                  placeholder="Search by card ID, user name, or email..."
+                  placeholder="Search by card ID, user name, email, or status (active/inactive)..."
                   class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <div class="absolute left-4 top-3.5 text-gray-400">
@@ -766,8 +766,8 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full border border-gray-200">
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="closeDeleteModal">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full border border-gray-200 relative z-50" @click.stop>
         <!-- Modal Header -->
         <div class="bg-red-50 px-6 py-4 border-b border-red-200 flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -830,15 +830,15 @@
     </div>
 
     <!-- Restore Cards Modal - Enhanced Design -->
-    <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
+    <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showRestoreModal = false">
       <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Backdrop -->
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="fixed inset-0 transition-opacity z-40" aria-hidden="true">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
         </div>
         
         <!-- Modal Container -->
-        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100">
+        <div class="relative z-50 inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100" @click.stop>
           
           <!-- Header Section - Flat Design -->
           <div class="bg-white border-b border-gray-200 px-6 py-4">
