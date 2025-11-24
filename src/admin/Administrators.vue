@@ -1017,15 +1017,15 @@
   </div>
 
   <!-- Restore Administrators Modal - Enhanced Design -->
-  <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
+  <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showRestoreModal = false">
     <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Backdrop -->
-      <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="fixed inset-0 transition-opacity z-40" aria-hidden="true">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       </div>
       
       <!-- Modal Container -->
-      <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100">
+      <div class="relative z-50 inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100" @click.stop>
         
         <!-- Header Section - Flat Design -->
         <div class="bg-gradient-to-r from-red-50 to-orange-50 px-6 py-4 border-b border-gray-200">
@@ -1256,8 +1256,8 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div v-if="showDeleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+  <div v-if="showDeleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="cancelDeleteAdministrator">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative z-50" @click.stop>
       <div class="flex items-center gap-3 mb-4">
         <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
           <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1287,8 +1287,8 @@
   </div>
 
   <!-- Restore Confirmation Modal -->
-  <div v-if="showRestoreConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+  <div v-if="showRestoreConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="cancelRestoreAdministrator">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative z-50" @click.stop>
       <div class="flex items-center gap-3 mb-4">
         <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
           <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

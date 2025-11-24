@@ -135,7 +135,7 @@
                   name="users-search"
                   v-model="searchQuery"
                   type="text"
-                  placeholder="Search by name, email, company, or contacts..."
+                  placeholder="Search by name, email, company, contacts, or status (active/inactive)..."
                   class="w-full pl-12 pr-4 py-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                   <div class="absolute left-4 top-3.5 text-gray-400">
@@ -1047,15 +1047,15 @@
       </div>
 
     <!-- Restore Users Modal - Enhanced Design -->
-       <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto">
+       <div v-if="showRestoreModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showRestoreModal = false">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Backdrop -->
-           <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+           <div class="fixed inset-0 transition-opacity z-40" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100">
+        <div class="relative z-50 inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-7xl rounded-2xl shadow-2xl border border-gray-100" @click.stop>
           
           <!-- Header Section - Flat Design -->
           <div class="bg-white border-b border-gray-200 px-6 py-4">
@@ -1345,15 +1345,15 @@
        </div>
 
     <!-- Delete User Confirmation Modal - Enhanced Design -->
-       <div v-if="showDeleteConfirmModal" class="fixed inset-0 z-50 overflow-y-auto">
+       <div v-if="showDeleteConfirmModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="cancelDeleteUser">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Backdrop -->
-           <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+           <div class="fixed inset-0 transition-opacity z-40" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100">
+        <div class="relative z-50 inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100" @click.stop>
           
           <!-- Header Section - Enhanced Design -->
           <div class="bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-100 px-6 py-6">
@@ -1402,15 +1402,15 @@
        </div>
 
     <!-- Restore User Confirmation Modal - Enhanced Design -->
-       <div v-if="showRestoreConfirmModal" class="fixed inset-0 z-50 overflow-y-auto">
+       <div v-if="showRestoreConfirmModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="cancelRestoreUser">
          <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Backdrop -->
-           <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+           <div class="fixed inset-0 transition-opacity z-40" aria-hidden="true">
              <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
            </div>
            
            <!-- Modal Container -->
-        <div class="inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100">
+        <div class="relative z-50 inline-block align-bottom bg-white text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-md rounded-2xl shadow-2xl border border-gray-100" @click.stop>
           
           <!-- Header Section - Enhanced Design -->
           <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100 px-6 py-6">
